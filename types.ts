@@ -6,6 +6,13 @@ export enum Position {
   FWD = 'FWD'
 }
 
+export interface Manager {
+  name: string;
+  nationality: string;
+  experience: 'Amateur' | 'Semi-Pro' | 'Professional';
+  preference: 'Attacking' | 'Balanced' | 'Defensive';
+}
+
 export enum MatchState {
   PRE_MATCH = 'PRE_MATCH',
   PLAYING = 'PLAYING',
@@ -53,11 +60,11 @@ export interface Player {
   age: number;
   position: Position;
   nationality: string;
-  
+
   // CA/PA System
   ca: number; // Current Ability (1-200)
   pa: number; // Potential Ability (1-200)
-  
+
   // Detailed Stats
   attributes: {
     technical: TechnicalAttributes;
@@ -65,11 +72,11 @@ export interface Player {
     physical: PhysicalAttributes;
   };
   hidden: HiddenAttributes;
-  
+
   // Dynamic Game State
   condition: number; // 0-100%
   morale: number; // 0-100%
-  
+
   // Season Stats
   goals: number;
   assists: number;
@@ -77,24 +84,7 @@ export interface Player {
   value: number; // Market value
 }
 
-export interface Team {
-  id: string;
-  name: string;
-  shortName: string;
-  primaryColor: string;
-  secondaryColor: string;
-  players: Player[];
-  wins: number;
-  draws: number;
-  losses: number;
-  goalsFor: number;
-  goalsAgainst: number;
-  points: number;
-  tactics: {
-    formation: string; // e.g. "4-4-2"
-    mentality: 'Defensive' | 'Balanced' | 'Attacking';
-  };
-}
+
 
 export interface MatchEvent {
   minute: number;
@@ -119,6 +109,76 @@ export interface GameState {
   userTeamId: string;
   teams: Team[];
   fixtures: Fixture[];
-  currentView: 'DASHBOARD' | 'SQUAD' | 'LEAGUE' | 'MATCH' | 'TACTICS';
+  currentView: 'MAIN_MENU' | 'MANAGER_CREATION' | 'CLUB_SELECTION' | 'DASHBOARD' | 'SQUAD' | 'LEAGUE' | 'MATCH' | 'TACTICS' | 'SEARCH';
   activeMatchId: string | null;
+  manager?: Manager;
+}
+
+// Tactics System Types
+export type Duty = 'Defend' | 'Support' | 'Attack' | 'Automatic';
+
+export interface Role {
+  id: string;
+  name: string;
+  description: string;
+  availableDuties: Duty[];
+}
+
+export interface PlayerPosition {
+  id: string; // e.g., "GK", "DR", "MCR"
+  name: string;
+  x: number; // 0-100 (Left-Right)
+  y: number; // 0-100 (Back-Front)
+}
+
+export interface Formation {
+  id: string;
+  name: string;
+  positions: PlayerPosition[]; // Array of 11 positions
+}
+
+export interface TacticalInstructions {
+  mentality: 'Very Defensive' | 'Defensive' | 'Cautious' | 'Balanced' | 'Positive' | 'Attacking' | 'Very Attacking';
+  inPossession: {
+    passingDirectness: number; // 0-100
+    tempo: number; // 0-100
+    width: number; // 0-100
+  };
+  inTransition: {
+    counterPress: boolean;
+    counter: boolean;
+    distributeQuickly: boolean;
+  };
+  outOfPossession: {
+    lineOfEngagement: number; // 0-100
+    defensiveLine: number; // 0-100
+    pressingIntensity: number; // 0-100
+  };
+}
+
+// Update Team interface to include full tactics
+export interface Team {
+  id: string;
+  name: string;
+  shortName: string;
+  primaryColor: string;
+  secondaryColor: string;
+  players: Player[];
+  wins: number;
+  draws: number;
+  losses: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  points: number;
+  tactics: {
+    formation: string; // Formation ID
+    mentality: string; // Legacy, keep for compatibility or remove if fully migrated
+    instructions: TacticalInstructions;
+    lineup: {
+      positionId: string; // e.g. "GK"
+      playerId: string;
+      role: string;
+      duty: Duty;
+    }[];
+  };
 }
