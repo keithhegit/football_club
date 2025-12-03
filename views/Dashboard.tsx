@@ -2,6 +2,7 @@ import React from 'react';
 import { Team, Fixture } from '../types';
 import { Calendar, ChevronRight, TrendingUp, Dumbbell, DollarSign } from 'lucide-react';
 import { ClubLogo } from '../components/ClubLogo';
+import { useTranslation } from 'react-i18next';
 
 interface DashboardProps {
   team: Team;
@@ -13,6 +14,8 @@ interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ team, nextFixture, opponent, leaguePosition, onContinue }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="p-4 space-y-6">
 
@@ -21,7 +24,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ team, nextFixture, opponen
         <div className="absolute top-0 right-0 p-3 opacity-10">
           <Calendar size={100} />
         </div>
-        <h2 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-4">Next Fixture</h2>
+        <h2 className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-4">{t('dashboard.nextFixture')}</h2>
 
         <div className="flex justify-between items-center mb-6 z-10 relative">
           <div className="text-center">
@@ -57,9 +60,17 @@ export const Dashboard: React.FC<DashboardProps> = ({ team, nextFixture, opponen
         <div className="bg-slate-900 p-4 rounded-lg border border-slate-800">
           <div className="flex items-center space-x-2 text-slate-400 mb-2">
             <TrendingUp size={16} />
-            <span className="text-xs font-bold uppercase">League Pos</span>
+            <span className="text-xs font-bold uppercase">{t('dashboard.leaguePos')}</span>
           </div>
           <div className="text-3xl font-bold text-white">{leaguePosition}<sup className="text-sm text-slate-500 font-normal">th</sup></div>
+        </div>
+
+        <div className="bg-slate-900 p-4 rounded-lg border border-slate-800">
+          <div className="flex items-center space-x-2 text-slate-400 mb-2">
+            <DollarSign size={16} />
+            <span className="text-xs font-bold uppercase">{t('dashboard.budget')}</span>
+          </div>
+          <div className="text-lg font-bold text-emerald-400">£{((team.budget || 50000000) / 1000000).toFixed(1)}M</div>
         </div>
 
         <button
@@ -68,10 +79,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ team, nextFixture, opponen
         >
           <div className="flex items-center space-x-2 text-slate-400 mb-2 group-hover:text-emerald-400">
             <Dumbbell size={16} />
-            <span className="text-xs font-bold uppercase">Training</span>
+            <span className="text-xs font-bold uppercase">{t('dashboard.training')}</span>
           </div>
           <div className="text-sm text-slate-300">
-            Manage Schedule
+            {t('dashboard.manageSchedule')}
           </div>
         </button>
       </div>
