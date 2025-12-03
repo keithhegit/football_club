@@ -176,25 +176,59 @@ const App: React.FC = () => {
   };
 
   const handleTransferComplete = (player: Player, fee: number) => {
-    if (!gameState) return;
+    if (!gameState) {
+      console.error('[Transfer] No game state available');
+      return;
+    }
 
-    console.log(`Transfer complete: ${player.name} for £${fee.toLocaleString()}`);
+    console.log('=== TRANSFER STARTING ===');
+    console.log('[Transfer] Player:', player.name, '(ID:', player.id, ')');
+    console.log('[Transfer] Fee: £', fee.toLocaleString());
+    console.log('[Transfer] User Team ID:', gameState.userTeamId);
 
     setGameState(prev => {
-      if (!prev) return null;
+      if (!prev) {
+        console.error('[Transfer] Previous state is null');
+        return null;
+      }
 
-      // Find user team and update it
+      // Find user team
+      const userTeam = prev.teams.find(t => t.id === prev.userTeamId);
+      if (!userTeam) {
+        console.error('[Transfer] ERROR: User team not found! ID:', prev.userTeamId);
+        return prev; // Return unchanged state
+      }
+
+      // CRITICAL: Check if player already in squad (prevents double purchase)
+      const alreadyInSquad = userTeam.players.some(p => p.id === player.id);
+      if (alreadyInSquad) {
+        console.warn('[Transfer] ⚠️ Player already in squad! Preventing duplicate.');
+        return prev; // Return unchanged state
+      }
+
+      console.log('[Transfer] ✓ Validation passed');
+      console.log('[Transfer] Current squad size:', userTeam.players.length);
+      console.log('[Transfer] Current budget: £', userTeam.budget?.toLocaleString());
+
+      // Create updated teams array
       const updatedTeams = prev.teams.map(team => {
         if (team.id === prev.userTeamId) {
-          // Add player to squad and deduct budget
+          const newPlayers = [...team.players, player];
+          const newBudget = (team.budget || 50000000) - fee;
+
+          console.log('[Transfer] ➜ New squad size:', newPlayers.length);
+          console.log('[Transfer] ➜ New budget: £', newBudget.toLocaleString());
+
           return {
             ...team,
-            players: [...team.players, player],
-            budget: (team.budget || 50000000) - fee
+            players: newPlayers,
+            budget: newBudget
           };
         }
         return team;
       });
+
+      console.log('=== TRANSFER COMPLETE ✅ ===');
 
       return {
         ...prev,
