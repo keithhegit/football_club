@@ -32,6 +32,11 @@ export const ClubLogo: React.FC<ClubLogoProps> = ({
         ? getClubLogoIdByClubId(clubId)
         : clubName ? getClubLogoId(clubName.trim()) : null;
 
+    // Debug logging
+    if (clubId || clubName) {
+        console.log('[ClubLogo] clubId:', clubId, 'clubName:', clubName, '→ logoId:', logoId);
+    }
+
     if (error || !logoId) {
         return (
             <div className={`${sizeClasses[size]} flex items-center justify-center bg-slate-800 rounded border border-slate-700 ${className}`}>
