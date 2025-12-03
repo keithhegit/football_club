@@ -83,6 +83,63 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
                     placeholder="Search players by name..."
                     value={filters.q}
                     onChange={(e) => handleSearch(e.target.value)}
+                    className="w-full bg-slate-900 text-slate-100 pl-10 pr-4 py-3 rounded-lg border border-slate-700 focus:border-emerald-500 focus:outline-none"
+                />
+            </div>
+
+            {/* Position Filters */}
+            <div className="flex gap-2 mb-4 overflow-x-auto">
+                <button
+                    onClick={() => setFilters(prev => ({ ...prev, position: undefined, page: 1 }))}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${!filters.position
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        }`}
+                >
+                    ALL
+                </button>
+                <button
+                    onClick={() => setFilters(prev => ({ ...prev, position: 'GK', page: 1 }))}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${filters.position === 'GK'
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        }`}
+                >
+                    GK
+                </button>
+                <button
+                    onClick={() => setFilters(prev => ({ ...prev, position: 'DEF', page: 1 }))}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${filters.position === 'DEF'
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        }`}
+                >
+                    DEF
+                </button>
+                <button
+                    onClick={() => setFilters(prev => ({ ...prev, position: 'MID', page: 1 }))}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${filters.position === 'MID'
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        }`}
+                >
+                    MID
+                </button>
+                <button
+                    onClick={() => setFilters(prev => ({ ...prev, position: 'FWD', page: 1 }))}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${filters.position === 'FWD'
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                        }`}
+                >
+                    FWD
+                </button>
+            </div>
+
+            {/* Results Info */}
+            <div className="mb-4 text-slate-400 text-sm">
+                Total: {pagination.total.toLocaleString()} players
+                {userTeam && <span className="ml-2">(Excluding your {userTeam.players.length} squad players)</span>}
             </div>
 
             {/* Loading State */}
