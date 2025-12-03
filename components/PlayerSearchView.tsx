@@ -61,7 +61,7 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
         }, 500);
 
         return () => clearTimeout(debounceTimer);
-    }, [filters, userTeam]); // Re-fetch when userTeam changes
+    }, [filters, userTeam]); // Re-fetch when userTeam changes (after transfer)
 
     const handleSearch = (q: string) => {
         setFilters(prev => ({ ...prev, q, page: 1 }));
@@ -70,13 +70,6 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
     const handlePageChange = (newPage: number) => {
         setFilters(prev => ({ ...prev, page: newPage }));
     };
-
-    const positionFilters = [
-        { value: '', label: 'GK' },
-        { value: 'D', label: 'D (C)' },
-        { value: 'M', label: 'M (C)' },
-        { value: 'ST', label: 'ST (C)' }
-    ];
 
     return (
         <div className="min-h-screen bg-slate-950 p-4">
@@ -90,30 +83,6 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
                     placeholder="Search players by name..."
                     value={filters.q}
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="w-full bg-slate-900 text-slate-100 pl-10 pr-4 py-3 rounded-lg border border-slate-700 focus:border-emerald-500 focus:outline-none"
-                />
-            </div>
-
-            {/* Position Filters */}
-            <div className="flex gap-2 mb-4 overflow-x-auto">
-                {positionFilters.map(pos => (
-                    <button
-                        key={pos.value}
-                        onClick={() => setFilters(prev => ({ ...prev, position: pos.value, page: 1 }))}
-                        className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${filters.position === pos.value
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                            }`}
-                    >
-                        {pos.label}
-                    </button>
-                ))}
-            </div>
-
-            {/* Results Info */}
-            <div className="mb-4 text-slate-400 text-sm">
-                Total: {pagination.total.toLocaleString()} players
-                {userTeam && <span className="ml-2">(Excluding your {userTeam.players.length} squad players)</span>}
             </div>
 
             {/* Loading State */}
