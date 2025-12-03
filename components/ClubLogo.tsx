@@ -21,37 +21,16 @@ export const ClubLogo: React.FC<ClubLogoProps> = ({
 
     const sizeClasses = {
         xs: 'w-4 h-4',
-        sm: 'w-6 h-6',
-        md: 'w-8 h-8',
-        lg: 'w-12 h-12',
-        xl: 'w-16 h-16'
-    };
-
-    // Priority: clubId > clubName
-    const logoId = clubId
-        ? getClubLogoIdByClubId(clubId)
-        : clubName ? getClubLogoId(clubName.trim()) : null;
-
-    // Debug logging
-    if (clubId || clubName) {
-        console.log('[ClubLogo] clubId:', clubId, 'clubName:', clubName, '→ logoId:', logoId);
-    }
-
-    if (error || !logoId) {
-        return (
-            <div className={`${sizeClasses[size]} flex items-center justify-center bg-slate-800 rounded border border-slate-700 ${className}`}>
-                <Shield className="text-slate-500" size={size === 'xs' ? 12 : size === 'sm' ? 16 : size === 'md' ? 20 : size === 'lg' ? 28 : 40} />
-            </div>
         );
     }
 
-    return (
-        <img
-            src={`${R2_BASE_URL}/${logoId}.png`}
-            alt={`${clubName || 'Club'} logo`}
-            className={`${sizeClasses[size]} object-contain ${className}`}
-            onError={() => setError(true)}
-            loading="lazy"
-        />
-    );
+return (
+    <img
+        src={`${R2_BASE_URL}/${logoId}.png`}
+        alt={`${clubName || 'Club'} logo`}
+        className={`${sizeClasses[size]} object-contain ${className}`}
+        onError={() => setError(true)}
+        loading="lazy"
+    />
+);
 };
