@@ -13,11 +13,36 @@ const AttributeRow = ({ label, value }: { label: string; value: number }) => (
     <div className="flex justify-between items-center text-xs">
         <span className="text-slate-400">{label}</span>
         <span className={`font-mono font-bold ${value >= 16 ? 'text-emerald-400' :
-                value >= 12 ? 'text-emerald-600' :
-                    'text-slate-500'
+            value >= 12 ? 'text-emerald-600' :
+                'text-slate-500'
             }`}>{value}</span>
     </div>
 );
+
+// Star Rating Component
+const StarRating = ({ ca }: { ca: number }) => {
+    // Simple static scale for now
+    // < 80: 1, 80-110: 2, 110-130: 3, 130-150: 4, 150-170: 4.5, > 170: 5
+    let stars = 1;
+    if (ca >= 170) stars = 5;
+    else if (ca >= 150) stars = 4.5;
+    else if (ca >= 130) stars = 4;
+    else if (ca >= 110) stars = 3;
+    else if (ca >= 80) stars = 2;
+
+    return (
+        <div className="flex space-x-0.5">
+            {[1, 2, 3, 4, 5].map((star) => (
+                <div key={star} className="relative">
+                    <span className="text-slate-600">★</span>
+                    <span className="absolute top-0 left-0 text-yellow-400 overflow-hidden" style={{ width: stars >= star ? '100%' : stars >= star - 0.5 ? '50%' : '0%' }}>
+                        ★
+                    </span>
+                </div>
+            ))}
+        </div>
+    );
+};
 
 export const PlayerProfileCard: React.FC<Props> = ({ player }) => {
     const [flipped, setFlipped] = useState(false);
@@ -45,7 +70,7 @@ export const PlayerProfileCard: React.FC<Props> = ({ player }) => {
     if (player.attributes.technical.dribbling >= 17) traits.push({ label: "Dribbler", color: "bg-purple-500" });
 
     // Get Top 3 Attributes for Front Card display
-    const allAttributes = { ...player.attributes.technical, ...player.attributes.mental, ...player.attributes.physical };
+    const allAttributes = { ...player.attributes.technical, ...player.attributes.mental, ...player.attributes.physical } as Record<string, number>;
     const topAttributes = Object.entries(allAttributes)
         .sort(([, a], [, b]) => b - a)
         .slice(0, 3);
@@ -64,7 +89,10 @@ export const PlayerProfileCard: React.FC<Props> = ({ player }) => {
                         <PlayerAvatar playerId={player.id} alt={player.name} size="md" className="border-2 border-slate-600" />
                         <div className="flex-1 min-w-0">
                             <h3 className="font-bold text-white text-lg leading-none truncate">{player.name}</h3>
-                            <span className="text-xs text-emerald-400 font-mono">{player.position}</span>
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className="text-xs text-emerald-400 font-mono">{player.position}</span>
+                                <StarRating ca={player.ca} />
+                            </div>
                         </div>
                         <div className="text-right">
                             <div className="text-2xl font-black text-white leading-none">{player.ca}</div>
