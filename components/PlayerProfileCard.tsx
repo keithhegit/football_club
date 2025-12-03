@@ -4,10 +4,12 @@ import { Player } from '../types';
 import { RefreshCw, ChevronRight } from 'lucide-react';
 import { PlayerAvatar } from './PlayerAvatar';
 import { TransferOfferModal } from './TransferOfferModal';
+import { getPotentialDescriptionChinese } from '../utils/playerPotential';
 
 interface Props {
     player: Player;
     onTransferComplete?: (player: Player, fee: number) => void;
+    hideActions?: boolean; // Hide Make Offer button when in confirmation flow
 }
 
 // Helper component for attribute rows
@@ -46,7 +48,7 @@ const StarRating = ({ ca }: { ca: number }) => {
     );
 };
 
-export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete }) => {
+export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete, hideActions = false }) => {
     const [flipped, setFlipped] = useState(false);
 
     // ... (Calculations remain unchanged)
@@ -78,6 +80,8 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete 
         .slice(0, 3);
 
     const [showTransferModal, setShowTransferModal] = useState(false);
+
+    const potentialText = getPotentialDescriptionChinese(player.pa);
 
     return (
         <>

@@ -126,7 +126,7 @@ export const ContractConfirmation: React.FC<Props> = ({
             {showPlayerProfile && (
                 <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setShowPlayerProfile(false)}>
                     <div className="w-full max-w-sm" onClick={e => e.stopPropagation()}>
-                        <PlayerProfileCard player={player} />
+                        <PlayerProfileCard player={player} hideActions={true} />
                     </div>
                 </div>
             )}
