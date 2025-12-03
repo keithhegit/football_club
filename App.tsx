@@ -22,6 +22,7 @@ import { LoginView } from './views/LoginView';
 import { RegisterView } from './views/RegisterView';
 import { LoadGameView } from './views/LoadGameView';
 import { saveService } from './services/save';
+import { TrainingView } from './views/TrainingView';
 
 // Helper to generate a season fixture list (Double Round Robin)
 const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
@@ -268,6 +269,10 @@ const App: React.FC = () => {
     return <div className="flex items-center justify-center h-screen bg-slate-950 text-slate-100">{t('common.loading')}</div>;
   }
 
+  // ... (imports)
+
+  // ... (inside App component)
+
   // Views
   if (gameState.currentView === 'MATCH' && nextFixture && opponent) {
     return (
@@ -280,6 +285,19 @@ const App: React.FC = () => {
     );
   }
 
+  if (gameState.currentView === 'TRAINING') {
+    return (
+      <Layout
+        currentView={gameState.currentView}
+        onChangeView={(view) => setGameState(prev => prev ? { ...prev, currentView: view } : null)}
+        teamName={userTeam.name}
+        onSaveGame={user ? handleSaveGame : undefined}
+      >
+        <TrainingView team={userTeam} />
+      </Layout>
+    );
+  }
+
   return (
     <Layout
       currentView={gameState.currentView}
@@ -287,6 +305,7 @@ const App: React.FC = () => {
       teamName={userTeam.name}
       onSaveGame={user ? handleSaveGame : undefined}
     >
+// ... (rest of Layout children)
 
       {gameState.currentView === 'DASHBOARD' && (
         <Dashboard

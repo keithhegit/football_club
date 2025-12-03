@@ -37,6 +37,7 @@ export interface MentalAttributes {
   composure: number;
   workRate: number;
   anticipation: number;
+  determination: number;
 }
 
 export interface PhysicalAttributes {

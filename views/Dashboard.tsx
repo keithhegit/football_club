@@ -1,6 +1,6 @@
 import React from 'react';
 import { Team, Fixture } from '../types';
-import { Calendar, ChevronRight, TrendingUp } from 'lucide-react';
+import { Calendar, ChevronRight, TrendingUp, Dumbbell } from 'lucide-react';
 import { ClubLogo } from '../components/ClubLogo';
 
 interface DashboardProps {
@@ -9,6 +9,7 @@ interface DashboardProps {
   opponent: Team | undefined;
   leaguePosition: number;
   onContinue: () => void;
+  onNavigate: (view: string) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ team, nextFixture, opponent, leaguePosition, onContinue }) => {
@@ -60,19 +61,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ team, nextFixture, opponen
           </div>
           <div className="text-3xl font-bold text-white">{leaguePosition}<sup className="text-sm text-slate-500 font-normal">th</sup></div>
         </div>
-        <div className="bg-slate-900 p-4 rounded-lg border border-slate-800">
-          <div className="flex items-center space-x-2 text-slate-400 mb-2">
-            <TrendingUp size={16} />
-            <span className="text-xs font-bold uppercase">Form</span>
+
+        <button
+          onClick={() => onContinue && (onContinue as any)('TRAINING')} // Hacky cast for now, ideally DashboardProps should accept onNavigate
+          className="bg-slate-900 p-4 rounded-lg border border-slate-800 hover:bg-slate-800 transition-colors text-left group"
+        >
+          <div className="flex items-center space-x-2 text-slate-400 mb-2 group-hover:text-emerald-400">
+            <Dumbbell size={16} />
+            <span className="text-xs font-bold uppercase">Training</span>
           </div>
-          <div className="flex space-x-1">
-            <div className="w-3 h-8 bg-emerald-500 rounded-sm"></div>
-            <div className="w-3 h-8 bg-emerald-500 rounded-sm"></div>
-            <div className="w-3 h-8 bg-gray-500 rounded-sm"></div>
-            <div className="w-3 h-8 bg-rose-500 rounded-sm"></div>
-            <div className="w-3 h-8 bg-emerald-500 rounded-sm"></div>
+          <div className="text-sm text-slate-300">
+            Manage Schedule
           </div>
-        </div>
+        </button>
       </div>
     </div>
   );
