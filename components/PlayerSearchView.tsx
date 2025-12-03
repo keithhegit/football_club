@@ -101,8 +101,8 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
                         key={pos.value}
                         onClick={() => setFilters(prev => ({ ...prev, position: pos.value, page: 1 }))}
                         className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${filters.position === pos.value
-                                ? 'bg-emerald-600 text-white'
-                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
                             }`}
                     >
                         {pos.label}
@@ -183,7 +183,7 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
 
             {/* Player Profile Modal */}
             {selectedPlayer && (
-                <div className="fixed in set-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setSelectedPlayer(null)}>
+                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setSelectedPlayer(null)}>
                     <div className="w-full max-w-sm" onClick={e => e.stopPropagation()}>
                         <PlayerProfileCard
                             player={selectedPlayer}
