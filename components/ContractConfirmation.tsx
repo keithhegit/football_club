@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Player } from '../types';
 import { X, CheckCircle, User, TrendingUp, DollarSign } from 'lucide-react';
+import { PlayerProfileCard } from './PlayerProfileCard';
 
 interface Props {
     player: Player;
@@ -17,6 +18,8 @@ export const ContractConfirmation: React.FC<Props> = ({
     onConfirm,
     onCancel
 }) => {
+    const [showPlayerProfile, setShowPlayerProfile] = useState(false);
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
             <div className="bg-slate-900 rounded-xl border border-emerald-500/50 shadow-2xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
@@ -40,15 +43,18 @@ export const ContractConfirmation: React.FC<Props> = ({
                     </div>
                 </div>
 
-                {/* Player Info */}
+                {/* Player Info - Now Clickable */}
                 <div className="p-6 space-y-6">
-                    <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
+                    <button
+                        onClick={() => setShowPlayerProfile(true)}
+                        className="w-full bg-slate-800 rounded-lg p-4 border border-slate-700 hover:border-emerald-500 transition-all group text-left"
+                    >
                         <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 rounded-full bg-slate-700 flex items-center justify-center border-2 border-emerald-500">
-                                <User className="text-emerald-400" size={32} />
+                            <div className="w-16 h-16 rounded-full bg-slate-700 flex items-center justify-center border-2 border-emerald-500 group-hover:scale-110 transition-transform">
+                                <User className="text-emerald-400 group-hover:text-emerald-300" size={32} />
                             </div>
                             <div className="flex-1">
-                                <h3 className="text-2xl font-bold text-white">{player.name}</h3>
+                                <h3 className="text-2xl font-bold text-white group-hover:text-emerald-300 transition-colors">{player.name}</h3>
                                 <div className="flex items-center gap-3 mt-1">
                                     <span className="text-emerald-400 font-semibold">{player.position}</span>
                                     <span className="text-slate-400">•</span>
@@ -57,8 +63,11 @@ export const ContractConfirmation: React.FC<Props> = ({
                                     <span className="text-slate-300">CA: {player.ca}</span>
                                 </div>
                             </div>
+                            <div className="text-slate-400 text-sm group-hover:text-emerald-400 transition-colors">
+                                点击查看详情 →
+                            </div>
                         </div>
-                    </div>
+                    </button>
 
                     {/* Contract Details */}
                     <div className="space-y-3">
