@@ -12,10 +12,17 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
     const [selectedPosition, setSelectedPosition] = useState<Position | 'ALL'>('ALL');
     const [selectedPlayer, setSelectedPlayer] = useState<typeof team.players[0] | null>(null);
 
-    // Filter players by position
+    // Smart position filtering
     const filteredPlayers = selectedPosition === 'ALL'
         ? team.players
-        : team.players.filter(p => p.position === selectedPosition);
+        : team.players.filter(p => {
+            const pos = p.position;
+            if (selectedPosition === 'GK') return pos === 'GK';
+            if (selectedPosition === 'DEF') return pos.includes('D (') || pos.includes('D/WB');
+            if (selectedPosition === 'MID') return pos.includes('M (') || pos.includes('M/AM') || pos.includes('DM');
+            if (selectedPosition === 'FWD') return pos.includes('ST') || pos.includes('AM (');
+            return pos === selectedPosition;
+        });
 
     // Sort by position order
     const positionOrder = { 'GK': 1, 'DEF': 2, 'MID': 3, 'FWD': 4 };
