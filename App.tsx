@@ -334,8 +334,6 @@ const App: React.FC = () => {
       onSaveGame={user ? handleSaveGame : undefined}
       onTransferComplete={handleTransferComplete}
     >
-// ... (rest of Layout children)
-
       {gameState.currentView === 'DASHBOARD' && (
         <Dashboard
           team={userTeam}
