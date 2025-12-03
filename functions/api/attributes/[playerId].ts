@@ -1,5 +1,5 @@
-import { verifyJWT } from '../../../utils/crypto';
-import { jsonResponse, errorResponse } from '../../../utils/response';
+import { verifyJWT } from '../../utils/crypto';
+import { jsonResponse, errorResponse } from '../../utils/response';
 
 // GET /api/attributes/:playerId
 export const onRequestGet: PagesFunction<Env> = async (context) => {
