@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Shirt } from 'lucide-react';
 import { Layout } from './components/Layout';
-import { GameState, Team, Fixture, MatchState, Manager } from './types';
+import { GameState, Team, Fixture, MatchState, Manager, Player } from './types';
 import { Dashboard } from './views/Dashboard';
 import { PlayerProfileCard } from './components/PlayerProfileCard';
 import { MatchView } from './views/MatchView';
@@ -175,6 +175,34 @@ const App: React.FC = () => {
     });
   };
 
+  const handleTransferComplete = (player: Player, fee: number) => {
+    if (!gameState) return;
+
+    console.log(`Transfer complete: ${player.name} for £${fee.toLocaleString()}`);
+
+    setGameState(prev => {
+      if (!prev) return null;
+
+      // Find user team and update it
+      const updatedTeams = prev.teams.map(team => {
+        if (team.id === prev.userTeamId) {
+          // Add player to squad and deduct budget
+          return {
+            ...team,
+            players: [...team.players, player],
+            budget: (team.budget || 50000000) - fee
+          };
+        }
+        return team;
+      });
+
+      return {
+        ...prev,
+        teams: updatedTeams
+      };
+    });
+  };
+
   const startMatch = () => {
     if (nextFixture && gameState) {
       setGameState(prev => prev ? { ...prev, currentView: 'MATCH', activeMatchId: nextFixture.id } : null);
@@ -304,6 +332,7 @@ const App: React.FC = () => {
       onChangeView={(view) => setGameState(prev => prev ? { ...prev, currentView: view } : null)}
       teamName={userTeam.name}
       onSaveGame={user ? handleSaveGame : undefined}
+      onTransferComplete={handleTransferComplete}
     >
 // ... (rest of Layout children)
 
@@ -322,14 +351,14 @@ const App: React.FC = () => {
       )}
 
       {gameState.currentView === 'LEAGUE' && (
-        <div className="p-2">
-          <h2 className="text-xl font-bold text-slate-100 mb-4 px-2">League Table</h2>
-          <div className="bg-slate-900 rounded-lg border border-slate-800 overflow-hidden">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-slate-950 text-slate-400">
+        <div className="overflow-y-auto h-full p-4">
+          <h2 className="text-2xl font-bold mb-4 text-slate-100">League Table</h2>
+          <div className="bg-slate-900 rounded-lg shadow overflow-hidden">
+            <table className="min-w-full divide-y divide-slate-800">
+              <thead className="bg-slate-800">
                 <tr>
-                  <th className="p-3 font-semibold">Pos</th>
-                  <th className="p-3 font-semibold">Team</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Pos</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Team</th>
                   <th className="p-3 font-semibold text-center">P</th>
                   <th className="p-3 font-semibold text-center">GD</th>
                   <th className="p-3 font-semibold text-center text-white">Pts</th>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { LayoutDashboard, Users, Trophy, Calendar, Shirt, Settings, Search, Save } from 'lucide-react';
 import { useI18n } from '../hooks/useI18n';
 import { SaveGameModal } from './SaveGameModal';
+import { PlayerSearchView } from './PlayerSearchView';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -9,9 +10,10 @@ interface LayoutProps {
   onChangeView: (view: any) => void;
   teamName: string;
   onSaveGame?: (name: string) => Promise<void>;
+  onTransferComplete?: (player: any, fee: number) => void;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeView, teamName, onSaveGame }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeView, teamName, onSaveGame, onTransferComplete }) => {
   const { t } = useI18n();
   const [showSaveModal, setShowSaveModal] = useState(false);
 

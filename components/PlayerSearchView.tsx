@@ -5,7 +5,11 @@ import { PlayerAvatar } from './PlayerAvatar';
 import { PlayerProfileCard } from './PlayerProfileCard';
 import { ClubLogo } from './ClubLogo';
 
-export const PlayerSearchView: React.FC = () => {
+interface PlayerSearchViewProps {
+    onTransferComplete?: (player: Player, fee: number) => void;
+}
+
+export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferComplete }) => {
     const [players, setPlayers] = useState<Player[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -161,7 +165,15 @@ export const PlayerSearchView: React.FC = () => {
             {selectedPlayer && (
                 <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setSelectedPlayer(null)}>
                     <div className="w-full max-w-sm relative" onClick={e => e.stopPropagation()}>
-                        <PlayerProfileCard player={selectedPlayer} />
+                        <PlayerProfileCard
+                            player={selectedPlayer}
+                            onTransferComplete={(player, fee) => {
+                                if (onTransferComplete) {
+                                    onTransferComplete(player, fee);
+                                }
+                                setSelectedPlayer(null);
+                            }}
+                        />
                     </div>
                 </div>
             )}

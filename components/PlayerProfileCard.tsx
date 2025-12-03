@@ -7,6 +7,7 @@ import { TransferOfferModal } from './TransferOfferModal';
 
 interface Props {
     player: Player;
+    onTransferComplete?: (player: Player, fee: number) => void;
 }
 
 // Helper component for attribute rows
@@ -45,7 +46,7 @@ const StarRating = ({ ca }: { ca: number }) => {
     );
 };
 
-export const PlayerProfileCard: React.FC<Props> = ({ player }) => {
+export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete }) => {
     const [flipped, setFlipped] = useState(false);
 
     // ... (Calculations remain unchanged)
@@ -75,7 +76,6 @@ export const PlayerProfileCard: React.FC<Props> = ({ player }) => {
     const topAttributes = Object.entries(allAttributes)
         .sort(([, a], [, b]) => b - a)
         .slice(0, 3);
-
 
     const [showTransferModal, setShowTransferModal] = useState(false);
 
@@ -222,7 +222,11 @@ export const PlayerProfileCard: React.FC<Props> = ({ player }) => {
             </div>
 
             {showTransferModal && (
-                <TransferOfferModal player={player} onClose={() => setShowTransferModal(false)} />
+                <TransferOfferModal
+                    player={player}
+                    onClose={() => setShowTransferModal(false)}
+                    onTransferComplete={onTransferComplete}
+                />
             )}
         </>
     );
