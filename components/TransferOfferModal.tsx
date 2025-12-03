@@ -9,7 +9,8 @@ interface Props {
 }
 
 export const TransferOfferModal: React.FC<Props> = ({ player, onClose }) => {
-    const [offerAmount, setOfferAmount] = useState(player.value);
+    const playerValue = player.value || (player.ca * 50000); // Fallback: CA * 50k
+    const [offerAmount, setOfferAmount] = useState(playerValue);
     const [wageAmount, setWageAmount] = useState(player.ca * 800); // Default guess
     const [response, setResponse] = useState<TransferResponse | null>(null);
 
@@ -45,7 +46,7 @@ export const TransferOfferModal: React.FC<Props> = ({ player, onClose }) => {
                         </div>
                         <div>
                             <div className="font-bold text-xl text-white">{player.name}</div>
-                            <div className="text-sm text-slate-400">Market Value: £{player.value.toLocaleString()}</div>
+                            <div className="text-sm text-slate-400">Market Value: £{playerValue.toLocaleString()}</div>
                         </div>
                     </div>
 

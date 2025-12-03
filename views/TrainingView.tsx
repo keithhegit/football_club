@@ -29,6 +29,12 @@ export const TrainingView: React.FC<Props> = ({ team, onTrainingComplete }) => {
         // Simulate delay
         setTimeout(() => {
             team.players.forEach(player => {
+                // Safety check: ensure player has attributes structure
+                if (!player.attributes || !player.attributes.technical || !player.attributes.mental || !player.attributes.physical) {
+                    console.warn(`Player ${player.name} missing attributes structure, skipping training`);
+                    return;
+                }
+
                 const delta = applyWeeklyTraining(player, schedule, assistantCoach);
 
                 // Apply delta to player attributes (In a real app, this would be a DB update or State dispatch)

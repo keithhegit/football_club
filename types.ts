@@ -82,7 +82,7 @@ export interface Player {
   goals: number;
   assists: number;
   cleanSheets: number;
-  value: number; // Market value
+  value: number; // Market value in £
 }
 
 

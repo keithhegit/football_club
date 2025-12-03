@@ -18,7 +18,7 @@ export interface TransferResponse {
 export function negotiateTransfer(player: Player, offer: TransferOffer): TransferResponse {
     // 1. Calculate Minimum Acceptable Fee
     // Base value * multiplier based on age and potential
-    let minFee = player.value;
+    let minFee = player.value || (player.ca * 50000); // Fallback calculation
 
     // Young high potential players cost more
     if (player.age < 23 && player.pa > 150) {

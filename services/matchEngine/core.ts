@@ -243,6 +243,23 @@ export class MatchEngine {
     }
 
     private flattenAttributes(player: Player): PlayerAttributes {
+        // Safety check: ensure player has attributes structure
+        if (!player || !player.attributes) {
+            console.error('Player missing attributes:', player);
+            // Return a default low-ability player attributes as fallback
+            return {
+                // Technical (default to 5)
+                finishing: 5, dribbling: 5, passing: 5, tackling: 5, technique: 5, firstTouch: 5,
+                // Mental (default to 5)  
+                vision: 5, decisions: 5, positioning: 5, composure: 5, workRate: 5, anticipation: 5, determination: 5,
+                // Physical (default to 5)
+                pace: 5, acceleration: 5, stamina: 5, strength: 5, balance: 5, agility: 5,
+                // Hidden
+                hidden: { consistency: 10, importantMatches: 10, injuryProneness: 10 },
+                goalkeeper: undefined
+            } as unknown as PlayerAttributes;
+        }
+
         return {
             ...player.attributes.technical,
             ...player.attributes.mental,
@@ -250,6 +267,6 @@ export class MatchEngine {
             hidden: player.hidden,
             // GK attributes might be missing on outfield players, handle gracefully if needed
             goalkeeper: (player.attributes as any).goalkeeper
-        } as PlayerAttributes;
+        } as unknown as PlayerAttributes;
     }
 }
