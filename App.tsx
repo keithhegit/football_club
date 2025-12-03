@@ -333,6 +333,7 @@ const App: React.FC = () => {
       teamName={userTeam.name}
       onSaveGame={user ? handleSaveGame : undefined}
       onTransferComplete={handleTransferComplete}
+      userTeam={userTeam}
     >
       {gameState.currentView === 'DASHBOARD' && (
         <Dashboard
