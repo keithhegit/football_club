@@ -6,9 +6,10 @@ import { X, Check, DollarSign, Briefcase } from 'lucide-react';
 interface Props {
     player: Player;
     onClose: () => void;
+    onTransferComplete?: (player: Player, fee: number) => void;
 }
 
-export const TransferOfferModal: React.FC<Props> = ({ player, onClose }) => {
+export const TransferOfferModal: React.FC<Props> = ({ player, onClose, onTransferComplete }) => {
     const playerValue = player.value || (player.ca * 50000); // Fallback: CA * 50k
     const [offerAmount, setOfferAmount] = useState(playerValue);
     const [wageAmount, setWageAmount] = useState(player.ca * 800); // Default guess
@@ -21,6 +22,11 @@ export const TransferOfferModal: React.FC<Props> = ({ player, onClose }) => {
             wage: wageAmount
         });
         setResponse(result);
+
+        // If accepted, trigger the transfer callback
+        if (result.accepted && onTransferComplete) {
+            onTransferComplete(player, offerAmount);
+        }
     };
 
     return (

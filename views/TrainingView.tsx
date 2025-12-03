@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Player, Team } from '../types';
 import { DEFAULT_SCHEDULES, TrainingSchedule, applyWeeklyTraining, Coach } from '../services/trainingEngine';
-import { Dumbbell, TrendingUp, Calendar, ChevronRight } from 'lucide-react';
+import { Dumbbell, TrendingUp, Calendar, ChevronRight, ArrowLeft } from 'lucide-react';
 
 interface Props {
     team: Team;
     onTrainingComplete?: () => void;
+    onBack?: () => void;
 }
 
-export const TrainingView: React.FC<Props> = ({ team, onTrainingComplete }) => {
+export const TrainingView: React.FC<Props> = ({ team, onTrainingComplete, onBack }) => {
     const [selectedScheduleId, setSelectedScheduleId] = useState<string>('GENERAL');
     const [report, setReport] = useState<Record<string, number>>({}); // PlayerID -> Total Gain
     const [isProcessing, setIsProcessing] = useState(false);
@@ -62,9 +63,19 @@ export const TrainingView: React.FC<Props> = ({ team, onTrainingComplete }) => {
     return (
         <div className="h-full flex flex-col bg-slate-950 p-6 overflow-hidden">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                    <Dumbbell className="text-emerald-500" /> Training Ground
-                </h1>
+                <div className="flex items-center gap-3">
+                    {onBack && (
+                        <button
+                            onClick={onBack}
+                            className="text-slate-400 hover:text-white transition-colors"
+                        >
+                            <ArrowLeft size={24} />
+                        </button>
+                    )}
+                    <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+                        <Dumbbell className="text-emerald-500" /> Training Ground
+                    </h1>
+                </div>
                 <div className="text-slate-400 font-mono text-sm">Week {week}</div>
             </div>
 

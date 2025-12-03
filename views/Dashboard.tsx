@@ -1,6 +1,6 @@
 import React from 'react';
 import { Team, Fixture } from '../types';
-import { Calendar, ChevronRight, TrendingUp, Dumbbell } from 'lucide-react';
+import { Calendar, ChevronRight, TrendingUp, Dumbbell, DollarSign } from 'lucide-react';
 import { ClubLogo } from '../components/ClubLogo';
 
 interface DashboardProps {

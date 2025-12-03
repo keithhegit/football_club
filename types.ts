@@ -171,6 +171,7 @@ export interface Team {
   goalsFor: number;
   goalsAgainst: number;
   points: number;
+  budget: number; // Transfer budget in £
   tactics: {
     formation: string; // Formation ID
     mentality: string; // Legacy, keep for compatibility or remove if fully migrated
