@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Player } from '../types';
 import { RefreshCw, ChevronRight } from 'lucide-react';
 import { PlayerAvatar } from './PlayerAvatar';
+import { TransferOfferModal } from './TransferOfferModal';
 
 interface Props {
     player: Player;
@@ -75,132 +76,154 @@ export const PlayerProfileCard: React.FC<Props> = ({ player }) => {
         .sort(([, a], [, b]) => b - a)
         .slice(0, 3);
 
+
+    const [showTransferModal, setShowTransferModal] = useState(false);
+
     return (
-        <div
-            onClick={() => setFlipped(!flipped)}
-            className="relative min-h-80 w-full cursor-pointer perspective-1000 group select-none"
-        >
-            <div className={`relative w-full h-full min-h-80 duration-500 preserve-3d transition-transform ${flipped ? 'rotate-y-180' : ''}`}>
+        <>
+            <div
+                onClick={() => setFlipped(!flipped)}
+                className="relative min-h-80 w-full cursor-pointer perspective-1000 group select-none"
+            >
+                <div className={`relative w-full h-full min-h-80 duration-500 preserve-3d transition-transform ${flipped ? 'rotate-y-180' : ''}`}>
 
-                {/* FRONT OF CARD */}
-                <div className="absolute w-full h-full backface-hidden bg-slate-800 rounded-xl border border-slate-700 shadow-xl overflow-hidden flex flex-col">
-                    {/* Header */}
-                    <div className="h-20 bg-gradient-to-r from-slate-900 to-slate-800 p-4 flex justify-between items-start gap-3">
-                        <PlayerAvatar playerId={player.id} alt={player.name} size="md" className="border-2 border-slate-600" />
-                        <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-white text-lg leading-none truncate">{player.name}</h3>
-                            <div className="flex items-center gap-2 mt-1">
-                                <span className="text-xs text-emerald-400 font-mono">{player.position}</span>
-                                <StarRating ca={player.ca} />
-                            </div>
-                        </div>
-                        <div className="text-right">
-                            <div className="text-2xl font-black text-white leading-none">{player.ca}</div>
-                            <div className="text-[10px] text-slate-500 uppercase tracking-widest">CA</div>
-                        </div>
-                    </div>
-
-                    {/* Body */}
-                    <div className="flex-1 p-4 relative flex flex-col">
-                        {/* Trait Badges */}
-                        <div className="absolute top-0 right-4 flex flex-col items-end space-y-1 z-10">
-                            {traits.slice(0, 2).map((t, i) => (
-                                <span key={i} className={`text-[9px] px-2 py-0.5 rounded-full text-white font-bold shadow-sm ${t.color}`}>
-                                    {t.label}
-                                </span>
-                            ))}
-                        </div>
-
-                        {/* Radar Chart */}
-                        <div className="flex justify-center items-center mt-0 mb-2">
-                            <div className="relative w-24 h-24">
-                                {/* Background Triangles */}
-                                <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100">
-                                    <polygon points="50,10 85,70 15,70" fill="none" stroke="#334155" strokeWidth="1" />
-                                    <polygon points="50,30 67,60 33,60" fill="none" stroke="#334155" strokeWidth="0.5" />
-                                    {/* Data Polygon */}
-                                    <polygon points={points} fill="rgba(16, 185, 129, 0.4)" stroke="#10b981" strokeWidth="2" />
-                                    {/* Labels */}
-                                    <text x="50" y="5" textAnchor="middle" className="text-[7px] fill-slate-400 font-bold">PHY</text>
-                                    <text x="95" y="75" textAnchor="middle" className="text-[7px] fill-slate-400 font-bold">TEC</text>
-                                    <text x="5" y="75" textAnchor="middle" className="text-[7px] fill-slate-400 font-bold">MEN</text>
-                                </svg>
-                            </div>
-                        </div>
-
-                        {/* Top Attributes Bars */}
-                        <div className="space-y-1.5 mt-auto mb-2">
-                            {topAttributes.map(([key, val]) => (
-                                <div key={key} className="flex items-center space-x-2">
-                                    <span className="text-[10px] text-slate-400 w-16 capitalize truncate text-right">
-                                        {key.replace(/([A-Z])/g, ' $1').trim()}
-                                    </span>
-                                    <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                                        <div
-                                            className={`h-full rounded-full ${val >= 15 ? 'bg-emerald-400' : val >= 12 ? 'bg-emerald-600' : 'bg-slate-500'}`}
-                                            style={{ width: `${(val / 20) * 100}%` }}
-                                        ></div>
-                                    </div>
-                                    <span className="text-[10px] text-slate-300 w-4 font-mono">{val}</span>
+                    {/* FRONT OF CARD */}
+                    <div className="absolute w-full h-full backface-hidden bg-slate-800 rounded-xl border border-slate-700 shadow-xl overflow-hidden flex flex-col">
+                        {/* Header */}
+                        <div className="h-20 bg-gradient-to-r from-slate-900 to-slate-800 p-4 flex justify-between items-start gap-3">
+                            <PlayerAvatar playerId={player.id} alt={player.name} size="md" className="border-2 border-slate-600" />
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-white text-lg leading-none truncate">{player.name}</h3>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-xs text-emerald-400 font-mono">{player.position}</span>
+                                    <StarRating ca={player.ca} />
                                 </div>
-                            ))}
+                            </div>
+                            <div className="text-right">
+                                <div className="text-2xl font-black text-white leading-none">{player.ca}</div>
+                                <div className="text-[10px] text-slate-500 uppercase tracking-widest">CA</div>
+                            </div>
                         </div>
 
-                        <div className="mt-1 text-center text-[10px] text-slate-600 flex items-center justify-center space-x-1">
-                            <span>Tap for Details</span>
-                            <ChevronRight size={10} />
-                        </div>
-                    </div>
-                </div>
+                        {/* Body */}
+                        <div className="flex-1 p-4 relative flex flex-col">
+                            {/* Trait Badges */}
+                            <div className="absolute top-0 right-4 flex flex-col items-end space-y-1 z-10">
+                                {traits.slice(0, 2).map((t, i) => (
+                                    <span key={i} className={`text-[9px] px-2 py-0.5 rounded-full text-white font-bold shadow-sm ${t.color}`}>
+                                        {t.label}
+                                    </span>
+                                ))}
+                            </div>
 
-                {/* BACK OF CARD (Detailed Stats) */}
-                <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-slate-900 rounded-xl border border-slate-700 shadow-xl overflow-hidden flex flex-col">
-                    <div className="p-3 bg-slate-950 border-b border-slate-800 flex justify-between items-center">
-                        <span className="font-bold text-slate-200 text-sm truncate">{player.name}</span>
-                        <RefreshCw size={14} className="text-slate-500" />
-                    </div>
+                            {/* Radar Chart */}
+                            <div className="flex justify-center items-center mt-0 mb-2">
+                                <div className="relative w-24 h-24">
+                                    {/* Background Triangles */}
+                                    <svg className="w-full h-full overflow-visible" viewBox="0 0 100 100">
+                                        <polygon points="50,10 85,70 15,70" fill="none" stroke="#334155" strokeWidth="1" />
+                                        <polygon points="50,30 67,60 33,60" fill="none" stroke="#334155" strokeWidth="0.5" />
+                                        {/* Data Polygon */}
+                                        <polygon points={points} fill="rgba(16, 185, 129, 0.4)" stroke="#10b981" strokeWidth="2" />
+                                        {/* Labels */}
+                                        <text x="50" y="5" textAnchor="middle" className="text-[7px] fill-slate-400 font-bold">PHY</text>
+                                        <text x="95" y="75" textAnchor="middle" className="text-[7px] fill-slate-400 font-bold">TEC</text>
+                                        <text x="5" y="75" textAnchor="middle" className="text-[7px] fill-slate-400 font-bold">MEN</text>
+                                    </svg>
+                                </div>
+                            </div>
 
-                    <div className="flex-1 overflow-y-auto p-2 grid grid-cols-2 gap-x-4 content-start">
-                        <div className="space-y-1 mb-2">
-                            <div className="text-[10px] font-bold text-emerald-500 uppercase mb-1 border-b border-slate-800">Technical</div>
-                            <AttributeRow label="Finishing" value={player.attributes.technical.finishing} />
-                            <AttributeRow label="Dribbling" value={player.attributes.technical.dribbling} />
-                            <AttributeRow label="Passing" value={player.attributes.technical.passing} />
-                            <AttributeRow label="Tackling" value={player.attributes.technical.tackling} />
-                            <AttributeRow label="Technique" value={player.attributes.technical.technique} />
-                            <AttributeRow label="FirstTouch" value={player.attributes.technical.firstTouch} />
-                        </div>
+                            {/* Top Attributes Bars */}
+                            <div className="space-y-1.5 mt-auto mb-2">
+                                {topAttributes.map(([key, val]) => (
+                                    <div key={key} className="flex items-center space-x-2">
+                                        <span className="text-[10px] text-slate-400 w-16 capitalize truncate text-right">
+                                            {key.replace(/([A-Z])/g, ' $1').trim()}
+                                        </span>
+                                        <div className="flex-1 h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                                            <div
+                                                className={`h-full rounded-full ${val >= 15 ? 'bg-emerald-400' : val >= 12 ? 'bg-emerald-600' : 'bg-slate-500'}`}
+                                                style={{ width: `${(val / 20) * 100}%` }}
+                                            ></div>
+                                        </div>
+                                        <span className="text-[10px] text-slate-300 w-4 font-mono">{val}</span>
+                                    </div>
+                                ))}
+                            </div>
 
-                        <div className="space-y-1 mb-2">
-                            <div className="text-[10px] font-bold text-blue-500 uppercase mb-1 border-b border-slate-800">Mental</div>
-                            <AttributeRow label="Vision" value={player.attributes.mental.vision} />
-                            <AttributeRow label="Decisions" value={player.attributes.mental.decisions} />
-                            <AttributeRow label="Position" value={player.attributes.mental.positioning} />
-                            <AttributeRow label="Composure" value={player.attributes.mental.composure} />
-                            <AttributeRow label="WorkRate" value={player.attributes.mental.workRate} />
-                            <AttributeRow label="Anticipat" value={player.attributes.mental.anticipation} />
-                        </div>
-
-                        <div className="space-y-1 col-span-2">
-                            <div className="text-[10px] font-bold text-purple-500 uppercase mb-1 border-b border-slate-800">Physical</div>
-                            <div className="grid grid-cols-2 gap-x-4">
-                                <AttributeRow label="Pace" value={player.attributes.physical.pace} />
-                                <AttributeRow label="Accel" value={player.attributes.physical.acceleration} />
-                                <AttributeRow label="Stamina" value={player.attributes.physical.stamina} />
-                                <AttributeRow label="Strength" value={player.attributes.physical.strength} />
-                                <AttributeRow label="Balance" value={player.attributes.physical.balance} />
-                                <AttributeRow label="Agility" value={player.attributes.physical.agility} />
+                            <div className="mt-1 text-center text-[10px] text-slate-600 flex items-center justify-center space-x-1">
+                                <span>Tap for Details</span>
+                                <ChevronRight size={10} />
                             </div>
                         </div>
                     </div>
+
+                    {/* BACK OF CARD (Detailed Stats) */}
+                    <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-slate-900 rounded-xl border border-slate-700 shadow-xl overflow-hidden flex flex-col">
+                        <div className="p-3 bg-slate-950 border-b border-slate-800 flex justify-between items-center">
+                            <span className="font-bold text-slate-200 text-sm truncate">{player.name}</span>
+                            <RefreshCw size={14} className="text-slate-500" />
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-2 grid grid-cols-2 gap-x-4 content-start">
+                            <div className="space-y-1 mb-2">
+                                <div className="text-[10px] font-bold text-emerald-500 uppercase mb-1 border-b border-slate-800">Technical</div>
+                                <AttributeRow label="Finishing" value={player.attributes.technical.finishing} />
+                                <AttributeRow label="Dribbling" value={player.attributes.technical.dribbling} />
+                                <AttributeRow label="Passing" value={player.attributes.technical.passing} />
+                                <AttributeRow label="Tackling" value={player.attributes.technical.tackling} />
+                                <AttributeRow label="Technique" value={player.attributes.technical.technique} />
+                                <AttributeRow label="FirstTouch" value={player.attributes.technical.firstTouch} />
+                            </div>
+
+                            <div className="space-y-1 mb-2">
+                                <div className="text-[10px] font-bold text-blue-500 uppercase mb-1 border-b border-slate-800">Mental</div>
+                                <AttributeRow label="Vision" value={player.attributes.mental.vision} />
+                                <AttributeRow label="Decisions" value={player.attributes.mental.decisions} />
+                                <AttributeRow label="Position" value={player.attributes.mental.positioning} />
+                                <AttributeRow label="Composure" value={player.attributes.mental.composure} />
+                                <AttributeRow label="WorkRate" value={player.attributes.mental.workRate} />
+                                <AttributeRow label="Anticipat" value={player.attributes.mental.anticipation} />
+                            </div>
+
+                            <div className="space-y-1 col-span-2">
+                                <div className="text-[10px] font-bold text-purple-500 uppercase mb-1 border-b border-slate-800">Physical</div>
+                                <div className="grid grid-cols-2 gap-x-4">
+                                    <AttributeRow label="Pace" value={player.attributes.physical.pace} />
+                                    <AttributeRow label="Accel" value={player.attributes.physical.acceleration} />
+                                    <AttributeRow label="Stamina" value={player.attributes.physical.stamina} />
+                                    <AttributeRow label="Strength" value={player.attributes.physical.strength} />
+                                    <AttributeRow label="Balance" value={player.attributes.physical.balance} />
+                                    <AttributeRow label="Agility" value={player.attributes.physical.agility} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="p-3 border-t border-slate-800 mt-auto">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowTransferModal(true);
+                                }}
+                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 rounded shadow-lg transition-colors"
+                            >
+                                Make Transfer Offer
+                            </button>
+                        </div>
+                    </div>
                 </div>
+                <style>{`
+                .perspective-1000 { perspective: 1000px; }
+                .preserve-3d { transform-style: preserve-3d; }
+                .backface-hidden { backface-visibility: hidden; }
+                .rotate-y-180 { transform: rotateY(180deg); }
+            `}</style>
             </div>
-            <style>{`
-            .perspective-1000 { perspective: 1000px; }
-            .preserve-3d { transform-style: preserve-3d; }
-            .backface-hidden { backface-visibility: hidden; }
-            .rotate-y-180 { transform: rotateY(180deg); }
-        `}</style>
-        </div>
+
+            {showTransferModal && (
+                <TransferOfferModal player={player} onClose={() => setShowTransferModal(false)} />
+            )}
+        </>
     );
 };
