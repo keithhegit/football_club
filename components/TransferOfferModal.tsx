@@ -3,6 +3,7 @@ import { Player } from '../types';
 import { negotiateTransfer, TransferResponse } from '../services/transferService';
 import { X, Check, DollarSign, Briefcase } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { ContractConfirmation } from './ContractConfirmation';
 
 interface Props {
     player: Player;
@@ -16,6 +17,7 @@ export const TransferOfferModal: React.FC<Props> = ({ player, onClose, onTransfe
     const [offerAmount, setOfferAmount] = useState(playerValue);
     const [wageAmount, setWageAmount] = useState(player.ca * 800); // Default guess
     const [response, setResponse] = useState<TransferResponse | null>(null);
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     const handleOffer = () => {
         const result = negotiateTransfer(player, {
@@ -25,10 +27,17 @@ export const TransferOfferModal: React.FC<Props> = ({ player, onClose, onTransfe
         });
         setResponse(result);
 
-        // If accepted, trigger the transfer callback
-        if (result.accepted && onTransferComplete) {
+        // If accepted, show confirmation screen instead of immediate transfer
+        if (result.accepted) {
+            setShowConfirmation(true);
+        }
+    };
+
+    const handleConfirmTransfer = () => {
+        if (onTransferComplete) {
             onTransferComplete(player, offerAmount);
         }
+        onClose();
     };
 
     return (
@@ -127,6 +136,17 @@ export const TransferOfferModal: React.FC<Props> = ({ player, onClose, onTransfe
                     )}
                 </div>
             </div>
+
+            {/* Contract Confirmation Modal */}
+            {showConfirmation && (
+                <ContractConfirmation
+                    player={player}
+                    transferFee={offerAmount}
+                    weeklyWage={wageAmount}
+                    onConfirm={handleConfirmTransfer}
+                    onCancel={() => setShowConfirmation(false)}
+                />
+            )}
         </div>
     );
 };

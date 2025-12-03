@@ -54,7 +54,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeV
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto pb-20 relative">
         <div className="max-w-md mx-auto min-h-full">
-          {children}
+          {currentView === 'SEARCH' ? (
+            <PlayerSearchView onTransferComplete={onTransferComplete} />
+          ) : (
+            children
+          )}
         </div>
       </main>
 
