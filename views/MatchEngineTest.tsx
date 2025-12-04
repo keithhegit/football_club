@@ -3,12 +3,14 @@
 
 import React, { useState } from 'react';
 import { MatchEngine } from '../engine/matchEngine';
-import { TeamState, PlayerState, MatchResult } from '../engine/types';
+import { TeamState, PlayerState, MatchResult, MatchState } from '../engine/types';
 import { getTacticalModifiers } from '../engine/tacticalMods';
+import { PitchCanvas } from '../components/PitchCanvas';
 
 export const MatchEngineTest: React.FC = () => {
     const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
     const [isSimulating, setIsSimulating] = useState(false);
+    const [matchState, setMatchState] = useState<MatchState | null>(null);
 
     const runTestMatch = () => {
         setIsSimulating(true);
@@ -22,7 +24,9 @@ export const MatchEngineTest: React.FC = () => {
         setTimeout(() => {
             const engine = new MatchEngine(homeTeam, awayTeam);
             const result = engine.simulateMatch();
+            const state = engine.getState();
             setMatchResult(result);
+            setMatchState(state);
             setIsSimulating(false);
         }, 100);
     };
@@ -63,6 +67,29 @@ export const MatchEngineTest: React.FC = () => {
                                 </div>
                             </div>
                         </div>
+
+                        {/* 2D Pitch Visualization */}
+                        {matchState && (
+                            <div className="bg-slate-800 p-6 rounded-lg  border border-slate-700">
+                                <h2 className="text-2xl font-bold text-slate-100 mb-4">⚽ Final Positions</h2>
+                                <div className="flex justify-center">
+                                    <PitchCanvas
+                                        homeTeam={matchState.homeTeam}
+                                        awayTeam={matchState.awayTeam}
+                                        ballPosition={matchState.ballPosition}
+                                        possession={matchState.possession}
+                                        width={400}
+                                        height={600}
+                                    />
+                                </div>
+                                <div className="mt-4 text-center text-sm text-slate-400">
+                                    <span className="inline-block w-3 h-3 bg-blue-500 rounded-full mr-1"></span>
+                                    Arsenal (Home) |
+                                    <span className="inline-block w-3 h-3 bg-red-500 rounded-full mx-1"></span>
+                                    Chelsea (Away)
+                                </div>
+                            </div>
+                        )}
 
                         {/* Match Statistics */}
                         <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
@@ -127,8 +154,8 @@ export const MatchEngineTest: React.FC = () => {
                                     <div
                                         key={index}
                                         className={`text-sm py-2 px-3 rounded ${event.description.includes('GOAL')
-                                                ? 'bg-emerald-900/30 border border-emerald-700 text-emerald-200'
-                                                : 'bg-slate-900 border border-slate-700 text-slate-300'
+                                            ? 'bg-emerald-900/30 border border-emerald-700 text-emerald-200'
+                                            : 'bg-slate-900 border border-slate-700 text-slate-300'
                                             }`}
                                     >
                                         <span className="text-emerald-400 font-mono font-bold">{event.time}'</span>
