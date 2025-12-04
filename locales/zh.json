@@ -1,0 +1,74 @@
+{
+    "appName": "FM2023",
+    "common": {
+        "loading": "加载中...",
+        "error": "错误",
+        "save": "保存",
+        "cancel": "取消",
+        "confirm": "确认",
+        "close": "关闭"
+    },
+    "nav": {
+        "home": "主页",
+        "squad": "阵容",
+        "league": "联赛",
+        "tactics": "战术",
+        "search": "球探"
+    },
+    "views": {
+        "dashboard": "仪表盘",
+        "training": "训练场"
+    },
+    "dashboard": {
+        "nextFixture": "下一场比赛",
+        "quickStats": "快速统计",
+        "leaguePos": "联赛排名",
+        "budget": "预算",
+        "training": "训练",
+        "manageSchedule": "管理日程"
+    },
+    "training": {
+        "title": "训练场",
+        "week": "第{week}周",
+        "selectSchedule": "选择训练计划",
+        "intensity": "强度",
+        "runWeek": "开始训练周",
+        "processing": "训练中...",
+        "report": "训练报告"
+    },
+    "transfer": {
+        "title": "转会谈判",
+        "makeOffer": "提交报价",
+        "dealDone": "交易完成！",
+        "dealRejected": "报价被拒绝",
+        "marketValue": "市场价值",
+        "transferFee": "转会费",
+        "weeklyWage": "周薪",
+        "accepted": "俱乐部和球员已接受您的报价！",
+        "clubRejected": "俱乐部要求至少 £{amount}",
+        "playerRejected": "球员要求周薪至少 £{wage}"
+    },
+    "squad": {
+        "title": "一线队阵容",
+        "players": "{count} 名球员",
+        "filterAll": "全部",
+        "filterGK": "门将",
+        "filterDEF": "后卫",
+        "filterMID": "中场",
+        "filterFWD": "前锋"
+    },
+    "search": {
+        "title": "球员搜索",
+        "total": "总计",
+        "searchPlaceholder": "按名字搜索球员...",
+        "noResults": "未找到球员"
+    },
+    "league": {
+        "title": "联赛积分榜",
+        "pos": "排名",
+        "team": "球队",
+        "played": "场次",
+        "goalDiff": "净胜球",
+        "points": "积分"
+    }
+}

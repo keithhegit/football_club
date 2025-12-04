@@ -1,0 +1,74 @@
+{
+    "appName": "FM2023",
+    "common": {
+        "loading": "Loading...",
+        "error": "Error",
+        "save": "Save",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "close": "Close"
+    },
+    "nav": {
+        "home": "Home",
+        "squad": "Squad",
+        "league": "League",
+        "tactics": "Tactics",
+        "search": "Search"
+    },
+    "views": {
+        "dashboard": "Dashboard",
+        "training": "Training Ground"
+    },
+    "dashboard": {
+        "nextFixture": "Next Fixture",
+        "quickStats": "Quick Stats",
+        "leaguePos": "League Pos",
+        "budget": "Budget",
+        "training": "Training",
+        "manageSchedule": "Manage Schedule"
+    },
+    "training": {
+        "title": "Training Ground",
+        "week": "Week {week}",
+        "selectSchedule": "Select Training Schedule",
+        "intensity": "Intensity",
+        "runWeek": "Run Training Week",
+        "processing": "Processing...",
+        "report": "Training Report"
+    },
+    "transfer": {
+        "title": "Transfer Negotiation",
+        "makeOffer": "Make Offer",
+        "dealDone": "Deal Done!",
+        "dealRejected": "Offer Rejected",
+        "marketValue": "Market Value",
+        "transferFee": "Transfer Fee",
+        "weeklyWage": "Weekly Wage",
+        "accepted": "The club and player have accepted your offer!",
+        "clubRejected": "The club demands at least £{amount}",
+        "playerRejected": "The player demands at least £{wage}/week"
+    },
+    "squad": {
+        "title": "First Team Squad",
+        "players": "{count} Players",
+        "filterAll": "ALL",
+        "filterGK": "GK",
+        "filterDEF": "DEF",
+        "filterMID": "MID",
+        "filterFWD": "FWD"
+    },
+    "search": {
+        "title": "Player Search",
+        "total": "Total",
+        "searchPlaceholder": "Search players by name...",
+        "noResults": "No players found"
+    },
+    "league": {
+        "title": "League Table",
+        "pos": "Pos",
+        "team": "Team",
+        "played": "P",
+        "goalDiff": "GD",
+        "points": "Pts"
+    }
+}
