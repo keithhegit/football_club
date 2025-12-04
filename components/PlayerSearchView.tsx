@@ -29,18 +29,23 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
     });
 
     const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+    const [localPositionFilter, setLocalPositionFilter] = useState<string>('ALL');
 
     const fetchPlayers = async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await api.searchPlayers(filters);
+            // Don't send position to API, we'll filter client-side
+            const apiFilters = { ...filters };
+            delete apiFilters.position;
+
+            const response = await api.searchPlayers(apiFilters);
 
             // Filter out players already in user's squad
             let availablePlayers = response.data;
             if (userTeam) {
-                const userPlayerIds = new Set(userTeam.players.map(p => p.id));
-                availablePlayers = response.data.filter((p: Player) => !userPlayerIds.has(p.id));
+                const userPlayerIds = new Set(userTeam.players.map(p => String(p.id)));
+                availablePlayers = response.data.filter((p: Player) => !userPlayerIds.has(String(p.id)));
                 console.log(`Filtered: ${response.data.length} → ${availablePlayers.length} (removed ${userPlayerIds.size} squad players)`);
             }
 
@@ -54,6 +59,20 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
             setLoading(false);
         }
     };
+
+    // Apply client-side position filtering
+    const displayedPlayers = localPositionFilter === 'ALL'
+        ? players
+        : players.filter(p => {
+            const pos = p.position;
+            if (!pos) return false;
+
+            if (localPositionFilter === 'GK') return pos.includes('GK');
+            if (localPositionFilter === 'DEF') return (pos.includes('D') && !pos.includes('DM') && !pos.includes('AM') && !pos.includes('M ')) || pos.includes('WB');
+            if (localPositionFilter === 'MID') return pos.includes('M') || pos.includes('DM') || pos.includes('AM');
+            if (localPositionFilter === 'FWD') return pos.includes('ST') || pos === 'FWD';
+            return false;
+        });
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
@@ -87,53 +106,20 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
                 />
             </div>
 
-            {/* Position Filters */}
+            {/* Position Filters - Client Side */}
             <div className="flex gap-2 mb-4 overflow-x-auto">
-                <button
-                    onClick={() => setFilters(prev => ({ ...prev, position: undefined, page: 1 }))}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${!filters.position
+                {['ALL', 'GK', 'DEF', 'MID', 'FWD'].map(pos => (
+                    <button
+                        key={pos}
+                        onClick={() => setLocalPositionFilter(pos)}
+                        className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${localPositionFilter === pos
                             ? 'bg-emerald-600 text-white'
                             : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                        }`}
-                >
-                    ALL
-                </button>
-                <button
-                    onClick={() => setFilters(prev => ({ ...prev, position: 'GK', page: 1 }))}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${filters.position === 'GK'
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                        }`}
-                >
-                    GK
-                </button>
-                <button
-                    onClick={() => setFilters(prev => ({ ...prev, position: 'DEF', page: 1 }))}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${filters.position === 'DEF'
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                        }`}
-                >
-                    DEF
-                </button>
-                <button
-                    onClick={() => setFilters(prev => ({ ...prev, position: 'MID', page: 1 }))}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${filters.position === 'MID'
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                        }`}
-                >
-                    MID
-                </button>
-                <button
-                    onClick={() => setFilters(prev => ({ ...prev, position: 'FWD', page: 1 }))}
-                    className={`px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap ${filters.position === 'FWD'
-                            ? 'bg-emerald-600 text-white'
-                            : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                        }`}
-                >
-                    FWD
-                </button>
+                            }`}
+                    >
+                        {pos}
+                    </button>
+                ))}
             </div>
 
             {/* Results Info */}
@@ -159,7 +145,7 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
             {/* Player List */}
             {!loading && !error && (
                 <div className="space-y-2 mb-4">
-                    {players.map(player => (
+                    {displayedPlayers.map(player => (
                         <button
                             key={player.id}
                             onClick={() => setSelectedPlayer(player)}

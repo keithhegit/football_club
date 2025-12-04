@@ -11,9 +11,10 @@ interface LayoutProps {
   teamName: string;
   onSaveGame?: (name: string) => Promise<void>;
   onTransferComplete?: (player: any, fee: number) => void;
+  userTeam?: any;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeView, teamName, onSaveGame, onTransferComplete }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeView, teamName, onSaveGame, onTransferComplete, userTeam }) => {
   const { t } = useI18n();
   const [showSaveModal, setShowSaveModal] = useState(false);
 
@@ -55,7 +56,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeV
       <main className="flex-1 overflow-y-auto pb-20 relative">
         <div className="max-w-md mx-auto min-h-full">
           {currentView === 'SEARCH' ? (
-            <PlayerSearchView onTransferComplete={onTransferComplete} />
+            <PlayerSearchView onTransferComplete={onTransferComplete} userTeam={userTeam} />
           ) : (
             children
           )}
