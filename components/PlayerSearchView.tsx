@@ -199,7 +199,13 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
                     <div className="w-full max-w-sm" onClick={e => e.stopPropagation()}>
                         <PlayerProfileCard
                             player={selectedPlayer}
-                            onTransferComplete={onTransferComplete}
+                            userTeam={userTeam}
+                            onTransferComplete={(player, fee) => {
+                                if (onTransferComplete) {
+                                    onTransferComplete(player, fee);
+                                }
+                                setSelectedPlayer(null); // Close modal after transfer
+                            }}
                         />
                     </div>
                 </div>
