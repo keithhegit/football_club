@@ -107,6 +107,7 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
                             <div className="text-right">
                                 <div className="text-2xl font-black text-white leading-none">{player.ca}</div>
                                 <div className="text-[10px] text-slate-500 uppercase tracking-widest">CA</div>
+                                <div className="text-xs text-amber-400 font-semibold mt-1">{potentialText}</div>
                             </div>
                         </div>
 
