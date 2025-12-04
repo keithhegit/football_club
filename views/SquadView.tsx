@@ -85,34 +85,17 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
                                                     'text-red-400'
                                             }`}>{player.position}</span>
                                         <span>Age {player.age}</span>
+                )}
                                     </div>
-                                </div>
-                                <div className="text-xs font-mono text-slate-500 flex flex-col items-end gap-0.5">
-                                    <div>CA: {player.ca}</div>
-                                    {player.pa > 0 && (
-                                        <div className="text-emerald-400">
-                                            {player.pa >= 170 ? '世界级' :
-                                                player.pa >= 150 ? '顶级' :
-                                                    player.pa >= 130 ? '关键' :
-                                                        player.pa >= 110 ? '主力' :
-                                                            player.pa >= 90 ? '轮换' : '替补'}
+
+                                    {/* Player Detail Modal */}
+                                    {selectedPlayer && (
+                                        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setSelectedPlayer(null)}>
+                                            <div className="w-full max-w-sm relative" onClick={e => e.stopPropagation()}>
+                                                <PlayerProfileCard player={selectedPlayer} userTeam={team} />
+                                            </div>
                                         </div>
                                     )}
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Player Detail Modal */}
-            {selectedPlayer && (
-                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setSelectedPlayer(null)}>
-                    <div className="w-full max-w-sm relative" onClick={e => e.stopPropagation()}>
-                        <PlayerProfileCard player={selectedPlayer} userTeam={team} />
-                    </div>
-                </div>
-            )}
-        </div>
-    );
+                                );
 };
