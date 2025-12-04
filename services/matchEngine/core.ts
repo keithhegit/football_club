@@ -94,6 +94,12 @@ export class MatchEngine {
         const defender = this.selectPlayer(defendingTeam, 'defend');
         const gk = this.selectGK(defendingTeam);
 
+        // Safety check: ensure all players exist
+        if (!attacker || !defender || !gk) {
+            console.error('Missing player in match', { attacker, defender, gk });
+            return; // Skip this tick if players are missing
+        }
+
         // Flatten attributes for calculation
         const attackerAttrs = this.flattenAttributes(attacker);
         const defenderAttrs = this.flattenAttributes(defender);
@@ -218,14 +224,23 @@ export class MatchEngine {
         return 'SHOT';
     }
 
-    private selectPlayer(team: Team, role: 'attack' | 'defend'): Player {
+    private selectPlayer(team: Team, role: 'attack' | 'defend'): Player | null {
         // Simplified selection: random player from lineup
         // In future: select based on position (e.g., ST for shots)
         const players = team.players; // Assuming team.players contains the match squad
+
+        if (!players || players.length === 0) {
+            console.error('Team has no players:', team.name);
+            return null;
+        }
+
         return players[Math.floor(Math.random() * players.length)];
     }
 
-    private selectGK(team: Team): Player {
+    private selectGK(team: Team): Player | null {
+        if (!team.players || team.players.length === 0) {
+            return null;
+        }
         return team.players.find(p => p.position === 'GK') || team.players[0];
     }
 
