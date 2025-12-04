@@ -1,5 +1,5 @@
-// Match Engine - Core simulation loop
-// Simulates 90-minute football matches using probability-based event system
+// Match Engine - Enhanced with step-by-step simulation for real-time playback
+// Extends core simulation with frame-by-frame control
 
 import {
     MatchState, MatchResult, TeamState, PlayerState, MatchEvent,
@@ -15,6 +15,12 @@ export class MatchEngine {
     private state: MatchState;
     private statsTracker: MatchStatsTracker;
     private matchDuration: number = 90; // minutes
+    private isPaused: boolean = false;
+    private simulationSpeed: number = 1; // 1x, 2x, 5x
+
+    // Callbacks for real-time updates
+    private onStateUpdate?: (state: MatchState) => void;
+    private onGoal?: (team: 'home' | 'away', minute: number) => void;
 
     constructor(homeTeam: TeamState, awayTeam: TeamState) {
         // Initialize match state
@@ -49,32 +55,28 @@ export class MatchEngine {
     }
 
     /**
-     * Simulate entire match
+     * Set callback for state updates (for real-time visualization)
      */
-    simulateMatch(): MatchResult {
-        console.log(`⚽ Match Start: ${this.state.homeTeam.name} vs ${this.state.awayTeam.name}`);
-
-        while (this.state.time < this.matchDuration) {
-            this.simulateTick();
-        }
-
-        console.log(`🏁 Full Time: ${this.state.homeTeam.name} ${this.state.score[0]} - ${this.state.score[1]} ${this.state.awayTeam.name}`);
-
-        const finalStats = this.statsTracker.finalize();
-
-        return {
-            homeScore: this.state.score[0],
-            awayScore: this.state.score[1],
-            statistics: finalStats,
-            eventLog: this.statsTracker.getEvents(),
-            playerRatings: new Map() // TODO: Calculate ratings
-        };
+    setUpdateCallback(callback: (state: MatchState) => void) {
+        this.onStateUpdate = callback;
     }
 
     /**
-     * Simulate one game tick (3-5 seconds of match time)
+     * Set callback for goal events
      */
-    private simulateTick(): void {
+    setGoalCallback(callback: (team: 'home' | 'away', minute: number) => void) {
+        this.onGoal = callback;
+    }
+
+    /**
+     * Simulate one step (tick) of the match
+     * Returns true if match continues, false if finished
+     */
+    simulateTick(): boolean {
+        if (this.state.time >= this.matchDuration) {
+            return false; // Match finished
+        }
+
         // Generate event based on current phase
         const event = this.generateEvent();
 
@@ -111,11 +113,7 @@ export class MatchEngine {
         };
 
         // Handle outcome
-        if (success) {
-            this.handleSuccess(event, matchEvent);
-        } else {
-            this.handleFailure(event, matchEvent);
-        }
+        const scoredGoal = this.handleOutcome(event, matchEvent, success);
 
         // Record event
         this.statsTracker.recordEvent(matchEvent, this.state.possession);
@@ -130,29 +128,108 @@ export class MatchEngine {
 
         // Advance time
         this.state.time += tickDuration;
+
+        // Update statistics from tracker
+        this.state.statistics = this.statsTracker.getStats();
+
+        // Notify callbacks
+        if (this.onStateUpdate) {
+            this.onStateUpdate({ ...this.state });
+        }
+
+        if (scoredGoal && this.onGoal) {
+            this.onGoal(this.state.possession, Math.floor(this.state.time));
+        }
+
+        return true; // Continue match
     }
 
     /**
-     * Generate event type based on current phase and position
+     * Simulate entire match (original method for backward compatibility)
      */
+    simulateMatch(): MatchResult {
+        console.log(`⚽ Match Start: ${this.state.homeTeam.name} vs ${this.state.awayTeam.name}`);
+
+        while (this.state.time < this.matchDuration) {
+            this.simulateTick();
+        }
+
+        console.log(`🏁 Full Time: ${this.state.homeTeam.name} ${this.state.score[0]} - ${this.state.score[1]} ${this.state.awayTeam.name}`);
+
+        const finalStats = this.statsTracker.finalize();
+
+        return {
+            homeScore: this.state.score[0],
+            awayScore: this.state.score[1],
+            statistics: finalStats,
+            eventLog: this.statsTracker.getEvents(),
+            playerRatings: new Map() // TODO: Calculate ratings
+        };
+    }
+
+    /**
+     * Handle action outcome and return if a goal was scored
+     */
+    private handleOutcome(action: ActionType, event: MatchEvent, success: boolean): boolean {
+        let scoredGoal = false;
+
+        if (success) {
+            switch (action) {
+                case 'SHOOT':
+                case 'SHOOT_LONG':
+                    // Goal!
+                    const teamIndex = this.state.possession === 'home' ? 0 : 1;
+                    this.state.score[teamIndex]++;
+                    event.description += ' ⚽ GOAL!';
+                    scoredGoal = true;
+                    this.resetToKickoff();
+                    break;
+
+                case 'PASS_SHORT':
+                case 'PASS_LONG':
+                    // Move ball forward
+                    this.moveBall(action === 'PASS_LONG' ? 20 : 10);
+                    break;
+
+                case 'DRIBBLE':
+                    this.moveBall(5);
+                    break;
+
+                case 'CROSS':
+                    this.state.phase = 'ATTACK';
+                    break;
+
+                case 'TACKLE':
+                case 'INTERCEPT':
+                    this.turnover();
+                    break;
+            }
+        } else {
+            // Most failures result in turnover
+            if (action !== 'SHOOT' && action !== 'SHOOT_LONG') {
+                this.turnover();
+            }
+        }
+
+        return scoredGoal;
+    }
+
+    // ... rest of methods remain the same
     private generateEvent(): ActionType {
         const phase = this.state.phase;
         const ballY = this.state.ballPosition.y;
 
-        // Determine if in attacking third
         const inAttackingThird = this.state.possession === 'home'
             ? ballY > 66
             : ballY < 34;
 
         if (phase === 'ATTACK') {
             if (inAttackingThird) {
-                // Final third - more shots and crosses
                 return weightedRandom<ActionType>(
                     ['PASS_SHORT', 'SHOOT', 'CROSS', 'DRIBBLE'],
                     [0.3, 0.3, 0.2, 0.2]
                 );
             } else {
-                // Build-up play
                 return weightedRandom<ActionType>(
                     ['PASS_SHORT', 'PASS_LONG', 'DRIBBLE'],
                     [0.5, 0.3, 0.2]
@@ -164,7 +241,6 @@ export class MatchEngine {
                 [0.5, 0.3, 0.2]
             );
         } else {
-            // Transition
             return weightedRandom<ActionType>(
                 ['PASS_LONG', 'PASS_SHORT', 'DRIBBLE'],
                 [0.4, 0.4, 0.2]
@@ -172,80 +248,23 @@ export class MatchEngine {
         }
     }
 
-    /**
-     * Select player from team based on ball position
-     */
     private selectPlayer(team: TeamState, action: ActionType, attacking: boolean): PlayerState {
         const formation = getFormation(team.formation);
         const nearestIndex = findNearestPlayer(this.state.ballPosition, formation.positions);
         return team.players[nearestIndex];
     }
 
-    /**
-     * Handle successful action
-     */
-    private handleSuccess(action: ActionType, event: MatchEvent): void {
-        switch (action) {
-            case 'SHOOT':
-            case 'SHOOT_LONG':
-                // Goal!
-                const teamIndex = this.state.possession === 'home' ? 0 : 1;
-                this.state.score[teamIndex]++;
-                event.description += ' ⚽ GOAL!';
-                this.resetToKickoff();
-                break;
-
-            case 'PASS_SHORT':
-            case 'PASS_LONG':
-                // Move ball forward
-                this.moveBall(action === 'PASS_LONG' ? 20 : 10);
-                break;
-
-            case 'DRIBBLE':
-                this.moveBall(5);
-                break;
-
-            case 'CROSS':
-                this.state.phase = 'ATTACK';
-                break;
-
-            case 'TACKLE':
-            case 'INTERCEPT':
-                this.turnover();
-                break;
-        }
-    }
-
-    /**
-     * Handle failed action
-     */
-    private handleFailure(action: ActionType, event: MatchEvent): void {
-        // Most failures result in turnover
-        if (action !== 'SHOOT' && action !== 'SHOOT_LONG') {
-            this.turnover();
-        }
-    }
-
-    /**
-     * Switch possession
-     */
     private turnover(): void {
         this.state.possession = this.state.possession === 'home' ? 'away' : 'home';
         this.state.phase = 'TRANSITION';
     }
 
-    /**
-     * Reset to kickoff after goal
-     */
     private resetToKickoff(): void {
         this.state.ballPosition = { x: 50, y: 50 };
         this.state.phase = 'TRANSITION';
-        this.turnover(); // Kick off for team that conceded
+        this.turnover();
     }
 
-    /**
-     * Move ball position
-     */
     private moveBall(distance: number): void {
         if (this.state.possession === 'home') {
             this.state.ballPosition.y = Math.min(100, this.state.ballPosition.y + distance);
@@ -256,12 +275,8 @@ export class MatchEngine {
         }
     }
 
-    /**
-     * Update player stamina
-     */
     private updateStamina(duration: number): void {
-        // Stamina decreases over time
-        const staminaDecay = duration * 0.5; // 0.5% per minute
+        const staminaDecay = duration * 0.5;
 
         for (const player of this.state.homeTeam.players) {
             player.stamina = Math.max(0, player.stamina - staminaDecay);
@@ -272,9 +287,6 @@ export class MatchEngine {
         }
     }
 
-    /**
-     * Generate event description
-     */
     private generateEventDescription(action: ActionType, actor: PlayerState, success: boolean): string {
         const actionText = {
             PASS_SHORT: '短传',
@@ -301,10 +313,15 @@ export class MatchEngine {
         return this.state.possession === 'home' ? this.state.awayTeam : this.state.homeTeam;
     }
 
-    /**
-     * Get current match state (for UI updates)
-     */
     getState(): MatchState {
         return { ...this.state };
+    }
+
+    isFinished(): boolean {
+        return this.state.time >= this.matchDuration;
+    }
+
+    getCurrentTime(): number {
+        return this.state.time;
     }
 }

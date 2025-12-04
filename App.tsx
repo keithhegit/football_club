@@ -24,6 +24,7 @@ import { LoadGameView } from './views/LoadGameView';
 import { saveService } from './services/save';
 import { TrainingView } from './views/TrainingView';
 import { MatchEngineTest } from './views/MatchEngineTest';
+import { LiveMatchPlayer } from './views/LiveMatchPlayer';
 
 // Helper to generate a season fixture list (Double Round Robin)
 const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
