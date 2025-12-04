@@ -10,6 +10,7 @@ interface Props {
     player: Player;
     onTransferComplete?: (player: Player, fee: number) => void;
     hideActions?: boolean; // Hide Make Offer button when in confirmation flow
+    userTeam?: { players: Player[] }; // To check if player is already in squad
 }
 
 // Helper component for attribute rows
@@ -48,7 +49,7 @@ const StarRating = ({ ca }: { ca: number }) => {
     );
 };
 
-export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete, hideActions = false }) => {
+export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete, hideActions = false, userTeam }) => {
     const [flipped, setFlipped] = useState(false);
 
     // ... (Calculations remain unchanged)
@@ -204,17 +205,24 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="p-3 border-t border-slate-800 mt-auto">
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowTransferModal(true);
-                                }}
-                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 rounded shadow-lg transition-colors"
-                            >
-                                Make Transfer Offer
-                            </button>
-                        </div>
+                        {!hideActions && (() => {
+                            const alreadyInSquad = userTeam?.players.some(p => String(p.id) === String(player.id));
+                            if (alreadyInSquad) return null;
+
+                            return (
+                                <div className="p-3 border-t border-slate-800 mt-auto">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setShowTransferModal(true);
+                                        }}
+                                        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 rounded shadow-lg transition-colors"
+                                    >
+                                        Make Transfer Offer
+                                    </button>
+                                </div>
+                            );
+                        })()}
                     </div>
                 </div>
                 <style>{`

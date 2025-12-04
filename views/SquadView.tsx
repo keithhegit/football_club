@@ -17,10 +17,10 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
         ? team.players
         : team.players.filter(p => {
             const pos = p.position;
-            if (selectedPosition === 'GK') return pos === 'GK';
-            if (selectedPosition === 'DEF') return pos.includes('D (') || pos.includes('D/WB');
-            if (selectedPosition === 'MID') return pos.includes('M (') || pos.includes('M/AM') || pos.includes('DM');
-            if (selectedPosition === 'FWD') return pos.includes('ST') || pos.includes('AM (');
+            if (selectedPosition === 'GK') return pos.includes('GK');
+            if (selectedPosition === 'DEF') return (pos.includes('D') && !pos.includes('DM') && !pos.includes('AM') && !pos.includes('M ')) || pos.includes('WB');
+            if (selectedPosition === 'MID') return pos.includes('M') || pos.includes('DM') || pos.includes('AM');
+            if (selectedPosition === 'FWD') return pos.includes('ST') || pos === 'FWD';
             return pos === selectedPosition;
         });
 
@@ -100,7 +100,7 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
             {selectedPlayer && (
                 <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setSelectedPlayer(null)}>
                     <div className="w-full max-w-sm relative" onClick={e => e.stopPropagation()}>
-                        <PlayerProfileCard player={selectedPlayer} />
+                        <PlayerProfileCard player={selectedPlayer} userTeam={team} />
                     </div>
                 </div>
             )}
