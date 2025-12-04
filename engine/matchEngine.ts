@@ -10,6 +10,7 @@ import { getActionModifier } from './tacticalMods';
 import { getFormation, findNearestPlayer } from './formation';
 import { MatchStatsTracker } from './matchStats';
 import { weightedRandom, randomBetween, randomInt } from './utils/mathHelpers';
+import { calculatePlayerRatings } from './playerRatings';
 
 export class MatchEngine {
     private state: MatchState;

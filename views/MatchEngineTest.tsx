@@ -166,6 +166,45 @@ export const MatchEngineTest: React.FC = () => {
                             </div>
                         </div>
 
+                        {/* Player Ratings */}
+                        {matchResult.playerRatings && matchResult.playerRatings.size > 0 && (
+                            <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                                <h2 className="text-2xl font-bold text-slate-100 mb-4">⭐ Player Ratings</h2>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <h3 className="text-emerald-400 font-semibold mb-3">Arsenal</h3>
+                                        <div className="space-y-2">
+                                            {matchState?.homeTeam.players.slice(0, 11).map(player => {
+                                                const rating = matchResult.playerRatings.get(player.id) || 6.0;
+                                                const colorClass = rating >= 7.5 ? 'text-emerald-400' : rating >= 6.5 ? 'text-yellow-400' : 'text-orange-400';
+                                                return (
+                                                    <div key={player.id} className="flex justify-between items-center text-sm">
+                                                        <span className="text-slate-300">{player.name}</span>
+                                                        <span className={`font-bold ${colorClass}`}>{rating.toFixed(1)}</span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-blue-400 font-semibold mb-3">Chelsea</h3>
+                                        <div className="space-y-2">
+                                            {matchState?.awayTeam.players.slice(0, 11).map(player => {
+                                                const rating = matchResult.playerRatings.get(player.id) || 6.0;
+                                                const colorClass = rating >= 7.5 ? 'text-emerald-400' : rating >= 6.5 ? 'text-yellow-400' : 'text-orange-400';
+                                                return (
+                                                    <div key={player.id} className="flex justify-between items-center text-sm">
+                                                        <span className="text-slate-300">{player.name}</span>
+                                                        <span className={`font-bold ${colorClass}`}>{rating.toFixed(1)}</span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Technical Info */}
                         <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
                             <h3 className="text-lg font-bold text-slate-100 mb-3">🔧 Technical Details</h3>

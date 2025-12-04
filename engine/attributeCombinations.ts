@@ -26,17 +26,17 @@ export const ACTION_FORMULAS: Record<ActionType, AttributeFormula> = {
     },
 
     SHOOT: {
-        primary: { Finishing: 0.4 },
-        mental: { Composure: 0.3, Decisions: 0.1 },
-        technical: { Technique: 0.2 },
+        primary: { Finishing: 0.15 },  // Reduced from 0.4 - shooting is hard!
+        mental: { Composure: 0.10, Decisions: 0.05 },
+        technical: { Technique: 0.05 },
         physical: {}
     },
 
     SHOOT_LONG: {
-        primary: { LongShots: 0.4 },
-        mental: { Composure: 0.2, Decisions: 0.1 },
-        technical: { Technique: 0.2 },
-        physical: { Balance: 0.1 }
+        primary: { LongShots: 0.12 },  // Reduced from 0.4 - long shots rarely score
+        mental: { Composure: 0.08, Decisions: 0.05 },
+        technical: { Technique: 0.05 },
+        physical: { Balance: 0.05 }
     },
 
     TACKLE: {
@@ -135,17 +135,17 @@ export function computeDefenseScore(
 ): number {
     // Map actions to relevant defensive attributes
     const defenseFormulas: Record<ActionType, { [key: string]: number }> = {
-        PASS_SHORT: { Marking: 0.3, Positioning: 0.3, Anticipation: 0.2, WorkRate: 0.2 },
-        PASS_LONG: { Positioning: 0.4, Anticipation: 0.3, JumpingReach: 0.3 },
-        SHOOT: { Positioning: 0.4, Anticipation: 0.3, Bravery: 0.2, JumpingReach: 0.1 },
-        SHOOT_LONG: { Positioning: 0.5, Anticipation: 0.3, JumpingReach: 0.2 },
+        PASS_SHORT: { Marking: 0.15, Positioning: 0.15, Anticipation: 0.1, WorkRate: 0.1 },  // Halved - passes should succeed more
+        PASS_LONG: { Positioning: 0.2, Anticipation: 0.15, JumpingReach: 0.15 },  // Halved
+        SHOOT: { Positioning: 0.35, Anticipation: 0.25, Bravery: 0.15, JumpingReach: 0.1 },  // GK resistance
+        SHOOT_LONG: { Positioning: 0.40, Anticipation: 0.25, JumpingReach: 0.15 },  // Slightly reduced
         TACKLE: { Strength: 0.3, Balance: 0.3, Dribbling: 0.2, Agility: 0.2 },
         DRIBBLE: { Tackling: 0.3, Marking: 0.2, Positioning: 0.2, Pace: 0.2, Strength: 0.1 },
         HEADER: { JumpingReach: 0.4, Marking: 0.3, Positioning: 0.2, Strength: 0.1 },
-        INTERCEPT: { Pace: 0.3, Anticipation: 0.3, Positioning: 0.2, Passing: 0.2 },
-        CROSS: { Positioning: 0.4, Anticipation: 0.3, JumpingReach: 0.3 },
-        FIRST_TOUCH: { Marking: 0.4, Tackling: 0.3, Aggression: 0.3 },
-        CLEARANCE: { Marking: 0.5, Tackling: 0.3, Positioning: 0.2 }
+        INTERCEPT: { Pace: 0.2, Anticipation: 0.2, Positioning: 0.15, Passing: 0.15 },  // Reduced
+        CROSS: { Positioning: 0.25, Anticipation: 0.2, JumpingReach: 0.2 },  // Reduced
+        FIRST_TOUCH: { Marking: 0.25, Tackling: 0.2, Aggression: 0.2 },  // Reduced
+        CLEARANCE: { Marking: 0.3, Tackling: 0.2, Positioning: 0.15 }  // Reduced
     };
 
     const formula = defenseFormulas[action];
@@ -156,6 +156,6 @@ export function computeDefenseScore(
         score += (attrValue / 20) * weight;
     }
 
-    // Defense reduces success, clamped to reasonable range
-    return Math.min(0.8, Math.max(0.0, score));
+    // Defense reduces success, clamped to reasonable range (max 50% reduction)
+    return Math.min(0.5, Math.max(0.0, score));  // Changed from 0.8 to 0.5
 }
