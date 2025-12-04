@@ -87,8 +87,17 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
                                         <span>Age {player.age}</span>
                                     </div>
                                 </div>
-                                <div className="text-xs font-mono text-slate-500">
-                                    CA: {player.ca}
+                                <div className="text-xs font-mono text-slate-500 flex flex-col items-end gap-0.5">
+                                    <div>CA: {player.ca}</div>
+                                    {player.pa > 0 && (
+                                        <div className="text-emerald-400">
+                                            {player.pa >= 170 ? '世界级' :
+                                                player.pa >= 150 ? '顶级' :
+                                                    player.pa >= 130 ? '关键' :
+                                                        player.pa >= 110 ? '主力' :
+                                                            player.pa >= 90 ? '轮换' : '替补'}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}

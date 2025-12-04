@@ -167,8 +167,8 @@ function mapPlayerFromApi(apiPlayer: any): Player {
         wage: apiPlayer.wage,
         club_name: apiPlayer.club_name,
         league_name: apiPlayer.league_name,
-        ca: calculateEstimatedCA(apiPlayer),
-        pa: apiPlayer.pa || 0, // Use PA from player_ability table
+        ca: apiPlayer.ca || calculateEstimatedCA(apiPlayer),
+        pa: apiPlayer.pa || 0,
         potential_code: apiPlayer.potential_code,
         min_pa: apiPlayer.min_pa,
         max_pa: apiPlayer.max_pa,
