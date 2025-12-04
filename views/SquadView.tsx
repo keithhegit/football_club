@@ -24,12 +24,14 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
             return pos === selectedPosition;
         });
 
-    // Sort by position order
+    // Sort by position order, then by CA (descending)
     const positionOrder = { 'GK': 1, 'DEF': 2, 'MID': 3, 'FWD': 4 };
     const sortedPlayers = [...filteredPlayers].sort((a, b) => {
         const posA = positionOrder[a.position as keyof typeof positionOrder] || 99;
         const posB = positionOrder[b.position as keyof typeof positionOrder] || 99;
-        return posA - posB;
+        if (posA !== posB) return posA - posB;
+        // Within same position, sort by CA descending
+        return b.ca - a.ca;
     });
 
     return (

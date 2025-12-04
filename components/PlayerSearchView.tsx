@@ -144,28 +144,41 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
 
             {/* Player List */}
             {!loading && !error && (
-                <div className="space-y-2 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                     {displayedPlayers.map(player => (
-                        <button
+                        <div
                             key={player.id}
                             onClick={() => setSelectedPlayer(player)}
-                            className="w-full bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500 rounded-lg p-4 transition-all text-left"
+                            className="bg-slate-800 p-3 rounded border border-slate-700 hover:bg-slate-700 cursor-pointer transition-colors flex items-center gap-3"
                         >
-                            <div className="flex items-center gap-3">
-                                <PlayerAvatar playerId={player.id} alt={player.name} size="md" />
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="font-bold text-white truncate">{player.name}</h3>
-                                    <div className="text-sm text-emerald-400">{player.position}</div>
+                            <PlayerAvatar playerId={player.id} alt={player.name} size="md" />
+                            <div className="flex-1 min-w-0">
+                                <div className="font-bold text-slate-200 truncate">{player.name}</div>
+                                <div className="text-xs text-slate-400 flex gap-2">
+                                    <span className={`${player.position?.includes('GK') ? 'text-yellow-400' :
+                                        player.position?.includes('D') ? 'text-blue-400' :
+                                            player.position?.includes('M') ? 'text-emerald-400' :
+                                                'text-red-400'
+                                        }`}>{player.position}</span>
+                                    <span>Age {player.age}</span>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    {player.club_id && <ClubLogo clubId={player.club_id} size="sm" />}
-                                    <div className="text-right">
-                                        <div className="text-xs text-slate-500">CA</div>
-                                        <div className="font-bold text-white">{player.ca}</div>
-                                    </div>
-                                </div>
+                                {player.club_name && (
+                                    <div className="text-xs text-slate-500 truncate mt-0.5">{player.club_name}</div>
+                                )}
                             </div>
-                        </button>
+                            <div className="text-xs font-mono text-slate-500 flex flex-col items-end gap-0.5">
+                                <div>CA: {player.ca}</div>
+                                {player.pa > 0 && (
+                                    <div className="text-emerald-400">
+                                        潜力：{player.pa >= 170 ? '🌟 世界级' :
+                                            player.pa >= 150 ? '⭐ 顶级' :
+                                                player.pa >= 130 ? '💎 关键' :
+                                                    player.pa >= 110 ? '🔹 主力' :
+                                                        player.pa >= 90 ? '📦 轮换' : '💤 替补'}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     ))}
                 </div>
             )}
