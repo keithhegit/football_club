@@ -18,7 +18,7 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
     const [filters, setFilters] = useState<SearchFilters>({
         q: '',
         page: 1,
-        limit: 20,
+        limit: 100, // Increased for client-side filtering
         sort: 'ca',
         order: 'desc'
     });
