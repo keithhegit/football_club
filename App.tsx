@@ -23,6 +23,7 @@ import { RegisterView } from './views/RegisterView';
 import { LoadGameView } from './views/LoadGameView';
 import { saveService } from './services/save';
 import { TrainingView } from './views/TrainingView';
+import { MatchEngineTest } from './views/MatchEngineTest';
 
 // Helper to generate a season fixture list (Double Round Robin)
 const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
@@ -49,6 +50,14 @@ const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
 };
 
 const App: React.FC = () => {
+  // Check for test mode via URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const isTestMode = urlParams.get('test') === 'match';
+
+  if (isTestMode) {
+    return <MatchEngineTest />;
+  }
+
   const { t } = useI18n();
   const [user, setUser] = useState<User | null>(authService.getUser());
   const [selectedClubId, setSelectedClubId] = useState<number | undefined>(undefined);
