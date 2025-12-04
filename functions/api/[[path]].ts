@@ -130,10 +130,12 @@ async function handlePlayersSearch(request: Request, env: Env): Promise<Response
     SELECT 
       p.*,
       c.name as club_name,
-      l.name as league_name
+      l.name as league_name,
+      pa.potential_ability as pa
     FROM players p
     LEFT JOIN clubs c ON p.club_id = c.id
     LEFT JOIN leagues l ON c.league_id = l.id
+    LEFT JOIN player_ability pa ON p.id = pa.player_id
     ${whereClause}
     ORDER BY ${orderByClause}
     LIMIT ? OFFSET ?
