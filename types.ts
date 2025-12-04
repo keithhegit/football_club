@@ -63,8 +63,9 @@ export interface Player {
   nationality: string;
 
   // CA/PA System
-  ca: number; // Current Ability (1-200)
-  pa: number; // Potential Ability (1-200)
+  ca: number; // Current Ability (1-200) - Dynamic, changes per season
+  pa: number; // Potential Ability (1-200) - Fixed, from D1
+  initialCA?: number; // Initial CA when player joined (for min limit)
 
   // Detailed Stats
   attributes: {
@@ -77,6 +78,17 @@ export interface Player {
   // Dynamic Game State
   condition: number; // 0-100%
   morale: number; // 0-100%
+
+  // Season Statistics (for growth calculation)
+  seasonStats?: {
+    appearances: number;
+    goals: number;
+    assists: number;
+    cleanSheets: number;
+    averageRating: number;
+    mom: number;
+    injuries?: number;
+  };
 
   // Season Stats
   goals: number;

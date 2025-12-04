@@ -17,6 +17,9 @@ export interface Player {
     league_name: string | null;
     ca: number;
     pa: number;
+    potential_code?: string;
+    min_pa?: number;
+    max_pa?: number;
     attributes: {
         technical: {
             corners: number;
@@ -165,7 +168,10 @@ function mapPlayerFromApi(apiPlayer: any): Player {
         club_name: apiPlayer.club_name,
         league_name: apiPlayer.league_name,
         ca: calculateEstimatedCA(apiPlayer),
-        pa: 0, // PA is hidden/unknown
+        pa: apiPlayer.pa || 0, // Use PA from player_ability table
+        potential_code: apiPlayer.potential_code,
+        min_pa: apiPlayer.min_pa,
+        max_pa: apiPlayer.max_pa,
         attributes: {
             technical: {
                 corners: p(apiPlayer.corners),

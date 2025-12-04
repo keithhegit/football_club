@@ -17,6 +17,20 @@ interface GameInitResult {
     selectedLeagueId: number;
 }
 
+// Helper to randomize PA based on range
+function randomizePotential(apiPlayer: ApiPlayer): number {
+    // If we have a potential code and range, use it
+    if (apiPlayer.potential_code && apiPlayer.min_pa && apiPlayer.max_pa) {
+        const min = apiPlayer.min_pa;
+        const max = apiPlayer.max_pa;
+        // Random integer between min and max (inclusive)
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Fallback to fixed PA or estimate
+    return apiPlayer.pa || 85;
+}
+
 // Map API Player to Game Player type
 function mapApiPlayerToGamePlayer(apiPlayer: ApiPlayer): Player {
     // Determine position from string
@@ -27,14 +41,19 @@ function mapApiPlayerToGamePlayer(apiPlayer: ApiPlayer): Player {
     else if (posStr.includes('M')) position = Position.MID;
     else if (posStr.includes('F') || posStr.includes('ST')) position = Position.FWD;
 
+    // Randomize PA here - this is the "New Game" moment
+    const randomizedPA = randomizePotential(apiPlayer);
+    const currentCA = apiPlayer.ca || 75;
+
     return {
         id: `p${apiPlayer.id}`,
         name: apiPlayer.name,
         age: apiPlayer.age,
         position,
         nationality: apiPlayer.nationality,
-        ca: apiPlayer.ca || 75,
-        pa: apiPlayer.pa || 85,
+        ca: currentCA,
+        pa: Math.max(randomizedPA, currentCA), // Ensure PA >= CA
+        initialCA: currentCA, // Track initial CA for growth
         attributes: apiPlayer.attributes,
         hidden: {
             consistency: 12,
@@ -47,6 +66,14 @@ function mapApiPlayerToGamePlayer(apiPlayer: ApiPlayer): Player {
         assists: 0,
         cleanSheets: 0,
         value: 1000000,
+        seasonStats: {
+            appearances: 0,
+            goals: 0,
+            assists: 0,
+            cleanSheets: 0,
+            averageRating: 0,
+            mom: 0
+        }
     };
 }
 

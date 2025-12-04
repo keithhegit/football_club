@@ -66,9 +66,10 @@ const App: React.FC = () => {
   });
 
   // Initialize game state once data is loaded after club selection
+  // Initialize game state once data is loaded after club selection
   useEffect(() => {
-    if (!loading && !error && initialUserTeam && initialTeams.length > 0 && managerData) {
-      setGameState({
+    if (!loading && !error && initialUserTeam && initialTeams.length > 0 && managerData && user) {
+      const newGameState: GameState = {
         currentWeek: 1,
         userTeamId: initialUserTeam.id,
         teams: initialTeams,
@@ -76,12 +77,28 @@ const App: React.FC = () => {
         currentView: 'DASHBOARD',
         activeMatchId: null,
         manager: managerData
+      };
+
+      setGameState(newGameState);
+
+      // Auto-save the new game immediately
+      // This ensures the randomized PA values are locked in for this save
+      const saveName = `${managerData.name} - ${initialUserTeam.name}`;
+      saveService.saveGame(saveName, newGameState).then(() => {
+        console.log('New game auto-saved:', saveName);
+      }).catch(err => {
+        console.error('Failed to auto-save new game:', err);
       });
     }
-  }, [loading, error, initialUserTeam, initialTeams, managerData]);
+  }, [loading, error, initialUserTeam, initialTeams, managerData, user]);
 
   // Startup flow handlers
+  // Startup flow handlers
   const handleNewGame = () => {
+    if (!user) {
+      setGameState(prev => prev ? { ...prev, currentView: 'LOGIN' } : null);
+      return;
+    }
     setGameState(prev => prev ? { ...prev, currentView: 'MANAGER_CREATION' } : null);
   };
 

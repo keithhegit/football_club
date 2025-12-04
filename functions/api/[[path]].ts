@@ -130,10 +130,15 @@ async function handlePlayersSearch(request: Request, env: Env): Promise<Response
     SELECT 
       p.*,
       c.name as club_name,
-      l.name as league_name
+      l.name as league_name,
+      pc.potential_code,
+      pc.min_pa,
+      pc.max_pa,
+      pc.calculated_ca as ca
     FROM players p
     LEFT JOIN clubs c ON p.club_id = c.id
     LEFT JOIN leagues l ON c.league_id = l.id
+    LEFT JOIN player_potential_codes pc ON p.id = pc.player_id
     ${whereClause}
     ORDER BY ${orderByClause}
     LIMIT ? OFFSET ?
@@ -165,10 +170,15 @@ async function handlePlayerById(request: Request, env: Env, id: string): Promise
     SELECT 
       p.*,
       c.name as club_name,
-      l.name as league_name
+      l.name as league_name,
+      pc.potential_code,
+      pc.min_pa,
+      pc.max_pa,
+      pc.calculated_ca as ca
     FROM players p
     LEFT JOIN clubs c ON p.club_id = c.id
     LEFT JOIN leagues l ON c.league_id = l.id
+    LEFT JOIN player_potential_codes pc ON p.id = pc.player_id
     WHERE p.id = ?
   `;
 
