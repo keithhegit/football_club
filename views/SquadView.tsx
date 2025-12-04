@@ -71,31 +71,5 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {sortedPlayers.map(player => (
                             <div
-                                key={player.id}
-                                onClick={() => setSelectedPlayer(player)}
-                                className="bg-slate-800 p-3 rounded border border-slate-700 hover:bg-slate-700 cursor-pointer transition-colors flex items-center gap-3"
-                            >
-                                <PlayerAvatar playerId={player.id} alt={player.name} size="md" />
-                                <div className="flex-1 min-w-0">
-                                    <div className="font-bold text-slate-200 truncate">{player.name}</div>
-                                    <div className="text-xs text-slate-400 flex gap-2">
-                                        <span className={`${player.position === 'GK' ? 'text-yellow-400' :
-                                            player.position === 'DEF' ? 'text-blue-400' :
-                                                player.position === 'MID' ? 'text-emerald-400' :
-                                                    'text-red-400'
-                                            }`}>{player.position}</span>
-                                        <span>Age {player.age}</span>
-                )}
-                                    </div>
-
-                                    {/* Player Detail Modal */}
-                                    {selectedPlayer && (
-                                        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setSelectedPlayer(null)}>
-                                            <div className="w-full max-w-sm relative" onClick={e => e.stopPropagation()}>
-                                                <PlayerProfileCard player={selectedPlayer} userTeam={team} />
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
                                 );
 };
