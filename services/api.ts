@@ -165,7 +165,7 @@ function mapPlayerFromApi(apiPlayer: any): Player {
         club_name: apiPlayer.club_name,
         league_name: apiPlayer.league_name,
         ca: calculateEstimatedCA(apiPlayer),
-        pa: 0, // PA is hidden/unknown
+        pa: apiPlayer.pa || 0, // Use PA from player_ability table
         attributes: {
             technical: {
                 corners: p(apiPlayer.corners),
