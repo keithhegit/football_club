@@ -24,6 +24,10 @@ export const MatchEngineTest: React.FC = () => {
         setTimeout(() => {
             const engine = new MatchEngine(homeTeam, awayTeam);
             const result = engine.simulateMatch();
+
+            // Console logging
+            console.log(' Match Result:', homeTeam.name, result.homeScore, '-', result.awayScore, awayTeam.name);
+            console.log(' Statistics:', result.statistics);
             const state = engine.getState();
             setMatchResult(result);
             setMatchState(state);
@@ -36,7 +40,7 @@ export const MatchEngineTest: React.FC = () => {
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-slate-100 mb-2">‚öΩ Match Engine Test</h1>
+                    <h1 className="text-3xl font-bold text-slate-100 mb-2">‚ö?Match Engine Test</h1>
                     <p className="text-slate-400">Phase 2.3 - Probability-based match simulation</p>
                 </div>
 
@@ -46,7 +50,7 @@ export const MatchEngineTest: React.FC = () => {
                     disabled={isSimulating}
                     className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-700 text-white px-6 py-3 rounded-lg font-semibold mb-6 transition-colors w-full md:w-auto"
                 >
-                    {isSimulating ? '‚è≥ Simulating Match...' : '‚ñ∂ Run Test Match'}
+                    {isSimulating ? '‚è?Simulating Match...' : '‚ñ?Run Test Match'}
                 </button>
 
                 {/* Results */}
@@ -71,7 +75,7 @@ export const MatchEngineTest: React.FC = () => {
                         {/* 2D Pitch Visualization */}
                         {matchState && (
                             <div className="bg-slate-800 p-6 rounded-lg  border border-slate-700">
-                                <h2 className="text-2xl font-bold text-slate-100 mb-4">‚öΩ Final Positions</h2>
+                                <h2 className="text-2xl font-bold text-slate-100 mb-4">‚ö?Final Positions</h2>
                                 <div className="flex justify-center">
                                     <PitchCanvas
                                         homeTeam={matchState.homeTeam}
@@ -169,7 +173,7 @@ export const MatchEngineTest: React.FC = () => {
                         {/* Player Ratings */}
                         {matchResult.playerRatings && matchResult.playerRatings.size > 0 && (
                             <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
-                                <h2 className="text-2xl font-bold text-slate-100 mb-4">‚≠ê Player Ratings</h2>
+                                <h2 className="text-2xl font-bold text-slate-100 mb-4">‚≠?Player Ratings</h2>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <h3 className="text-emerald-400 font-semibold mb-3">Arsenal</h3>
@@ -353,3 +357,4 @@ function createMockTeam(name: string, side: 'home' | 'away'): TeamState {
         })
     };
 }
+
