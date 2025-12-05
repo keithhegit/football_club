@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Trash2, Play, Calendar, Save } from 'lucide-react';
 import { saveService, GameSave } from '../services/save';
 import { GameState } from '../types';
+import { clearStore, initDB } from '../utils/localDB';
 
 interface LoadGameViewProps {
     onBack: () => void;
@@ -62,21 +63,48 @@ export const LoadGameView: React.FC<LoadGameViewProps> = ({ onBack, onLoad }) =>
         }
     };
 
+    const handleClearCache = async () => {
+        if (!confirm('This will clear all local data (IndexedDB). This is useful if you are experiencing "Team not found" errors. Continue?')) return;
+
+        try {
+            await initDB();
+            await clearStore('teams');
+            await clearStore('players');
+            await clearStore('games');
+            await clearStore('matchResults');
+            await clearStore('fixtures');
+            await clearStore('leagueTables');
+            alert('Local data cleared successfully. Please create a NEW GAME.');
+        } catch (err) {
+            console.error(err);
+            alert('Failed to clear local data');
+        }
+    };
+
     return (
         <div className="h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
             <div className="w-full max-w-2xl bg-slate-900 rounded-xl border border-slate-800 shadow-2xl overflow-hidden flex flex-col h-[80vh]">
                 {/* Header */}
-                <div className="p-6 border-b border-slate-800 flex items-center gap-4">
+                <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={onBack}
+                            className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
+                        >
+                            <ArrowLeft size={24} />
+                        </button>
+                        <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                            <Save className="text-emerald-500" />
+                            Load Game
+                        </h2>
+                    </div>
                     <button
-                        onClick={onBack}
-                        className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors"
+                        onClick={handleClearCache}
+                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium rounded-lg transition-colors border border-slate-700"
+                        title="Fix 'Team not found' errors"
                     >
-                        <ArrowLeft size={24} />
+                        Clear Local Cache
                     </button>
-                    <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                        <Save className="text-emerald-500" />
-                        Load Game
-                    </h2>
                 </div>
 
                 {/* Content */}
@@ -128,7 +156,7 @@ export const LoadGameView: React.FC<LoadGameViewProps> = ({ onBack, onLoad }) =>
                                                 </button>
                                                 <button
                                                     onClick={(e) => handleDelete(save.id, e)}
-                                                    className="p-2 bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    className="p-2 bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white rounded-lg transition-colors"
                                                     title="Delete Save"
                                                 >
                                                     <Trash2 size={20} />
