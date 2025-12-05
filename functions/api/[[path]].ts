@@ -192,45 +192,60 @@ async function handlePlayerById(request: Request, env: Env, id: string): Promise
 }
 
 async function handleClubs(request: Request, env: Env): Promise<Response> {
-    const url = new URL(request.url);
-    const leagueId = getQueryParam(url, 'league');
-    const page = Math.max(1, getIntParam(url, 'page', 1));
-    const limit = Math.min(100, Math.max(1, getIntParam(url, 'limit', 50)));
-    const offset = (page - 1) * limit;
+    try {
+        const url = new URL(request.url);
+        const leagueId = getQueryParam(url, 'league');
+        const page = Math.max(1, getIntParam(url, 'page', 1));
+        const limit = Math.min(100, Math.max(1, getIntParam(url, 'limit', 50)));
+        const offset = (page - 1) * limit;
 
-    const whereClause = leagueId ? 'WHERE c.league_id = ?' : '';
-    const params = leagueId ? [parseInt(leagueId, 10)] : [];
+        console.log(`[API] handleClubs called. League: ${leagueId}, Page: ${page}`);
 
-    // Count total
-    const countQuery = `SELECT COUNT(*) as total FROM clubs c ${whereClause}`;
-    const countResult = await env.DB.prepare(countQuery).bind(...params).first<{ total: number }>();
-    const total = countResult?.total || 0;
+        const whereClause = leagueId ? 'WHERE c.league_id = ?' : '';
+        const params = leagueId ? [parseInt(leagueId, 10)] : [];
 
-    // Fetch clubs
-    const dataQuery = `
-    SELECT 
-      c.id, c.name,
-      l.name as league_name
-    FROM clubs c
-    LEFT JOIN leagues l ON c.league_id = l.id
-    ${whereClause}
-    ORDER BY c.name ASC
-    LIMIT ? OFFSET ?
-  `;
+        // Count total
+        const countQuery = `SELECT COUNT(*) as total FROM clubs c ${whereClause}`;
+        console.log(`[API] Executing count query: ${countQuery} with params: ${params}`);
 
-    const clubs = await env.DB.prepare(dataQuery)
-        .bind(...params, limit, offset)
-        .all();
+        const countResult = await env.DB.prepare(countQuery).bind(...params).first<{ total: number }>();
+        const total = countResult?.total || 0;
 
-    return jsonResponse({
-        data: clubs.results || [],
-        pagination: {
-            page,
-            limit,
-            total,
-            totalPages: Math.ceil(total / limit),
-        },
-    });
+        // Fetch clubs
+        const dataQuery = `
+            SELECT 
+              c.id, c.name,
+              l.name as league_name
+            FROM clubs c
+            LEFT JOIN leagues l ON c.league_id = l.id
+            ${whereClause}
+            ORDER BY c.name ASC
+            LIMIT ? OFFSET ?
+        `;
+        console.log(`[API] Executing data query: ${dataQuery}`);
+
+        const clubs = await env.DB.prepare(dataQuery)
+            .bind(...params, limit, offset)
+            .all();
+
+        if (!clubs.success) {
+            throw new Error(`Clubs query failed: ${clubs.error}`);
+        }
+
+        return jsonResponse({
+            data: clubs.results || [],
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+            },
+        });
+    } catch (error: any) {
+        console.error('[API] handleClubs Error:', error);
+        // Rethrow to be caught by main handler which now returns detailed JSON
+        throw error;
+    }
 }
 
 async function handleLeagues(request: Request, env: Env): Promise<Response> {
