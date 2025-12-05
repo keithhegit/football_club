@@ -130,8 +130,11 @@ function buildQueryString(params: Record<string, any>): string {
 export async function apiFetch<T>(endpoint: string): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${endpoint}`);
     if (!response.ok) {
-        const error: any = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(error.error || `API error: ${response.status}`);
+        const errorData: any = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('[API] Request failed:', endpoint, errorData);
+        // Prioritize 'message' which contains the actual backend exception (e.g. SQL error)
+        const errorMsg = errorData.message || errorData.error || `API error: ${response.status}`;
+        throw new Error(errorMsg);
     }
     return response.json();
 }
