@@ -41,8 +41,8 @@ export async function onRequestPost(context) {
             SELECT c.name as Club, l.name as League 
             FROM clubs c 
             JOIN leagues l ON c.league_id = l.id 
-            WHERE l.name = ?
-        `).bind(targetLeague);
+            WHERE l.name = ? OR l.name = ?
+        `).bind(dbLeagueName, targetLeague);
 
         const teamsResult = await teamsQuery.all();
 
