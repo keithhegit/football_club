@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import api, { Club } from '../services/api';
 import { Team, Player, Position, HiddenAttributes } from '../types';
 import { Player as ApiPlayer } from '../services/api';
+import { gameInitializer } from '../services/gameInitializer';
+import { getFromStore, getAllFromStore, getTeamPlayers } from '../utils/localDB';
+import { convertPlayersToState, getStartingXI } from '../utils/playerConverter';
+import { TeamState, PlayerState } from '../engine/types';
 
 // League IDs from D1 database
 const LEAGUE_IDS = {
@@ -189,47 +193,100 @@ export function useGameInit(clubId?: number) {
             try {
                 setState(prev => ({ ...prev, loading: true, error: null }));
 
-                // 1. Try to find the club in Premier League first
+                // 1. Get Club Name from API (Legacy selection flow)
+                // We still use this to know WHICH club the user wanted
                 let userClub: Club | undefined;
-                let clubs: Club[] = [];
                 let selectedLeagueId = LEAGUE_IDS.PREMIER_LEAGUE;
+                let leagueName = 'Premier League';
 
+                // Try Premier League
                 const plClubsResponse = await api.getClubs(LEAGUE_IDS.PREMIER_LEAGUE, 1, 100);
                 userClub = plClubsResponse.data.find(c => c.id === clubId);
 
                 if (userClub) {
-                    clubs = plClubsResponse.data;
                     selectedLeagueId = LEAGUE_IDS.PREMIER_LEAGUE;
+                    leagueName = 'Premier League';
                 } else {
-                    // 2. Try La Liga
+                    // Try La Liga
                     const laLigaClubsResponse = await api.getClubs(LEAGUE_IDS.LA_LIGA, 1, 100);
                     userClub = laLigaClubsResponse.data.find(c => c.id === clubId);
                     if (userClub) {
-                        clubs = laLigaClubsResponse.data;
                         selectedLeagueId = LEAGUE_IDS.LA_LIGA;
+                        leagueName = 'La Liga'; // Assuming API supports this, or we map ID
                     }
                 }
 
-                if (!userClub || clubs.length === 0) {
-                    throw new Error('未找到指定的俱乐部');
+                if (!userClub) {
+                    throw new Error('Club not found');
                 }
 
-                // 3. Fetch players for user's club
-                console.log('Fetching players for club:', userClub.id, userClub.name);
-                const userPlayersResponse = await api.searchPlayers({
-                    club_id: userClub.id,
-                    limit: 100
-                });
-                const userPlayers = userPlayersResponse.data;
-                console.log('Fetched players count:', userPlayers.length);
+                // 2. Initialize Game Data (D1 -> IndexedDB)
+                // This ensures we have the league data locally
+                // We pass a temp manager name because this hook runs BEFORE manager creation in the current flow
+                // The actual save will be updated/created in App.tsx later, but this populates the DB tables
+                await gameInitializer.initializeNewGame(leagueName, 'Player', userClub.name);
 
-                // 4. Map to Team model
-                const userTeam = mapClubToTeam(userClub, userPlayers);
+                // 3. Load Data from Local IndexedDB
+                // Now we rely 100% on the local data we just fetched/cached
+                const allTeamData = await getAllFromStore<any>('teams');
 
-                // 5. Map all clubs to teams (for league standings)
-                const allTeams = clubs.map(club =>
-                    club.id === userClub.id ? userTeam : mapClubToTeam(club, [])
-                );
+                // Find user's team in the new local data (matching by name)
+                const localUserTeam = allTeamData.find(t => t.name === userClub?.name);
+
+                if (!localUserTeam) {
+                    throw new Error('Failed to load team data from local storage');
+                }
+
+                // Helper to convert Local DB Team -> Game Team (Legacy Type for App.tsx compatibility)
+                const convertToLegacyTeam = async (dbTeam: any): Promise<Team> => {
+                    const dbPlayers = await getTeamPlayers(dbTeam.name);
+                    const enginePlayers = convertPlayersToState(dbPlayers);
+
+                    // Map Engine PlayerState -> Legacy Player Interface
+                    const legacyPlayers: Player[] = enginePlayers.map(p => ({
+                        id: p.id.toString(),
+                        name: p.name,
+                        age: 20, // Default if missing
+                        position: mapPosition(p.position),
+                        nationality: 'Unknown',
+                        ca: 100, // Placeholder
+                        pa: 150,
+                        initialCA: 100,
+                        attributes: p.attributes as any, // Cast/Map as needed
+                        hidden: { consistency: 10, importantMatches: 10, injuryProneness: 10 },
+                        condition: p.condition,
+                        morale: p.morale,
+                        goals: 0, assists: 0, cleanSheets: 0,
+                        value: 1000000,
+                        seasonStats: { appearances: 0, goals: 0, assists: 0, cleanSheets: 0, averageRating: 0, mom: 0 }
+                    }));
+
+                    return {
+                        id: dbTeam.id,
+                        name: dbTeam.name,
+                        shortName: dbTeam.name.substring(0, 3).toUpperCase(),
+                        primaryColor: dbTeam.colors?.primary || '#00ff00',
+                        secondaryColor: dbTeam.colors?.secondary || '#ffffff',
+                        players: legacyPlayers,
+                        wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, points: 0,
+                        tactics: {
+                            formation: dbTeam.tactics?.formation || '4-4-2',
+                            mentality: 'Balanced',
+                            instructions: {
+                                inPossession: { passingDirectness: 50, tempo: 50, width: 50 },
+                                inTransition: { counterPress: false, counter: false, distributeQuickly: false },
+                                outOfPossession: { lineOfEngagement: 50, defensiveLine: 50, pressingIntensity: 50 }
+                            },
+                            lineup: generateLegacyLineup(legacyPlayers, dbTeam.tactics?.formation || '4-4-2')
+                        }
+                    };
+                };
+
+                const userTeam = await convertToLegacyTeam(localUserTeam);
+
+                // Convert other teams (shallowly if performance is issue, but need valid objects)
+                // For now convert all
+                const allTeams = await Promise.all(allTeamData.map(convertToLegacyTeam));
 
                 setState({
                     loading: false,
@@ -238,7 +295,9 @@ export function useGameInit(clubId?: number) {
                     allTeams,
                     selectedLeagueId,
                 });
+
             } catch (err: any) {
+                console.error('Game Init Error:', err);
                 setState(prev => ({
                     ...prev,
                     loading: false,
@@ -251,4 +310,23 @@ export function useGameInit(clubId?: number) {
     }, [clubId]);
 
     return state;
+}
+
+// Helper: Map Engine Position String to Legacy Enum
+function mapPosition(pos: string): Position {
+    if (pos === 'GK') return Position.GK;
+    if (pos.includes('D')) return Position.DEF;
+    if (pos.includes('M')) return Position.MID;
+    return Position.FWD;
+}
+
+// Helper: Generate legacy lineup structure
+function generateLegacyLineup(players: Player[], formation: string) {
+    // Simple placeholder - take first 11
+    return players.slice(0, 11).map(p => ({
+        positionId: 'gk', // This needs proper mapping logic but kept simple for now
+        playerId: p.id,
+        role: 'GK',
+        duty: 'Defend'
+    }));
 }

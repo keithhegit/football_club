@@ -384,6 +384,7 @@ const App: React.FC = () => {
         awayTeam={nextFixture.awayTeamId === userTeam.id ? userTeam : opponent}
         userTeamId={userTeam.id}
         onMatchComplete={handleMatchComplete}
+        fixtureId={nextFixture.id}
       />
     );
   }

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Team, MatchEvent, MatchState } from '../types';
-import { simulateMinute } from '../utils/gameEngine';
-import { Play, Pause, FastForward, CheckCircle2 } from 'lucide-react';
+import { matchSimulator } from '../services/matchSimulator';
+import { MatchEngine } from '../engine/matchEngine'; // Direct import of new engine
+import { TeamState } from '../engine/types'; // Import new types
+import { Play, Pause, FastForward, CheckCircle2, SkipForward } from 'lucide-react';
 import { generatePostMatchComment, getAssistantReport } from '../services/geminiService';
 
 interface MatchViewProps {
@@ -9,9 +11,10 @@ interface MatchViewProps {
   awayTeam: Team;
   onMatchComplete: (homeScore: number, awayScore: number) => void;
   userTeamId: string;
+  fixtureId?: string; // New prop for local simulation
 }
 
-export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatchComplete, userTeamId }) => {
+export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatchComplete, userTeamId, fixtureId }) => {
   const [minute, setMinute] = useState(0);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [events, setEvents] = useState<MatchEvent[]>([]);
@@ -36,15 +39,81 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   // Initialize Engine and Simulate Full Match on Mount (or Start)
   useEffect(() => {
     if (matchState === MatchState.PLAYING && !fullMatchResult) {
-      // Lazy load engine to avoid circular deps if any
-      import('../services/matchEngine/core').then(({ MatchEngine }) => {
-        const engine = new MatchEngine(homeTeam, awayTeam);
-        const result = engine.simulateMatch();
-        setFullMatchResult(result);
-        console.log("Match Simulated:", result);
-      });
+
+      const simulate = async () => {
+        try {
+          let result;
+
+          // PLAN A: Use Local Simulator (Real Data)
+          if (fixtureId) {
+            console.log("Starting LOCAL simulation for fixture:", fixtureId);
+            // We need to map team IDs to strings if they are numbers
+            const hId = homeTeam.id.toString();
+            const aId = awayTeam.id.toString();
+            result = await matchSimulator.simulateFixture(fixtureId, hId, aId);
+          }
+          // PLAN B: Legacy/Direct Simulation (Fallback)
+          else {
+            console.log("Starting LEGACY simulation (No Fixture ID)");
+            // Convert legacy teams to TeamState structure if needed
+            // For now, simpler to use the Engine directly with casting or mapping
+            // Assuming props `homeTeam` has `players` array
+
+            // Quick mapping for legacy props -> TeamState
+            const hTeamState: TeamState = {
+              id: homeTeam.id.toString(),
+              name: homeTeam.name,
+              players: (homeTeam.players || []).map((p: any) => ({
+                id: p.id,
+                name: p.name,
+                position: p.position || 'MC',
+                attributes: p.attributes || {},
+                condition: 100,
+                stamina: 100,
+                currentPosition: { x: 50, y: 50 },
+                // ... other REQUIRED fields for PlayerState
+                morale: 75, form: 75, yellowCards: 0, redCard: false
+              })),
+              tacticalModifiers: {
+                tempo: 0, width: 0, defensiveLine: 0, passingDirectness: 0,
+                closingDown: 0, timeWasting: 0, mentality: 0
+              }
+            };
+
+            const aTeamState: TeamState = {
+              id: awayTeam.id.toString(),
+              name: awayTeam.name,
+              players: (awayTeam.players || []).map((p: any) => ({
+                id: p.id,
+                name: p.name,
+                position: p.position || 'MC',
+                attributes: p.attributes || {},
+                condition: 100,
+                stamina: 100,
+                currentPosition: { x: 50, y: 50 },
+                morale: 75, form: 75, yellowCards: 0, redCard: false
+              })),
+              tacticalModifiers: {
+                tempo: 0, width: 0, defensiveLine: 0, passingDirectness: 0,
+                closingDown: 0, timeWasting: 0, mentality: 0
+              }
+            };
+
+            const engine = new MatchEngine(hTeamState, aTeamState);
+            result = engine.simulateMatch();
+          }
+
+          setFullMatchResult(result);
+          console.log("Match Simulated:", result);
+
+        } catch (error) {
+          console.error("Simulation failed:", error);
+        }
+      };
+
+      simulate();
     }
-  }, [matchState, homeTeam, awayTeam, fullMatchResult]);
+  }, [matchState, homeTeam, awayTeam, fullMatchResult, fixtureId]);
 
   // Replay Loop (Visualizer)
   useEffect(() => {
