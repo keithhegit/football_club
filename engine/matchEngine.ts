@@ -143,6 +143,14 @@ export class MatchEngine {
         // Roll outcome
         const success = rollActionOutcome(probability);
 
+        // Calculate xG for shooting events
+        let xgValue: number | undefined;
+        if (event === 'SHOOT' || event === 'SHOOT_LONG') {
+            // Estimate defender proximity (simplified)
+            const defenderProx = opponent ? 50 + (opponent.attributes.Positioning || 10) * 2 : 70;
+            xgValue = calculateXG(this.state.ballPosition, defenderProx);
+        }
+
         // Create event record
         const matchEvent: MatchEvent = {
             time: Math.floor(this.state.time),
@@ -151,6 +159,7 @@ export class MatchEngine {
             opponent: opponent || undefined,
             outcome: success ? 'SUCCESS' : 'FAILURE',
             position: this.state.ballPosition,
+            xGContribution: xgValue,
             description: this.generateEventDescription(event, actor, success)
         };
 
