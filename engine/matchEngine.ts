@@ -180,8 +180,10 @@ export class MatchEngine {
         // Advance time
         this.state.time += tickDuration;
 
-        // Update statistics from tracker
-        this.state.statistics = this.statsTracker.getStats();
+        // Update statistics (with finalized pass accuracy)
+
+        this.updatePlayerPositions();
+        this.state.statistics = this.statsTracker.finalize();
 
         // Notify callbacks
         if (this.onStateUpdate) {
@@ -336,6 +338,28 @@ export class MatchEngine {
         for (const player of this.state.awayTeam.players) {
             player.stamina = Math.max(0, player.stamina - staminaDecay);
         }
+    }
+
+    private updatePlayerPositions(): void {
+        const ballY = this.state.ballPosition.y;
+        // Home team players
+        this.state.homeTeam.players.forEach((player, idx) => {
+            const baseY = 20 + (idx * 7);
+            const targetY = baseY * 0.7 + ballY * 0.3;
+            player.currentPosition = {
+                x: 30 + (idx % 3) * 20,
+                y: Math.max(5, Math.min(95, targetY))
+            };
+        });
+        // Away team players
+        this.state.awayTeam.players.forEach((player, idx) => {
+            const baseY = 80 - (idx * 7);
+            const targetY = baseY * 0.7 + ballY * 0.3;
+            player.currentPosition = {
+                x: 30 + (idx %3) * 20,
+                y: Math.max(5, Math.min(95, targetY))
+            };
+        });
     }
 
     private generateEventDescription(action: ActionType, actor: PlayerState, success: boolean): string {
