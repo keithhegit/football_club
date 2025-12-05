@@ -1,4 +1,4 @@
-// Match Engine - Enhanced with step-by-step simulation for real-time playback
+﻿// Match Engine - Enhanced with step-by-step simulation for real-time playback
 // Extends core simulation with frame-by-frame control
 
 import {
@@ -413,3 +413,4 @@ export class MatchEngine {
         return 'NONE';
     }
 }
+

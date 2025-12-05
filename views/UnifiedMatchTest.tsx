@@ -19,7 +19,7 @@ export const UnifiedMatchTest: React.FC = () => {
     const [showStats, setShowStats] = useState(true);
 
     const animationRef = useRef<number>();
-    const lastUpdateRef = useRef<number>(0);
+    const tickCountRef = useRef<number>(0);
 
     const startNewMatch = () => {
         console.log('\n🚀 === NEW MATCH TEST STARTED ===\n');
@@ -41,6 +41,7 @@ export const UnifiedMatchTest: React.FC = () => {
         setMatchState(engine.getState());
         setIsFinished(false);
         setIsPlaying(false);
+        tickCountRef.current = 0;
 
         console.log('⚽ Match Start:', `${homeTeam.name} vs ${awayTeam.name}\n`);
     };
@@ -70,32 +71,55 @@ export const UnifiedMatchTest: React.FC = () => {
         setMatchEngine(null);
         setIsPlaying(false);
         setIsFinished(false);
+        tickCountRef.current = 0;
         console.log('🔄 Match reset\n');
     };
 
-    // Animation loop
+    // Auto-play animation loop - FIXED
     useEffect(() => {
-        if (!matchEngine || !isPlaying || isFinished) return;
+        if (!matchEngine || !isPlaying || isFinished) {
+            if (animationRef.current) {
+                cancelAnimationFrame(animationRef.current);
+                animationRef.current = undefined;
+            }
+            return;
+        }
 
-        const animate = (timestamp: number) => {
-            if (!lastUpdateRef.current) lastUpdateRef.current = timestamp;
-            const elapsed = timestamp - lastUpdateRef.current;
+        const ticksPerFrame = speed; // Process more ticks at higher speeds
 
-            // Update at 60fps, multiplied by speed
-            if (elapsed > 16.67 / speed) {
+        const animate = () => {
+            // Check if still valid
+            if (!matchEngine || isFinished) {
+                if (animationRef.current) {
+                    cancelAnimationFrame(animationRef.current);
+                }
+                return;
+            }
+
+            // Process multiple ticks per frame
+            for (let i = 0; i < ticksPerFrame; i++) {
                 const shouldContinue = matchEngine.simulateTick();
                 const currentState = matchEngine.getState();
+                tickCountRef.current++;
+
+                // Update UI every 5 ticks to avoid excessive re-renders
+                if (tickCountRef.current % 5 === 0) {
+                    setMatchState({ ...currentState });
+                }
 
                 if (!shouldContinue || currentState.time >= 90) {
                     setIsFinished(true);
                     setIsPlaying(false);
+                    setMatchState({ ...currentState }); // Final update
                     logMatchSummary(currentState);
+                    if (animationRef.current) {
+                        cancelAnimationFrame(animationRef.current);
+                    }
                     return;
                 }
-
-                lastUpdateRef.current = timestamp;
             }
 
+            // Continue animation
             animationRef.current = requestAnimationFrame(animate);
         };
 
@@ -104,6 +128,7 @@ export const UnifiedMatchTest: React.FC = () => {
         return () => {
             if (animationRef.current) {
                 cancelAnimationFrame(animationRef.current);
+                animationRef.current = undefined;
             }
         };
     }, [matchEngine, isPlaying, isFinished, speed]);
@@ -256,25 +281,44 @@ export const UnifiedMatchTest: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Recent Events */}
+                            {/* Recent Events - FILTERED */}
                             <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
-                                <h3 className="text-lg font-bold text-slate-100 mb-4">📋 Recent Events</h3>
+                                <h3 className="text-lg font-bold text-slate-100 mb-4">📋 Key Events</h3>
                                 <div className="space-y-1 max-h-96 overflow-y-auto">
-                                    {matchState.eventLog.slice(-15).reverse().map((event, index) => (
-                                        <div
-                                            key={index}
-                                            className={`text-xs py-1.5 px-2 rounded ${event.description.includes('GOAL')
-                                                ? 'bg-emerald-900/30 text-emerald-200 font-semibold'
-                                                : event.description.includes('CARD')
-                                                    ? 'bg-yellow-900/30 text-yellow-200'
-                                                    : 'bg-slate-900 text-slate-300'
-                                                }`}
-                                        >
-                                            <span className="text-emerald-400 font-mono font-bold">{event.time}'</span>
-                                            {' '}
-                                            <span>{event.description}</span>
-                                        </div>
-                                    ))}
+                                    {matchState.eventLog
+                                        .filter(event => {
+                                            // Only show important events
+                                            const desc = event.description.toLowerCase();
+                                            return (
+                                                desc.includes('goal') ||
+                                                desc.includes('card') ||
+                                                desc.includes('save') ||
+                                                desc.includes('corner') ||
+                                                desc.includes('foul') ||
+                                                desc.includes('offside') ||
+                                                desc.includes('free kick') ||
+                                                desc.includes('substitution') ||
+                                                desc.includes('half time') ||
+                                                desc.includes('full time')
+                                            );
+                                        })
+                                        .slice(-15)
+                                        .reverse()
+                                        .map((event, index) => (
+                                            <div
+                                                key={index}
+                                                className={`text-xs py-1.5 px-2 rounded ${event.description.includes('GOAL')
+                                                        ? 'bg-emerald-900/30 text-emerald-200 font-semibold'
+                                                        : event.description.includes('CARD')
+                                                            ? 'bg-yellow-900/30 text-yellow-200'
+                                                            : 'bg-slate-900 text-slate-300'
+                                                    }`}
+                                            >
+                                                <span className="text-emerald-400 font-mono font-bold">{event.time}'</span>
+                                                {' '}
+                                                <span>{event.description}</span>
+                                            </div>
+                                        ))}
                                 </div>
                             </div>
 
@@ -298,9 +342,9 @@ export const UnifiedMatchTest: React.FC = () => {
 // Stat Row Component
 const StatRow: React.FC<{ label: string; homeValue: string; awayValue: string }> = ({ label, homeValue, awayValue }) => (
     <div className="flex justify-between items-center py-1 border-b border-slate-700/50">
-        <span className="text-emerald-400 font-semibold w-20 text-right">{homeValue}</span>
-        <span className="text-slate-400 flex-1 text-center">{label}</span>
-        <span className="text-blue-400 font-semibold w-20 text-left">{awayValue}</span>
+        <span className="text-emerald-400 font-semibold w-24 text-right">{homeValue}</span>
+        <span className="text-slate-400 flex-1 text-center text-xs">{label}</span>
+        <span className="text-blue-400 font-semibold w-24 text-left">{awayValue}</span>
     </div>
 );
 
@@ -321,7 +365,7 @@ function createMockTeam(name: string, side: 'home' | 'away'): TeamState {
                 Corners: 10 + Math.floor(Math.random() * 4),
                 Crossing: 10 + Math.floor(Math.random() * 4),
                 Dribbling: (isForward ? 11 : 7) + Math.floor(Math.random() * 5),
-                Finishing: (isForward ? 10 : 5) + Math.floor(Math.random() * 4),  // Realistic: 10-13 forwards, 5-8 others
+                Finishing: (isForward ? 10 : 5) + Math.floor(Math.random() * 4),  // Realistic
                 FirstTouch: 11 + Math.floor(Math.random() * 4),
                 FreeKickTaking: 8 + Math.floor(Math.random() * 4),
                 Heading: (isDefender ? 12 : 9) + Math.floor(Math.random() * 4),
