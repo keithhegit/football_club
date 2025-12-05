@@ -269,7 +269,7 @@ export class MatchEngine {
             if (inAttackingThird) {
                 return weightedRandom<ActionType>(
                     ['PASS_SHORT', 'SHOOT', 'CROSS', 'DRIBBLE'],
-                    [0.3, 0.3, 0.2, 0.2]
+                    [0.4, 0.1, 0.3, 0.2]  // Reduced SHOOT from 0.3 to 0.1
                 );
             } else {
                 return weightedRandom<ActionType>(
