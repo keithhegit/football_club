@@ -190,13 +190,13 @@ export class MatchEngine {
      * Simulate entire match (original method for backward compatibility)
      */
     simulateMatch(): MatchResult {
-        console.log(`�?Match Start: ${this.state.homeTeam.name} vs ${this.state.awayTeam.name}`);
+        console.log(`âš?Match Start: ${this.state.homeTeam.name} vs ${this.state.awayTeam.name}`);
 
         while (this.state.time < this.matchDuration) {
             this.simulateTick();
         }
 
-        console.log(`🏁 Full Time: ${this.state.homeTeam.name} ${this.state.score[0]} - ${this.state.score[1]} ${this.state.awayTeam.name}`);
+        console.log(`ðŸ�� Full Time: ${this.state.homeTeam.name} ${this.state.score[0]} - ${this.state.score[1]} ${this.state.awayTeam.name}`);
 
         const finalStats = this.statsTracker.finalize();
 
@@ -222,7 +222,7 @@ export class MatchEngine {
                     // Goal!
                     const teamIndex = this.state.possession === 'home' ? 0 : 1;
                     this.state.score[teamIndex]++;
-                    event.description += ' �?GOAL!';
+                    event.description += ' âš?GOAL!';
                     scoredGoal = true;
                     this.resetToKickoff();
                     break;
@@ -331,20 +331,20 @@ export class MatchEngine {
 
     private generateEventDescription(action: ActionType, actor: PlayerState, success: boolean): string {
         const actionText = {
-            PASS_SHORT: '短传',
-            PASS_LONG: '长传',
-            SHOOT: '射门',
-            SHOOT_LONG: '远射',
-            TACKLE: '抢断',
-            DRIBBLE: '盘带',
-            CROSS: '传中',
-            INTERCEPT: '拦截',
-            HEADER: '头球',
-            FIRST_TOUCH: '停球',
-            CLEARANCE: '解围'
+            PASS_SHORT: 'çŸ­ä¼ ',
+            PASS_LONG: 'é•¿ä¼ ',
+            SHOOT: 'å°„é—¨',
+            SHOOT_LONG: 'è¿œå°„',
+            TACKLE: 'æŠ¢æ–­',
+            DRIBBLE: 'ç›˜å¸¦',
+            CROSS: 'ä¼ ä¸­',
+            INTERCEPT: 'æ‹¦æˆª',
+            HEADER: 'å¤´ç�ƒ',
+            FIRST_TOUCH: 'å�œç�ƒ',
+            CLEARANCE: 'è§£å›´'
         };
 
-        return `${actor.name} ${actionText[action]} - ${success ? '成功' : '失败'}`;
+        return `${actor.name} ${actionText[action]} - ${success ? 'æˆ�åŠŸ' : 'å¤±è´¥'}`;
     }
 
     private getPossessingTeam(): TeamState {
@@ -366,10 +366,41 @@ export class MatchEngine {
     getCurrentTime(): number {
         return this.state.time;
     }
-}
 
-    checkForFoul(actor: PlayerState, opponent: PlayerState | null): boolean { if (!opponent) return false; let foulChance = 0.02; const aggression = actor.attributes.Aggression || 10; foulChance *= (aggression / 10); if (this.state.phase === 'DEFEND') foulChance *= 1.5; return Math.random() < foulChance; } handleFoul(player: PlayerState): CardType { const aggression = player.attributes.Aggression || 10; const cardProb = (aggression / 20) * 0.20; if (player.yellowCards >= 1 && Math.random() < cardProb * 0.4) { player.redCard = true; return 'RED'; } if (Math.random() < cardProb) { player.yellowCards++; return 'YELLOW'; } return 'NONE'; } }
+    /**
+     * Check if a foul should be generated (8-18 fouls per match)
+     */
+    private checkForFoul(actor: PlayerState, opponent: PlayerState | null): boolean {
+        if (!opponent) return false;
 
-    private checkForFoul(actor: PlayerState, opponent: PlayerState | null): boolean { if (!opponent) return false; let foulChance = 0.02; const aggression = actor.attributes.Aggression || 10; foulChance *= (aggression / 10); if (this.state.phase === 'DEFEND') foulChance *= 1.5; return Math.random() < foulChance; }
-    private handleFoul(player: PlayerState): CardType { const aggression = player.attributes.Aggression || 10; const cardProb = (aggression / 20) * 0.20; if (player.yellowCards >= 1 && Math.random() < cardProb * 0.4) { player.redCard = true; return 'RED'; } if (Math.random() < cardProb) { player.yellowCards++; return 'YELLOW'; } return 'NONE'; }
+        let foulChance = 0.02;
+        const aggression = actor.attributes.Aggression || 10;
+        foulChance *= (aggression / 10);
+
+        if (this.state.phase === 'DEFEND') {
+            foulChance *= 1.5;
+        }
+
+        return Math.random() < foulChance;
+    }
+
+    /**
+     * Handle foul and determine card type
+     */
+    private handleFoul(player: PlayerState): CardType {
+        const aggression = player.attributes.Aggression || 10;
+        const cardProb = (aggression / 20) * 0.20;
+
+        if (player.yellowCards >= 1 && Math.random() < cardProb * 0.4) {
+            player.redCard = true;
+            return 'RED';
+        }
+
+        if (Math.random() < cardProb) {
+            player.yellowCards++;
+            return 'YELLOW';
+        }
+
+        return 'NONE';
+    }
 }
