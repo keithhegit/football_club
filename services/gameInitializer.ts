@@ -38,6 +38,13 @@ export const gameInitializer = {
             const saveId = crypto.randomUUID();
             const timestamp = Date.now();
 
+            console.log(`[GameInit] Received ${data.teams.length} teams and ${data.players.length} players from API.`);
+
+            if (data.teams.length === 0) {
+                console.error('[GameInit] API returned 0 teams! Check League Name mismatch.');
+                throw new Error('API returned 0 teams. This usually means the requested league does not exist in the database.');
+            }
+
             const gameData: GameData = {
                 saveId,
                 saveName: `${managerName} - ${clubName}`,
@@ -54,11 +61,9 @@ export const gameInitializer = {
             await saveToStore('games', gameData);
 
             // Save Teams
-            // Ensure ID consistency if possible, or mapping
             await saveBatch('teams', data.teams);
 
             // Save Players
-            // Note: raw D1 players, will be converted to PlayerState on load
             await saveBatch('players', data.players);
 
             // Initialize League Table

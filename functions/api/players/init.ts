@@ -6,15 +6,16 @@ export async function onRequestPost(context) {
 
         console.log(`[API] Init requested for league: ${targetLeague}`);
 
-        // Check if DB binding exists
-        if (!context.env.DB) {
-            console.error('[API] Critical Error: context.env.DB is undefined');
-            throw new Error('Database binding (DB) is missing in Cloudflare environment');
-        }
+        // Map frontend league names to likely DB names (from CSV import)
+        let dbLeagueName = targetLeague;
+        if (targetLeague === 'Premier League') dbLeagueName = 'English Premier Division';
+        if (targetLeague === 'La Liga') dbLeagueName = 'Spanish First Division';
+
+        console.log(`[API] mapped '${targetLeague}' to '${dbLeagueName}'`);
 
         // 1. Fetch Players with Club info using JOINs
         // Schema: players -> clubs -> leagues
-        console.log(`[API] Executing JOIN query for players in ${targetLeague}...`);
+        console.log(`[API] Executing JOIN query for players in ${dbLeagueName}...`);
 
         // Note: returning as snake_case as per schema, client side converter handles attribute mapping
         const playersQuery = context.env.DB.prepare(`
@@ -22,8 +23,8 @@ export async function onRequestPost(context) {
             FROM players p 
             JOIN clubs c ON p.club_id = c.id 
             JOIN leagues l ON c.league_id = l.id 
-            WHERE l.name = ?
-        `).bind(targetLeague);
+            WHERE l.name = ? OR l.name = ?
+        `).bind(dbLeagueName, targetLeague); // Try both just in case
 
         const playersResult = await playersQuery.all();
 
