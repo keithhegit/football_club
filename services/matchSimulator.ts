@@ -17,7 +17,12 @@ export const matchSimulator = {
             const awayTeamData = await getFromStore<any>('teams', awayTeamId);
 
             if (!homeTeamData || !awayTeamData) {
-                throw new Error('Team data not found locally');
+                const availableTeams = await getFromStore<any[]>('teams', null) || []; // This method signature might be wrong for keys, let's just error broadly or use getAll
+                // Actually let's just log the error clearly
+                console.error(`Missing Data Error:`);
+                console.error(`- Looking for Home ID: ${homeTeamId} (Found: ${!!homeTeamData})`);
+                console.error(`- Looking for Away ID: ${awayTeamId} (Found: ${!!awayTeamData})`);
+                throw new Error(`Team data not found locally. Home: ${homeTeamId}, Away: ${awayTeamId}. Please start a NEW GAME.`);
             }
 
             const homePlayersRaw = await getTeamPlayers(homeTeamData.name); // Access by club name index
