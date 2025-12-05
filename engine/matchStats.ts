@@ -57,7 +57,8 @@ export class MatchStatsTracker {
                 break;
 
             case 'CROSS':
-                if (event.outcome === 'FAILURE') {
+            // Only ~25% of failed crosses result in corners
+            if (event.outcome === 'FAILURE' && Math.random() < 0.25) {
                     this.stats.corners[teamIndex === 0 ? 1 : 0]++; // Opponent corner
                 }
                 break;
@@ -134,3 +135,4 @@ export class MatchStatsTracker {
         return [...this.events];
     }
 }
+
