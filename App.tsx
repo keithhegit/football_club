@@ -25,6 +25,7 @@ import { saveService } from './services/save';
 import { TrainingView } from './views/TrainingView';
 import { MatchEngineTest } from './views/MatchEngineTest';
 import { LiveMatchPlayer } from './views/LiveMatchPlayer';
+import { UnifiedMatchTest } from './views/UnifiedMatchTest';
 
 // Helper to generate a season fixture list (Double Round Robin)
 const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
@@ -53,7 +54,20 @@ const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
 const App: React.FC = () => {
   // Check for test mode via URL parameter
   const urlParams = new URLSearchParams(window.location.search);
-  const isTestMode = urlParams.get('test') === 'match';
+  const testMode = urlParams.get('test');
+  const isTestMode = testMode === 'match';
+  const isLiveMode = testMode === 'live';
+  const isUnifiedMode = testMode === 'unified';
+
+  // Unified test page (combines Live + Match + Stats)
+  if (isUnifiedMode) {
+    return <UnifiedMatchTest />;
+  }
+
+  // Separate test pages (legacy)
+  if (isLiveMode) {
+    return <LiveMatchPlayer />;
+  }
 
   if (isTestMode) {
     return <MatchEngineTest />;
