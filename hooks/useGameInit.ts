@@ -231,10 +231,19 @@ export function useGameInit(clubId?: number) {
                 const allTeamData = await getAllFromStore<any>('teams');
 
                 // Find user's team in the new local data (matching by name)
-                const localUserTeam = allTeamData.find(t => t.name === userClub?.name);
+                const normalize = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+                // Try exact match first, then normalized
+                let localUserTeam = allTeamData.find(t => t.name === userClub?.name);
+                if (!localUserTeam && userClub) {
+                    const target = normalize(userClub.name);
+                    localUserTeam = allTeamData.find(t => normalize(t.name) === target);
+                }
 
                 if (!localUserTeam) {
-                    throw new Error('Failed to load team data from local storage');
+                    console.error('Failed to find team:', userClub?.name);
+                    console.error('Available keys:', allTeamData.map((t: any) => t.name));
+                    throw new Error(`Team data mismatch: Could not find "${userClub?.name}" in D1 database (${allTeamData.length} teams loaded).`);
                 }
 
                 // Helper to convert Local DB Team -> Game Team (Legacy Type for App.tsx compatibility)
