@@ -23,7 +23,9 @@ export const gameInitializer = {
             });
 
             if (!response.ok) {
-                throw new Error(`Failed to fetch initial data: ${response.statusText}`);
+                const errData = await response.json().catch(() => ({}));
+                console.error('[GameInit] Server Error Details:', errData);
+                throw new Error(`Failed to fetch initial data: ${errData.error || response.statusText}`);
             }
 
             const data: InitResponse = await response.json();

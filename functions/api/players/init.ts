@@ -12,40 +12,53 @@ export async function onRequestPost(context) {
             throw new Error('Database binding (DB) is missing in Cloudflare environment');
         }
 
-        // 1. Fetch Players
-        console.log('[API] Executing query: SELECT * FROM fm_players...');
-        const playersQuery = context.env.DB.prepare('SELECT * FROM fm_players WHERE League = ?').bind(targetLeague);
+        // 1. Fetch Players with Club info using JOINs
+        // Schema: players -> clubs -> leagues
+        console.log(`[API] Executing JOIN query for players in ${targetLeague}...`);
+
+        // Note: returning as snake_case as per schema, client side converter handles attribute mapping
+        const playersQuery = context.env.DB.prepare(`
+            SELECT p.*, c.name as Club, l.name as League 
+            FROM players p 
+            JOIN clubs c ON p.club_id = c.id 
+            JOIN leagues l ON c.league_id = l.id 
+            WHERE l.name = ?
+        `).bind(targetLeague);
+
         const playersResult = await playersQuery.all();
 
         if (!playersResult.success) {
-            console.error('[API] Players query failed:', playersResult.error);
+            console.error('[API] Players JOIN query failed:', playersResult.error);
             throw new Error(`Players query failed: ${playersResult.error}`);
         }
 
         console.log(`[API] Found ${playersResult.results.length} players`);
 
         // 2. Fetch unique clubs to build Team objects
-        console.log('[API] Executing query: SELECT DISTINCT Club FROM fm_players...');
-        const teamsQuery = context.env.DB.prepare('SELECT DISTINCT Club FROM fm_players WHERE League = ?').bind(targetLeague);
+        console.log('[API] Executing JOIN query for clubs...');
+        const teamsQuery = context.env.DB.prepare(`
+            SELECT c.name as Club, l.name as League 
+            FROM clubs c 
+            JOIN leagues l ON c.league_id = l.id 
+            WHERE l.name = ?
+        `).bind(targetLeague);
+
         const teamsResult = await teamsQuery.all();
 
         if (!teamsResult.success) {
-            console.error('[API] Teams query failed:', teamsResult.error);
+            console.error('[API] Teams JOIN query failed:', teamsResult.error);
             throw new Error(`Teams query failed: ${teamsResult.error}`);
         }
 
         console.log(`[API] Found ${teamsResult.results.length} unique clubs`);
 
-        // 3. Construct Team objects (basic info) - in a real scenario we might have a separate teams table
-        // For now, we simulate team data from the unique club names
+        // 3. Construct Team objects
         const teams = teamsResult.results.map((row, index) => {
-            // Create deterministic ID based on club name
-            // This ensures consistency across loads/re-inits
             const sanitizedName = (row.Club || `unknown_${index}`).replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
             return {
                 id: `t_${sanitizedName}`,
                 name: row.Club || 'Unknown Club',
-                league: targetLeague,
+                league: row.League || targetLeague,
                 reputation: 5000,
                 tactics: {
                     formation: '4-3-3',
