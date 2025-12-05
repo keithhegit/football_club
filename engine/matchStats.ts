@@ -18,7 +18,9 @@ export class MatchStatsTracker {
             xG: [0, 0],
             tackles: [0, 0],
             fouls: [0, 0],
-            corners: [0, 0]
+            corners: [0, 0],
+            yellowCards: [0, 0],
+            redCards: [0, 0]
         };
         this.events = [];
         this.possessionTime = { home: 0, away: 0 };
@@ -58,6 +60,10 @@ export class MatchStatsTracker {
                 if (event.outcome === 'FAILURE') {
                     this.stats.corners[teamIndex === 0 ? 1 : 0]++; // Opponent corner
                 }
+                break;
+
+            case 'FOUL':
+                this.stats.fouls[teamIndex]++;
                 break;
         }
     }

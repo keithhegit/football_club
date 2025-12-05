@@ -333,6 +333,8 @@ function createMockTeam(name: string, side: 'home' | 'away'): TeamState {
             stamina: 100,
             morale: 70 + Math.floor(Math.random() * 20),
             form: 70 + Math.floor(Math.random() * 20),
+            yellowCards: 0,
+            redCard: false,
             currentPosition: { x: 50, y: side === 'home' ? 20 : 80 }
         });
     }

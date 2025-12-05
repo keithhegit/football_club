@@ -251,8 +251,8 @@ export const LiveMatchPlayer: React.FC = () => {
                                         <div
                                             key={index}
                                             className={`text-xs py-1.5 px-2 rounded ${event.description.includes('GOAL')
-                                                    ? 'bg-emerald-900/30 text-emerald-200'
-                                                    : 'bg-slate-900 text-slate-300'
+                                                ? 'bg-emerald-900/30 text-emerald-200'
+                                                : 'bg-slate-900 text-slate-300'
                                                 }`}
                                         >
                                             <span className="text-emerald-400 font-mono font-bold">{event.time}'</span>
@@ -338,6 +338,8 @@ function createMockTeam(name: string, side: 'home' | 'away'): TeamState {
             stamina: 100,
             morale: 75,
             form: 75,
+            yellowCards: 0,
+            redCard: false,
             currentPosition: { x: 50, y: side === 'home' ? 30 + i * 5 : 70 - i * 5 }
         });
     }

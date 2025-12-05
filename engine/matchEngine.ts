@@ -3,7 +3,7 @@
 
 import {
     MatchState, MatchResult, TeamState, PlayerState, MatchEvent,
-    ActionType, MatchPhase, Position, MatchConditions
+    ActionType, MatchPhase, Position, MatchConditions, CardType
 } from './types';
 import { computeActionSuccess, rollActionOutcome, calculateXG } from './probabilityEngine';
 import { getActionModifier } from './tacticalMods';
@@ -43,7 +43,9 @@ export class MatchEngine {
                 xG: [0, 0],
                 tackles: [0, 0],
                 fouls: [0, 0],
-                corners: [0, 0]
+                corners: [0, 0],
+                yellowCards: [0, 0],
+                redCards: [0, 0]
             },
             conditions: {
                 weather: 'clear',
@@ -99,6 +101,45 @@ export class MatchEngine {
             this.state.conditions
         );
 
+        // Check for foul (before executing the action)
+        const foulGenerated = this.checkForFoul(actor, opponent);
+        if (foulGenerated) {
+            // Handle foul instead of normal action
+            const card = this.handleFoul(actor);
+            const foulEvent: MatchEvent = {
+                time: Math.floor(this.state.time),
+                type: 'FOUL',
+                actor,
+                opponent: opponent || undefined,
+                outcome: 'FAILURE',
+                position: this.state.ballPosition,
+                description: `${actor.name} commits a foul${card !== 'NONE' ? ` and receives a ${card} CARD` : ''}`
+            };
+
+            this.statsTracker.recordEvent(foulEvent, this.state.possession);
+            this.state.eventLog.push(foulEvent);
+
+            // Record card
+            if (card === 'YELLOW') {
+                this.state.statistics.yellowCards[this.state.possession === 'home' ? 0 : 1]++;
+            } else if (card === 'RED') {
+                this.state.statistics.redCards[this.state.possession === 'home' ? 0 : 1]++;
+            }
+
+            // Foul results in turnover
+            this.turnover();
+
+            // Advance time slightly
+            const tickDuration = randomBetween(2, 3) / 60;
+            this.state.time += tickDuration;
+
+            if (this.onStateUpdate) {
+                this.onStateUpdate({ ...this.state });
+            }
+
+            return true;
+        }
+
         // Roll outcome
         const success = rollActionOutcome(probability);
 
@@ -149,7 +190,7 @@ export class MatchEngine {
      * Simulate entire match (original method for backward compatibility)
      */
     simulateMatch(): MatchResult {
-        console.log(`âš½ Match Start: ${this.state.homeTeam.name} vs ${this.state.awayTeam.name}`);
+        console.log(`âš?Match Start: ${this.state.homeTeam.name} vs ${this.state.awayTeam.name}`);
 
         while (this.state.time < this.matchDuration) {
             this.simulateTick();
@@ -181,7 +222,7 @@ export class MatchEngine {
                     // Goal!
                     const teamIndex = this.state.possession === 'home' ? 0 : 1;
                     this.state.score[teamIndex]++;
-                    event.description += ' âš½ GOAL!';
+                    event.description += ' âš?GOAL!';
                     scoredGoal = true;
                     this.resetToKickoff();
                     break;
@@ -325,4 +366,10 @@ export class MatchEngine {
     getCurrentTime(): number {
         return this.state.time;
     }
+}
+
+    checkForFoul(actor: PlayerState, opponent: PlayerState | null): boolean { if (!opponent) return false; let foulChance = 0.02; const aggression = actor.attributes.Aggression || 10; foulChance *= (aggression / 10); if (this.state.phase === 'DEFEND') foulChance *= 1.5; return Math.random() < foulChance; } handleFoul(player: PlayerState): CardType { const aggression = player.attributes.Aggression || 10; const cardProb = (aggression / 20) * 0.20; if (player.yellowCards >= 1 && Math.random() < cardProb * 0.4) { player.redCard = true; return 'RED'; } if (Math.random() < cardProb) { player.yellowCards++; return 'YELLOW'; } return 'NONE'; } }
+
+    private checkForFoul(actor: PlayerState, opponent: PlayerState | null): boolean { if (!opponent) return false; let foulChance = 0.02; const aggression = actor.attributes.Aggression || 10; foulChance *= (aggression / 10); if (this.state.phase === 'DEFEND') foulChance *= 1.5; return Math.random() < foulChance; }
+    private handleFoul(player: PlayerState): CardType { const aggression = player.attributes.Aggression || 10; const cardProb = (aggression / 20) * 0.20; if (player.yellowCards >= 1 && Math.random() < cardProb * 0.4) { player.redCard = true; return 'RED'; } if (Math.random() < cardProb) { player.yellowCards++; return 'YELLOW'; } return 'NONE'; }
 }

@@ -1,0 +1,33 @@
+getCurrentTime(): number {
+    return this.state.time;
+}
+
+    /**
+     * Check if a foul should be generated (8-18 fouls per match)
+     */
+    private checkForFoul(actor: PlayerState, opponent: PlayerState | null): boolean {
+    if (!opponent) return false;
+    let foulChance = 0.02;
+    const aggression = actor.attributes.Aggression || 10;
+    foulChance *= (aggression / 10);
+    if (this.state.phase === 'DEFEND') foulChance *= 1.5;
+    return Math.random() < foulChance;
+}
+
+    /**
+     * Handle foul and determine card
+     */
+    private handleFoul(player: PlayerState): CardType {
+    const aggression = player.attributes.Aggression || 10;
+    const cardProb = (aggression / 20) * 0.20;
+    if (player.yellowCards >= 1 && Math.random() < cardProb * 0.4) {
+        player.redCard = true;
+        return 'RED';
+    }
+    if (Math.random() < cardProb) {
+        player.yellowCards++;
+        return 'YELLOW';
+    }
+    return 'NONE';
+}
+}

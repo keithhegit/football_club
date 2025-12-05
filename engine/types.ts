@@ -12,7 +12,10 @@ export type ActionType =
     | 'INTERCEPT'
     | 'CROSS'
     | 'FIRST_TOUCH'
-    | 'CLEARANCE';
+    | 'CLEARANCE'
+    | 'FOUL';
+
+export type CardType = 'YELLOW' | 'RED' | 'NONE';
 
 export type MatchPhase = 'ATTACK' | 'DEFEND' | 'TRANSITION';
 
@@ -90,6 +93,8 @@ export interface PlayerState {
     morale: number; // 0-100
     form: number; // 0-100
     currentPosition: Position;
+    yellowCards: number; // Match cards
+    redCard: boolean; // Sent off
 }
 
 export interface MatchConditions {
@@ -123,6 +128,8 @@ export interface MatchStatistics {
     tackles: [number, number];
     fouls: [number, number];
     corners: [number, number];
+    yellowCards: [number, number]; // Yellow cards
+    redCards: [number, number]; // Red cards
 }
 
 export interface MatchState {
