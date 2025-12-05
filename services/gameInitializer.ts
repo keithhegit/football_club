@@ -61,10 +61,20 @@ export const gameInitializer = {
             await saveToStore('games', gameData);
 
             // Save Teams
+            // Ensure ID consistency if possible, or mapping
             await saveBatch('teams', data.teams);
 
             // Save Players
-            await saveBatch('players', data.players);
+            // API returns 'id', IndexedDB expects 'UID'
+            // We also need to ensure Club/League fields match the index expectations
+            const mappedPlayers = data.players.map((p: any) => ({
+                ...p,
+                UID: p.id, // Map D1 id to local UID
+                // Ensure Club/League are present (API alias handles this, checking just in case)
+                Club: p.Club || p.club_name,
+                League: p.League || p.league_name
+            }));
+            await saveBatch('players', mappedPlayers);
 
             // Initialize League Table
             const leagueTableEntries = data.teams.map((team: any) => ({
