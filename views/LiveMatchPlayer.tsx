@@ -30,7 +30,7 @@ export const LiveMatchPlayer: React.FC = () => {
         });
 
         engine.setGoalCallback((team, minute) => {
-            console.log(`âš½ GOAL! ${team === 'home' ? 'Arsenal' : 'Chelsea'} scored at ${minute}'`);
+            console.log(`âš?GOAL! ${team === 'home' ? 'Arsenal' : 'Chelsea'} scored at ${minute}'`);
         });
 
         engineRef.current = engine;
@@ -117,7 +117,7 @@ export const LiveMatchPlayer: React.FC = () => {
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-slate-100 mb-2">âš½ Live Match Simulation</h1>
+                    <h1 className="text-3xl font-bold text-slate-100 mb-2">âš?Live Match Simulation</h1>
                     <p className="text-slate-400">Real-time playback with visual controls</p>
                 </div>
 
@@ -299,17 +299,17 @@ function createMockTeam(name: string, side: 'home' | 'away'): TeamState {
             attributes: {
                 Corners: 12 + Math.floor(Math.random() * 4),
                 Crossing: 12 + Math.floor(Math.random() * 4),
-                Dribbling: (isForward ? 14 : 10) + Math.floor(Math.random() * 4),
-                Finishing: (isForward ? 15 : 8) + Math.floor(Math.random() * 4),
+                Dribbling: (isForward ? 11 : 7) + Math.floor(Math.random() * 4),
+                Finishing: (isForward ? 10 : 5) + Math.floor(Math.random() * 4),
                 FirstTouch: 13 + Math.floor(Math.random() * 4),
                 FreeKickTaking: 10 + Math.floor(Math.random() * 4),
                 Heading: (isDefender ? 14 : 11) + Math.floor(Math.random() * 4),
                 LongShots: 11 + Math.floor(Math.random() * 4),
                 LongThrows: 10 + Math.floor(Math.random() * 2),
                 Marking: (isDefender ? 15 : 10) + Math.floor(Math.random() * 4),
-                Passing: 13 + Math.floor(Math.random() * 4),
+                Passing: 9 + Math.floor(Math.random() * 4),
                 PenaltyTaking: 12 + Math.floor(Math.random() * 4),
-                Tackling: (isDefender ? 15 : 10) + Math.floor(Math.random() * 4),
+                Tackling: (isDefender ? 11 : 6) + Math.floor(Math.random() * 4),
                 Technique: 13 + Math.floor(Math.random() * 4),
                 Aggression: 12 + Math.floor(Math.random() * 4),
                 Anticipation: 13 + Math.floor(Math.random() * 4),
@@ -330,9 +330,9 @@ function createMockTeam(name: string, side: 'home' | 'away'): TeamState {
                 Balance: 13 + Math.floor(Math.random() * 4),
                 JumpingReach: (isDefender ? 13 : 11) + Math.floor(Math.random() * 4),
                 NaturalFitness: 14 + Math.floor(Math.random() * 3),
-                Pace: (isForward ? 14 : 12) + Math.floor(Math.random() * 4),
+                Pace: (isForward ? 11 : 9) + Math.floor(Math.random() * 4),
                 Stamina: 100,
-                Strength: (isDefender ? 14 : 12) + Math.floor(Math.random() * 4)
+                Strength: (isDefender ? 11 : 8) + Math.floor(Math.random() * 4)
             },
             condition: 100,
             stamina: 100,
@@ -358,3 +358,4 @@ function createMockTeam(name: string, side: 'home' | 'away'): TeamState {
         })
     };
 }
+

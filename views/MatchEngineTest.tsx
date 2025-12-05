@@ -295,7 +295,7 @@ function createMockTeam(name: string, side: 'home' | 'away'): TeamState {
                 Corners: 12 + Math.floor(Math.random() * 4),
                 Crossing: 12 + Math.floor(Math.random() * 4),
                 Dribbling: (isForward ? 14 : 10) + Math.floor(Math.random() * 4),
-                Finishing: (isForward ? 15 : 8) + Math.floor(Math.random() * 4),
+                Finishing: (isForward ? 10 : 5) + Math.floor(Math.random() * 4),
                 FirstTouch: 13 + Math.floor(Math.random() * 4),
                 FreeKickTaking: 10 + Math.floor(Math.random() * 4),
                 Heading: (isDefender ? 14 : 11) + Math.floor(Math.random() * 4),
@@ -357,4 +357,5 @@ function createMockTeam(name: string, side: 'home' | 'away'): TeamState {
         })
     };
 }
+
 
