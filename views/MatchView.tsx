@@ -5,7 +5,6 @@ import { MatchEngine } from '../engine/matchEngine'; // Direct import of new eng
 import { TeamState, MatchEvent } from '../engine/types'; // Import new types
 import { Play, Pause, FastForward, CheckCircle2, SkipForward } from 'lucide-react';
 import { generatePostMatchComment, getAssistantReport } from '../services/geminiService';
-import { useNavigate } from 'react-router-dom';
 
 interface MatchViewProps {
   homeTeam: Team;
@@ -61,8 +60,6 @@ const StatRow: React.FC<{ label: string; homeValue: string; awayValue: string }>
 // -----------------------------------------------------------------------------
 
 export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatchComplete, userTeamId, fixtureId }) => {
-
-  const navigate = useNavigate?.();
   const [minute, setMinute] = useState(0);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [events, setEvents] = useState<MatchEvent[]>([]);
@@ -295,7 +292,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   };
 
   const handleBackToDashboard = () => {
-    if (navigate) navigate('/dashboard');
+    window.location.href = '/';
   };
 
   const handlePauseToggle = () => setPaused((p) => !p);
