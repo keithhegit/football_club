@@ -69,12 +69,33 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   const [speed, setSpeed] = useState(100); // ms per tick
   const [assistantReport, setAssistantReport] = useState<string>("");
   const [headline, setHeadline] = useState<string>("");
+  const [filter, setFilter] = useState<string>('IMPORTANT'); // Default filter to interesting events
+  const [showTactics, setShowTactics] = useState<boolean>(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Match Engine Instance
   const engineRef = useRef<any>(null);
   const [fullMatchResult, setFullMatchResult] = useState<any>(null);
+  const [tacticalModifiers, setTacticalModifiers] = useState<any>({
+    mentality: 0,
+    tempo: 0,
+    directness: 0,
+    width: 0,
+    defensiveLine: 0,
+    engagementLine: 0,
+    pressingIntensity: 0,
+    timeWasting: 0,
+    counterPress: false,
+    counter: false,
+    workBallIntoBox: false,
+    hitEarlyCrosses: false,
+    shootOnSight: false,
+    stayOnFeet: false,
+    tackleHarder: false,
+    closeDownMore: false,
+    markTighter: false
+  });
 
   // Auto-scroll logs
   useEffect(() => {
@@ -111,10 +132,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
               morale: 75, form: 75, yellowCards: 0, redCard: false
             })),
             formation: '4-4-2',
-            tacticalModifiers: {
-              tempo: 0, width: 0, defensiveLine: 0, passingDirectness: 0,
-              closingDown: 0, timeWasting: 0, mentality: 0
-            }
+            tacticalModifiers: tacticalModifiers
           };
 
           const aTeamState: TeamState = {
@@ -130,10 +148,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
               morale: 75, form: 75, yellowCards: 0, redCard: false
             })),
             formation: '4-4-2',
-            tacticalModifiers: {
-              tempo: 0, width: 0, defensiveLine: 0, passingDirectness: 0,
-              closingDown: 0, timeWasting: 0, mentality: 0
-            }
+            tacticalModifiers: tacticalModifiers
           };
 
           const engine = new MatchEngine(hTeamState, aTeamState);
@@ -183,13 +198,10 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
             tackles: [0, 0],
             fouls: [0, 0],
             yellowCards: [0, 0],
-            redCards: [0, 0]
+            redCards: [0, 0],
+            corners: [0, 0],
+            freeKicks: [0, 0]
           };
-
-          // Basic possession fluctuation
-          const fluctuation = Math.floor(Math.random() * 5) - 2;
-          stats.possession[0] = 50 + fluctuation;
-          stats.possession[1] = 50 - fluctuation;
 
           // Aggregate stats from events
           currentEvents.forEach((e: any) => {
@@ -197,8 +209,8 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
             const idx = isHome ? 0 : 1;
 
             // xG Accumulation (if available)
-            if (e.xG) stats.xG[idx] += e.xG;
-            else if (e.type === 'SHOOT') stats.xG[idx] += 0.1; // Fallback estimate
+            if (e.xGContribution) stats.xG[idx] += e.xGContribution;
+            else if (e.type === 'SHOOT' || e.type === 'SHOOT_LONG') stats.xG[idx] += 0.08; // fallback
 
             // Shots
             if (e.type === 'SHOOT' || e.type === 'SHOOT_LONG') {
@@ -237,9 +249,18 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
             if (e.type === 'FOUL') {
               stats.fouls[idx]++;
             }
-            if (e.description.includes('Yellow Card')) stats.yellowCards[idx]++;
-            if (e.description.includes('Red Card')) stats.redCards[idx]++;
+            if (e.description?.toLowerCase().includes('yellow')) stats.yellowCards[idx]++;
+            if (e.description?.toLowerCase().includes('red')) stats.redCards[idx]++;
+            if (e.type === 'CORNER') stats.corners[idx]++;
+            if (e.type === 'FREE_KICK') stats.freeKicks[idx]++;
           });
+
+          // Possession proxy: passes share
+          const totalPasses = stats.passAttempts[0] + stats.passAttempts[1];
+          if (totalPasses > 0) {
+            stats.possession[0] = Math.round((stats.passAttempts[0] / totalPasses) * 100);
+            stats.possession[1] = 100 - stats.possession[0];
+          }
 
           setCurrentStats(stats);
           return currentMinute;
@@ -273,6 +294,74 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   return (
     <div className="flex flex-col h-full bg-slate-950">
 
+      {/* Tactics Drawer */}
+      {showTactics && (
+        <div className="absolute inset-0 bg-black/40 z-30" onClick={() => setShowTactics(false)} />
+      )}
+      <div className={`fixed right-0 top-0 h-full w-full max-w-md bg-slate-900 border-l border-slate-800 z-40 transform transition-transform duration-200 ${showTactics ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="p-4 flex justify-between items-center border-b border-slate-800">
+          <div className="text-sm font-bold text-slate-200 uppercase">战术板 (In-Match)</div>
+          <button onClick={() => setShowTactics(false)} className="text-slate-400 text-xs">关闭</button>
+        </div>
+        <div className="p-4 space-y-4 overflow-y-auto h-[calc(100%-56px)]">
+          {/* Sliders */}
+          {[
+            { key: 'mentality', label: '心态(Mentality)', min: -2, max: 2, step: 1 },
+            { key: 'tempo', label: '节奏(Tempo)', min: -2, max: 2, step: 1 },
+            { key: 'directness', label: '传球直接性', min: -2, max: 2, step: 1 },
+            { key: 'width', label: '进攻宽度', min: -2, max: 2, step: 1 },
+            { key: 'pressingIntensity', label: '压迫强度', min: -2, max: 2, step: 1 },
+            { key: 'defensiveLine', label: '防线高度', min: -2, max: 2, step: 1 },
+            { key: 'engagementLine', label: '逼抢线', min: -2, max: 2, step: 1 },
+            { key: 'timeWasting', label: '拖延时间', min: 0, max: 1, step: 0.1 },
+          ].map(ctrl => (
+            <div key={ctrl.key} className="flex flex-col gap-1">
+              <label className="text-xs text-slate-300">{ctrl.label}</label>
+              <input
+                type="range"
+                min={ctrl.min}
+                max={ctrl.max}
+                step={ctrl.step}
+                value={tacticalModifiers[ctrl.key] ?? 0}
+                onChange={(e) => setTacticalModifiers(prev => ({ ...prev, [ctrl.key]: Number(e.target.value) }))}
+              />
+              <div className="text-[10px] text-slate-500">当前: {tacticalModifiers[ctrl.key] ?? 0}</div>
+            </div>
+          ))}
+
+          {/* Toggles */}
+          {[
+            { key: 'counterPress', label: '反抢 (Counter-Press)' },
+            { key: 'counter', label: '反击 (Counter)' },
+            { key: 'workBallIntoBox', label: '倒脚渗透 (Work Ball Into Box)' },
+            { key: 'hitEarlyCrosses', label: '提前传中 (Hit Early Crosses)' },
+            { key: 'shootOnSight', label: '见缝就射 (Shoot on Sight)' },
+            { key: 'stayOnFeet', label: '站立防守 (Stay on Feet)' },
+            { key: 'tackleHarder', label: '强硬抢断 (Tackle Harder)' },
+            { key: 'closeDownMore', label: '更多压迫 (Close Down More)' },
+            { key: 'markTighter', label: '紧逼盯人 (Mark Tighter)' },
+          ].map(ctrl => (
+            <label key={ctrl.key} className="flex items-center gap-2 text-xs text-slate-300">
+              <input
+                type="checkbox"
+                checked={!!tacticalModifiers[ctrl.key]}
+                onChange={(e) => setTacticalModifiers(prev => ({ ...prev, [ctrl.key]: e.target.checked }))}
+              />
+              {ctrl.label}
+            </label>
+          ))}
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowTactics(false)}
+              className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold py-2 rounded"
+            >
+              应用
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Scoreboard */}
       <div className="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-10 shadow-lg">
         <div className="flex justify-between items-center mb-2">
@@ -285,6 +374,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
             <div className="flex space-x-2">
               <button onClick={() => setSpeed(200)} className={`p-1 rounded ${speed === 200 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}><Play size={14} /></button>
               <button onClick={() => setSpeed(50)} className={`p-1 rounded ${speed === 50 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}><FastForward size={14} /></button>
+              <button onClick={() => setShowTactics(!showTactics)} className={`p-1 rounded ${showTactics ? 'bg-emerald-700 text-white' : 'text-slate-500'}`}>Tactics</button>
             </div>
           )}
         </div>
@@ -340,43 +430,65 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                   homeValue={`${currentStats?.fouls[0] || 0} (${currentStats?.yellowCards[0] || 0}/${currentStats?.redCards[0] || 0})`}
                   awayValue={`${currentStats?.fouls[1] || 0} (${currentStats?.yellowCards[1] || 0}/${currentStats?.redCards[1] || 0})`}
                 />
+                <StatRow label="Corners / FK"
+                  homeValue={`${currentStats?.corners[0] || 0} / ${currentStats?.freeKicks[0] || 0}`}
+                  awayValue={`${currentStats?.corners[1] || 0} / ${currentStats?.freeKicks[1] || 0}`}
+                />
               </div>
             </div>
           )}
 
-          {/* Top Performers (Simplified Player Stats) */}
+          {/* Top Performers (MVP & Goalscorers) */}
           {(matchState === MatchState.PLAYING || matchState === MatchState.FULL_TIME) && (
             <div className="bg-slate-900/80 p-4 rounded-lg border border-slate-800">
-              <h3 className="text-xs font-bold text-slate-300 uppercase mb-3 border-b border-slate-700 pb-2">Key Players</h3>
+              <h3 className="text-xs font-bold text-slate-300 uppercase mb-3 border-b border-slate-700 pb-2">Match Highlights</h3>
+
+              {/* MVP Calculation */}
+              {(() => {
+                const allPlayers = [...(homeTeam.players || []), ...(awayTeam.players || [])];
+                let mvp = null;
+                let maxRating = 0;
+
+                allPlayers.forEach(p => {
+                  const r = calculateMockRating(p, events);
+                  if (r > maxRating) {
+                    maxRating = r;
+                    mvp = p;
+                  }
+                });
+
+                if (!mvp) return null;
+
+                const isHomeMvp = homeTeam.players?.find((p: any) => p.id === (mvp as any).id);
+                return (
+                  <div className="mb-4 bg-slate-800/50 p-3 rounded">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Man of the Match</div>
+                    <div className="flex justify-between items-center">
+                      <span className={`font-bold text-sm ${isHomeMvp ? 'text-emerald-400' : 'text-blue-400'}`}>{(mvp as any).name}</span>
+                      <span className="bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded text-xs font-bold">{maxRating.toFixed(1)}</span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Goalscorers */}
               <div className="space-y-3">
-                {/* Home Key Players */}
-                <div>
-                  <div className="text-[10px] font-bold text-emerald-500 mb-1 uppercase">{homeTeam.name}</div>
-                  {homeTeam.players?.slice(0, 11).map((p: any) => {
-                    const rating = calculateMockRating(p, events);
-                    if (rating < 7.0) return null; // Only show good performers
-                    return (
-                      <div key={p.id} className="flex justify-between items-center text-xs">
-                        <span className="text-slate-400 truncate w-24">{p.name}</span>
-                        <span className="text-emerald-400 font-bold">{rating.toFixed(1)}</span>
+                <div className="text-[10px] font-bold text-slate-500 uppercase">Goalscorers</div>
+                {events.filter(e => (e.type === 'SHOOT' || e.type === 'SHOOT_LONG') && e.outcome === 'SUCCESS').map((e, i) => {
+                  const isHome = e.teamId == homeTeam.id;
+                  return (
+                    <div key={i} className="flex justify-between items-center text-xs border-b border-slate-800/50 pb-1 last:border-0">
+                      <span className="text-slate-300">{e.actor?.name || 'Unknown'}</span>
+                      <div className="flex items-center gap-2">
+                        <span className={`${isHome ? 'text-emerald-500' : 'text-blue-500'} font-bold`}>{e.time}'</span>
+                        <span className="text-xs">⚽</span>
                       </div>
-                    )
-                  })}
-                </div>
-                {/* Away Key Players */}
-                <div>
-                  <div className="text-[10px] font-bold text-blue-500 mb-1 uppercase">{awayTeam.name}</div>
-                  {awayTeam.players?.slice(0, 11).map((p: any) => {
-                    const rating = calculateMockRating(p, events);
-                    if (rating < 7.0) return null; // Only show good performers
-                    return (
-                      <div key={p.id} className="flex justify-between items-center text-xs">
-                        <span className="text-slate-400 truncate w-24">{p.name}</span>
-                        <span className="text-blue-400 font-bold">{rating.toFixed(1)}</span>
-                      </div>
-                    )
-                  })}
-                </div>
+                    </div>
+                  )
+                })}
+                {events.filter(e => (e.type === 'SHOOT' || e.type === 'SHOOT_LONG') && e.outcome === 'SUCCESS').length === 0 && (
+                  <div className="text-slate-600 text-xs italic">No goals yet</div>
+                )}
               </div>
             </div>
           )}
@@ -407,44 +519,59 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           {/* Live Commentary Log (Filtered) */}
           {(matchState === MatchState.PLAYING || matchState === MatchState.FULL_TIME) && (
             <div
-              ref={scrollRef}
-              className="flex-1 bg-slate-900/50 rounded-lg border border-slate-800 p-4 overflow-y-auto space-y-3"
+              className="flex-1 bg-slate-900/50 rounded-lg border border-slate-800 flex flex-col overflow-hidden"
             >
-              {events.length === 0 && <div className="text-center text-slate-500 text-sm mt-10">The referee blows the whistle...</div>}
-              {events
-                .filter(e => {
-                  // Always show Goals
-                  if ((e.type === 'SHOOT' || e.type === 'SHOOT_LONG') && e.outcome === 'SUCCESS') return true;
-
-                  // Show significant defensive/set-piece events
-                  if (['SAVE', 'CORNER', 'FOUL', 'OFFSIDE'].includes(e.type)) return true;
-
-                  // Fallback string checks for other event types if description is rich
-                  if (e.description.includes('Goal') || e.description.includes('Card') || e.description.includes('Sub')) return true;
-
-                  return false;
-                })
-                .map((e: any, idx) => (
-                  <div key={idx} className={`text-sm flex space-x-3 ${(e.type.includes('SHOOT') && e.outcome === 'SUCCESS') ? 'bg-slate-800/80 p-3 rounded border-l-4 border-emerald-500 shadow-md' : ''}`}>
-                    <span className="text-slate-500 font-mono w-8 text-right">{e.time !== undefined ? e.time : e.minute}'</span>
-                    <span className={(e.type.includes('SHOOT') && e.outcome === 'SUCCESS') ? 'text-white font-bold text-base' : e.description.includes('Card') ? 'text-yellow-200' : 'text-slate-300'}>
-                      {e.description}
-                    </span>
-                  </div>
-                ))}
-
-              {matchState === MatchState.FULL_TIME && (
-                <div className="border-t border-slate-700 pt-6 mt-6 pb-4">
-                  <div className="text-center text-slate-400 text-xs uppercase mb-3">Full Time Analysis</div>
-                  <div className="text-center font-serif text-xl text-white italic px-6 mb-6">"{headline || 'Wait for it...'}"</div>
+              {/* Event Filter Tabs */}
+              <div className="flex border-b border-slate-800 bg-slate-900 overflow-x-auto">
+                {['IMPORTANT', 'ALL', 'GOAL', 'SHOT', 'SAVE', 'SET PIECE', 'FOUL/CARD', 'INJURY'].map(f => (
                   <button
-                    onClick={handleFinish}
-                    className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 rounded transition-all text-lg shadow-lg"
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap transition-colors ${filter === f ? 'text-white border-b-2 border-emerald-500 bg-slate-800' : 'text-slate-500 hover:text-slate-300'}`}
                   >
-                    Return to Dashboard
+                    {f}
                   </button>
-                </div>
-              )}
+                ))}
+              </div>
+
+              {/* Scrollable List */}
+              <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-2.5">
+                {events.length === 0 && <div className="text-center text-slate-500 text-sm mt-10">The referee blows the whistle...</div>}
+
+                {events
+                  .filter(e => {
+                    if (filter === 'ALL') return true;
+                    if (filter === 'GOAL') return (e.type === 'SHOOT' || e.type === 'SHOOT_LONG') && e.outcome === 'SUCCESS';
+                    if (filter === 'SHOT') return (e.type === 'SHOOT' || e.type === 'SHOOT_LONG');
+                    if (filter === 'SAVE') return e.type === 'SAVE';
+                    if (filter === 'SET PIECE') return e.type === 'CORNER' || e.type === 'FREE_KICK' || e.description?.toLowerCase().includes('penalty');
+                    if (filter === 'FOUL/CARD') return e.type === 'FOUL' || e.description?.toLowerCase().includes('card') || e.description?.toLowerCase().includes('offside');
+                    if (filter === 'INJURY') return e.description?.toLowerCase().includes('injury');
+
+                    // IMPORTANT (Default)
+                    if (filter === 'IMPORTANT') {
+                      if ((e.type === 'SHOOT' || e.type === 'SHOOT_LONG') && e.outcome === 'SUCCESS') return true;
+                      if (['SAVE', 'CORNER', 'FREE_KICK'].includes(e.type)) return true;
+                      if (e.description?.toLowerCase().includes('yellow') || e.description?.toLowerCase().includes('red')) return true;
+                      // Show some close shots
+                      if ((e.type === 'SHOOT' || e.type === 'SHOOT_LONG') && e.outcome === 'SAVED') return true;
+                      return false;
+                    }
+
+                    return true;
+                  })
+                  .map((e: any, idx) => (
+                    <div key={idx} className={`text-sm flex space-x-3 items-start ${(e.type.includes('SHOOT') && e.outcome === 'SUCCESS') ? 'bg-slate-800/80 p-3 rounded border-l-4 border-emerald-500 shadow-md my-2' : ''}`}>
+                      <span className="text-slate-500 font-mono w-8 text-right flex-shrink-0 pt-0.5">{e.time !== undefined ? e.time : e.minute}'</span>
+                      <div className="flex-1">
+                        <span className={(e.type.includes('SHOOT') && e.outcome === 'SUCCESS') ? 'text-white font-bold text-base' : e.description.includes('Card') ? 'text-yellow-200' : 'text-slate-300'}>
+                          {e.description}
+                        </span>
+                        {/* Add Subtext for context if available later */}
+                      </div>
+                    </div>
+                  ))}
+              </div>
             </div>
           )}
         </div>

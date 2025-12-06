@@ -16,6 +16,7 @@ export type ActionType =
     | 'FOUL'
     | 'SAVE'
     | 'CORNER'
+    | 'FREE_KICK'
     | 'OFFSIDE';
 
 export type CardType = 'YELLOW' | 'RED' | 'NONE';
@@ -95,6 +96,8 @@ export interface PlayerState {
     stamina: number; // 0-100
     morale: number; // 0-100
     form: number; // 0-100
+    hiddenConsistency?: number; // 1-20 (GenieScout: Consistency)
+    hiddenImportantMatches?: number; // 1-20 (Important Matches)
     currentPosition: Position;
     yellowCards: number; // Match cards
     redCard: boolean; // Sent off
@@ -107,7 +110,34 @@ export interface MatchConditions {
 }
 
 export interface TacticalModifiers {
-    [key: string]: number; // Action type -> multiplier
+    // Core sliders (0 = neutral)
+    mentality?: number;          // -2 .. +2
+    tempo?: number;              // -2 .. +2
+    directness?: number;         // -2 .. +2
+    width?: number;              // -2 .. +2
+    defensiveLine?: number;      // -2 .. +2
+    engagementLine?: number;     // -2 .. +2
+    pressingIntensity?: number;  // -2 .. +2
+    timeWasting?: number;        // 0..1
+    counterPress?: boolean;
+    counter?: boolean;
+    focusLeft?: boolean;
+    focusRight?: boolean;
+    focusCentre?: boolean;
+    workBallIntoBox?: boolean;
+    hitEarlyCrosses?: boolean;
+    shootOnSight?: boolean;
+    stayOnFeet?: boolean;
+    tackleHarder?: boolean;
+    closeDownMore?: boolean;
+    markTighter?: boolean;
+    showOntoFootLeft?: boolean;
+    showOntoFootRight?: boolean;
+    distributeQuickly?: boolean;
+    derby?: boolean; // context flag
+
+    // Legacy per-action override (kept for backward compat)
+    [key: string]: number | boolean | undefined;
 }
 
 export interface MatchEvent {
@@ -132,6 +162,7 @@ export interface MatchStatistics {
     tackles: [number, number];
     fouls: [number, number];
     corners: [number, number];
+    freeKicks: [number, number];
     yellowCards: [number, number]; // Yellow cards
     redCards: [number, number]; // Red cards
 }

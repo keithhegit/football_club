@@ -17,12 +17,20 @@ import { clamp } from './utils/mathHelpers';
  * @param conditions - Match environmental conditions
  * @returns Probability of success (0.0 - 1.0)
  */
+type ContextModifiers = {
+    teamStrengthMod?: number;   // e.g. 1.0 baseline, strong team ~1.05
+    contextMod?: number;        // e.g. home/score/time影响
+    luckMod?: number;           // 0.92 - 1.08 随机浮动
+    importantMatch?: boolean;   // 决赛/德比等重要场次
+};
+
 export function computeActionSuccess(
     action: ActionType,
     actor: PlayerState,
     opponent: PlayerState | null,
     tacticalMods: TacticalModifiers,
-    conditions: MatchConditions
+    conditions: MatchConditions,
+    context?: ContextModifiers
 ): number {
     // 1. Base probability from player attributes
     let probability = computeBaseScore(action, actor.attributes as any);
@@ -43,6 +51,13 @@ export function computeActionSuccess(
     const formMod = getFormModifier(actor.form);
     probability *= formMod;
 
+    // 5.1 Hidden: Consistency + Important Matches
+    const consistencyMod = getConsistencyModifier(actor.hiddenConsistency);
+    probability *= consistencyMod;
+
+    const importantMatchMod = getImportantMatchModifier(actor.hiddenImportantMatches, context?.importantMatch);
+    probability *= importantMatchMod;
+
     // 6. Reduce by opponent's defensive capability
     if (opponent) {
         const defenseScore = computeDefenseScore(action, opponent.attributes as any);
@@ -53,6 +68,12 @@ export function computeActionSuccess(
     const environmentMod = getEnvironmentModifier(action, conditions);
     probability *= environmentMod;
 
+    // 8. Apply team/context/luck modifiers
+    const teamStrengthMod = context?.teamStrengthMod ?? 1.0;
+    const contextMod = context?.contextMod ?? 1.0;
+    const luckMod = context?.luckMod ?? 1.0;
+    probability *= teamStrengthMod * contextMod * luckMod;
+
     // Clamp final probability
     return clamp(probability, 0.0, 1.0);
 }
@@ -62,11 +83,18 @@ export function computeActionSuccess(
  * Stamina < 50% significantly reduces physical performance.
  */
 function getConditionModifier(condition: number, stamina: number): number {
-    // Base condition modifier (80-100% = 0.8-1.0)
-    const condMod = 0.8 + (condition / 100) * 0.2;
+    // Condition curve: 100 -> 1.0, 80 -> 0.9, 60 -> 0.8, 40 -> 0.65, 20 -> 0.5
+    const condRatio = condition / 100;
+    const condMod = condRatio >= 0.8
+        ? 0.9 + (condRatio - 0.8) * 0.5 // 0.9 - 1.0
+        : condRatio >= 0.6
+            ? 0.8 + (condRatio - 0.6) * 0.5 // 0.8 - 0.9
+            : condRatio >= 0.4
+                ? 0.65 + (condRatio - 0.4) * 0.75 // 0.65 - 0.8
+                : 0.5; // very low
 
     // Stamina penalty when low
-    const staminaMod = stamina < 50 ? 0.8 : 1.0;
+    const staminaMod = stamina < 50 ? 0.82 : 1.0;
 
     return condMod * staminaMod;
 }
@@ -76,9 +104,9 @@ function getConditionModifier(condition: number, stamina: number): number {
  * Affects mental attributes (Decisions, Composure, etc.)
  */
 function getMoraleModifier(morale: number): number {
-    // Morale range: 0-100, impact ±10%
-    // 50 = 1.0, 100 = 1.1, 0 = 0.9
-    return 1.0 + (morale - 50) / 500;
+    // Morale range: 0-100, impact ±12%
+    // 50 = 1.0, 100 = 1.12, 0 = 0.88
+    return 1.0 + (morale - 50) / 420;
 }
 
 /**
@@ -86,9 +114,9 @@ function getMoraleModifier(morale: number): number {
  * Form affects overall consistency.
  */
 function getFormModifier(form: number): number {
-    // Form range: 0-100, impact ±5%
-    // 50 = 1.0, 100 = 1.05, 0 = 0.95
-    return 1.0 + (form - 50) / 1000;
+    // Form range: 0-100, impact ±8%
+    // 50 = 1.0, 100 = 1.08, 0 = 0.92
+    return 1.0 + (form - 50) / 625;
 }
 
 /**
@@ -114,6 +142,19 @@ function getEnvironmentModifier(action: ActionType, conditions: MatchConditions)
     }
 
     return modifier;
+}
+
+function getConsistencyModifier(consistency?: number): number {
+    // Consistency 10 = neutral, >10 稳定加成，<10 波动扣减；范围 0.94 - 1.06
+    if (!consistency) return 1.0;
+    return clamp(0.94 + (consistency - 10) * 0.012, 0.94, 1.06);
+}
+
+function getImportantMatchModifier(imp?: number, isImportant?: boolean): number {
+    if (!isImportant) return 1.0;
+    // Important Matches 10 = neutral，低值在大场面掉链子，高值提升
+    const val = imp ?? 10;
+    return clamp(0.9 + (val - 10) * 0.02, 0.88, 1.12);
 }
 
 /**

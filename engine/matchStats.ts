@@ -24,6 +24,7 @@ export class MatchStatsTracker {
             tackles: [0, 0],
             fouls: [0, 0],
             corners: [0, 0],
+            freeKicks: [0, 0],
             yellowCards: [0, 0],
             redCards: [0, 0]
         };
@@ -70,6 +71,10 @@ export class MatchStatsTracker {
 
             case 'FOUL':
                 this.stats.fouls[teamIndex]++;
+                break;
+
+            case 'FREE_KICK':
+                this.stats.freeKicks[teamIndex]++;
                 break;
         }
     }

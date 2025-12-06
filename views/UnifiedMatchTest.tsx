@@ -288,9 +288,8 @@ export const UnifiedMatchTest: React.FC = () => {
                                     <StatRow label="xG" homeValue={(matchState.statistics?.xG?.[0] || 0).toFixed(2)} awayValue={(matchState.statistics?.xG?.[1] || 0).toFixed(2)} />
                                     <StatRow label="Passes" homeValue={`${matchState.statistics?.passes?.[0] || 0} (${matchState.statistics?.passAccuracy?.[0] || 0}%)`} awayValue={`${matchState.statistics?.passes?.[1] || 0} (${matchState.statistics?.passAccuracy?.[1] || 0}%)`} />
                                     <StatRow label="Tackles" homeValue={(matchState.statistics?.tackles?.[0] || 0).toString()} awayValue={(matchState.statistics?.tackles?.[1] || 0).toString()} />
-                                    <StatRow label="Fouls" homeValue={(matchState.statistics?.fouls?.[0] || 0).toString()} awayValue={(matchState.statistics?.fouls?.[1] || 0).toString()} />
-                                    <StatRow label="Yellow Cards" homeValue={(matchState.statistics?.yellowCards?.[0] || 0).toString()} awayValue={(matchState.statistics?.yellowCards?.[1] || 0).toString()} />
-                                    <StatRow label="Corners" homeValue={(matchState.statistics?.corners?.[0] || 0).toString()} awayValue={(matchState.statistics?.corners?.[1] || 0).toString()} />
+                                    <StatRow label="Fouls (Y/R)" homeValue={`${matchState.statistics?.fouls?.[0] || 0} (${matchState.statistics?.yellowCards?.[0] || 0}/${matchState.statistics?.redCards?.[0] || 0})`} awayValue={`${matchState.statistics?.fouls?.[1] || 0} (${matchState.statistics?.yellowCards?.[1] || 0}/${matchState.statistics?.redCards?.[1] || 0})`} />
+                                    <StatRow label="Corners / FK" homeValue={`${matchState.statistics?.corners?.[0] || 0} / ${matchState.statistics?.freeKicks?.[0] || 0}`} awayValue={`${matchState.statistics?.corners?.[1] || 0} / ${matchState.statistics?.freeKicks?.[1] || 0}`} />
                                 </div>
                             </div>
 

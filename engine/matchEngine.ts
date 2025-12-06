@@ -18,6 +18,8 @@ export class MatchEngine {
     private matchDuration: number = 90; // minutes
     private isPaused: boolean = false;
     private simulationSpeed: number = 1; // 1x, 2x, 5x
+    private teamStrengthDiff: number; // home - away (normalized -0.3 ~ +0.3)
+    private luck: { home: number; away: number }; // 0.92 - 1.08 for variability
 
     // Callbacks for real-time updates
     private onStateUpdate?: (state: MatchState) => void;
@@ -44,6 +46,7 @@ export class MatchEngine {
                 tackles: [0, 0],
                 fouls: [0, 0],
                 corners: [0, 0],
+                freeKicks: [0, 0],
                 yellowCards: [0, 0],
                 redCards: [0, 0]
             },
@@ -55,6 +58,19 @@ export class MatchEngine {
         };
 
         this.statsTracker = new MatchStatsTracker(homeTeam.id, awayTeam.id);
+
+        // Pre-compute team strength diff (approx CA gap as normalized multiplier)
+        const homeStrength = this.computeTeamStrength(homeTeam);
+        const awayStrength = this.computeTeamStrength(awayTeam);
+        const strengthDelta = homeStrength - awayStrength;
+        // Clamp to ±0.3 (each 0.1 ≈ 10% success swing)
+        this.teamStrengthDiff = Math.max(-0.3, Math.min(0.3, strengthDelta / 100));
+
+        // Luck factor per team (运气层 0.92 - 1.08)
+        this.luck = {
+            home: 0.92 + Math.random() * 0.16,
+            away: 0.92 + Math.random() * 0.16
+        };
     }
 
     /**
@@ -92,12 +108,19 @@ export class MatchEngine {
         const opponent = this.selectPlayer(defendingTeam, event, false);
 
         // Calculate success probability
+        const contextMod = this.getContextModifier();
         const probability = computeActionSuccess(
             event,
             actor,
             opponent,
             possessingTeam.tacticalModifiers,
-            this.state.conditions
+            this.state.conditions,
+            {
+                teamStrengthMod: this.getTeamStrengthMod(),
+                contextMod,
+                luckMod: this.state.possession === 'home' ? this.luck.home : this.luck.away,
+                importantMatch: false // placeholder flag; wire to fixture metadata when available
+            }
         );
 
         // Check for foul (before executing the action)
@@ -119,6 +142,21 @@ export class MatchEngine {
             this.statsTracker.recordEvent(foulEvent, this.state.possession);
             this.state.eventLog.push(foulEvent);
 
+            // Award free kick to defending side
+            const fkTeam = this.state.possession === 'home' ? 'away' : 'home';
+            const freeKickEvent: MatchEvent = {
+                time: Math.floor(this.state.time),
+                type: 'FREE_KICK',
+                actor: opponent || actor, // best available reference
+                opponent: actor,
+                outcome: 'SUCCESS',
+                position: this.state.ballPosition,
+                description: `Free kick awarded to ${fkTeam === 'home' ? this.state.homeTeam.name : this.state.awayTeam.name}`,
+                teamId: fkTeam === 'home' ? this.state.homeTeam.id : this.state.awayTeam.id
+            };
+            this.statsTracker.recordEvent(freeKickEvent, fkTeam);
+            this.state.eventLog.push(freeKickEvent);
+
             // Record card
             if (card === 'YELLOW') {
                 this.state.statistics.yellowCards[this.state.possession === 'home' ? 0 : 1]++;
@@ -129,8 +167,8 @@ export class MatchEngine {
             // Foul results in turnover
             this.turnover();
 
-            // Advance time slightly
-            const tickDuration = randomBetween(2, 3) / 60;
+            // Advance time slightly (Faster pace -> More events)
+            const tickDuration = randomBetween(0.5, 1.5) / 60;
             this.state.time += tickDuration;
 
             if (this.onStateUpdate) {
@@ -165,14 +203,16 @@ export class MatchEngine {
         };
 
         // Handle outcome
-        const scoredGoal = this.handleOutcome(event, matchEvent, success);
+        const scoredGoal = this.handleOutcome(event, matchEvent, success, xgValue);
 
         // Record event
         this.statsTracker.recordEvent(matchEvent, this.state.possession);
         this.state.eventLog.push(matchEvent);
 
         // Update possession time
-        const tickDuration = randomBetween(3, 5) / 60; // Convert seconds to minutes
+        // Reduce tick duration to increase total events (aiming for ~400 passes)
+        // Slow down ticks以降低过高事件量与大比分
+        const tickDuration = randomBetween(4, 7) / 60; // 4-7 秒/事件，目标 ~700-1100 ticks
         this.statsTracker.updatePossession(this.state.possession, tickDuration);
 
         // Update player stamina
@@ -208,7 +248,7 @@ export class MatchEngine {
             this.simulateTick();
         }
 
-        console.log(`ðŸ�� Full Time: ${this.state.homeTeam.name} ${this.state.score[0]} - ${this.state.score[1]} ${this.state.awayTeam.name}`);
+        console.log(`Full Time: ${this.state.homeTeam.name} ${this.state.score[0]} - ${this.state.score[1]} ${this.state.awayTeam.name}`);
 
         const finalStats = this.statsTracker.finalize();
 
@@ -217,14 +257,15 @@ export class MatchEngine {
             awayScore: this.state.score[1],
             statistics: finalStats,
             eventLog: this.statsTracker.getEvents(),
-            playerRatings: new Map() // TODO: Calculate ratings
+            playerRatings: calculatePlayerRatings(
+                this.statsTracker.getEvents(),
+                this.state.homeTeam.players,
+                this.state.awayTeam.players
+            )
         };
     }
 
-    /**
-     * Handle action outcome and return if a goal was scored
-     */
-    private handleOutcome(action: ActionType, event: MatchEvent, success: boolean): boolean {
+    private handleOutcome(action: ActionType, event: MatchEvent, success: boolean, xgValue?: number): boolean {
         let scoredGoal = false;
 
         if (success) {
@@ -342,35 +383,120 @@ export class MatchEngine {
         return scoredGoal;
     }
 
+    /**
+     * Approximate team strength using average of all visible attributes.
+     * Normalized by player count and attribute count to avoid runaway values.
+     */
+    private computeTeamStrength(team: TeamState): number {
+        const players = team.players || [];
+        if (players.length === 0) return 0;
+
+        let total = 0;
+        let count = 0;
+        for (const p of players) {
+            const attrs = p.attributes as Record<string, number>;
+            for (const val of Object.values(attrs)) {
+                if (typeof val === 'number') {
+                    total += val;
+                    count++;
+                }
+            }
+        }
+        const avg = count > 0 ? total / count : 0;
+        // Return rough CA-like number (0-100)
+        return avg * 5; // attributes 1-20 -> ~5x to map toward CA scale
+    }
+
+    /**
+     * Team strength modifier: clamp to 0.85-1.15 to avoid extremes.
+     */
+    private getTeamStrengthMod(): number {
+        const diff = this.teamStrengthDiff; // -0.3 ~ +0.3
+        const mod = 1 + diff;
+        return Math.max(0.85, Math.min(1.15, mod));
+    }
+
+    /**
+     * Context modifier: home advantage, score/time pressure.
+     */
+    private getContextModifier(): number {
+        let mod = 1.0;
+
+        // Home advantage
+        mod *= this.state.possession === 'home' ? 1.08 : 0.97;
+
+        // Time pressure: final 15 minutes
+        const timeRemaining = Math.max(0, this.matchDuration - this.state.time);
+        const scoreDiff = this.state.score[0] - this.state.score[1]; // home - away
+
+        // Trailing team pushes harder, leading team stabilizes
+        if (timeRemaining < 15) {
+            if (scoreDiff < 0 && this.state.possession === 'home') mod *= 1.08;
+            if (scoreDiff > 0 && this.state.possession === 'home') mod *= 0.96;
+            if (scoreDiff > 0 && this.state.possession === 'away') mod *= 1.08;
+            if (scoreDiff < 0 && this.state.possession === 'away') mod *= 0.96;
+        }
+
+        // Derby / high aggression hook (placeholder flag via tacticalModifiers.DERBY)
+        const derbyBoost = this.getPossessingTeam().tacticalModifiers.derby ? 1.05 : 1.0;
+        mod *= derbyBoost;
+
+        return Math.max(0.85, Math.min(1.15, mod));
+    }
+
     private generateEvent(): ActionType {
         const phase = this.state.phase;
         const ballY = this.state.ballPosition.y;
+        const mods = this.getPossessingTeam().tacticalModifiers || {};
 
         const inAttackingThird = this.state.possession === 'home'
             ? ballY > 66
             : ballY < 34;
 
+        const tempoBias = mods.tempo || 0;
+        const directBias = mods.directness || 0;
+        const widthBias = mods.width || 0;
+        const counterPress = mods.counterPress ? 1.05 : 1.0;
+        const counter = mods.counter ? 1.05 : 1.0;
+
         if (phase === 'ATTACK') {
             if (inAttackingThird) {
                 return weightedRandom<ActionType>(
                     ['PASS_SHORT', 'SHOOT', 'CROSS', 'DRIBBLE'],
-                    [0.4, 0.1, 0.3, 0.2]  // Reduced SHOOT from 0.3 to 0.1
+                    [
+                        0.55 - directBias * 0.05 - tempoBias * 0.03 + (mods.workBallIntoBox ? 0.03 : 0),
+                        0.15 + tempoBias * 0.02 + (mods.shootOnSight ? 0.05 : 0),
+                        0.2 + widthBias * 0.05 + (mods.hitEarlyCrosses ? 0.05 : 0),
+                        0.1 + tempoBias * 0.01
+                    ]
                 );
             } else {
                 return weightedRandom<ActionType>(
                     ['PASS_SHORT', 'PASS_LONG', 'DRIBBLE'],
-                    [0.5, 0.3, 0.2]
+                    [
+                        0.7 - directBias * 0.06 + (mods.workBallIntoBox ? 0.05 : 0),
+                        0.2 + directBias * 0.08 + (mods.counter ? 0.05 : 0),
+                        0.1 + tempoBias * 0.02
+                    ]
                 );
             }
         } else if (phase === 'DEFEND') {
             return weightedRandom<ActionType>(
                 ['TACKLE', 'INTERCEPT', 'CLEARANCE'],
-                [0.5, 0.3, 0.2]
+                [
+                    0.4 + (mods.pressingIntensity || 0) * 0.05 + (mods.tackleHarder ? 0.05 : 0),
+                    0.4 + (mods.engagementLine || 0) * 0.02,
+                    0.2 + (mods.defensiveLine || 0) * -0.03
+                ]
             );
         } else {
             return weightedRandom<ActionType>(
                 ['PASS_LONG', 'PASS_SHORT', 'DRIBBLE'],
-                [0.4, 0.4, 0.2]
+                [
+                    0.3 + directBias * 0.08 + counter * 0.02,
+                    0.6 - directBias * 0.08,
+                    0.1 + tempoBias * 0.02 + counterPress * 0.01
+                ]
             );
         }
     }
@@ -403,14 +529,23 @@ export class MatchEngine {
     }
 
     private updateStamina(duration: number): void {
-        const staminaDecay = duration * 0.5;
+        const modsHome = this.state.homeTeam.tacticalModifiers || {};
+        const modsAway = this.state.awayTeam.tacticalModifiers || {};
+
+        const decayBase = duration * 0.5;
+
+        const pressDecayHome = decayBase * (1 + (modsHome.pressingIntensity || 0) * 0.25);
+        const pressDecayAway = decayBase * (1 + (modsAway.pressingIntensity || 0) * 0.25);
+
+        const tempoDecayHome = pressDecayHome * (1 + (modsHome.tempo || 0) * 0.15);
+        const tempoDecayAway = pressDecayAway * (1 + (modsAway.tempo || 0) * 0.15);
 
         for (const player of this.state.homeTeam.players) {
-            player.stamina = Math.max(0, player.stamina - staminaDecay);
+            player.stamina = Math.max(0, player.stamina - tempoDecayHome);
         }
 
         for (const player of this.state.awayTeam.players) {
-            player.stamina = Math.max(0, player.stamina - staminaDecay);
+            player.stamina = Math.max(0, player.stamina - tempoDecayAway);
         }
     }
 
@@ -438,20 +573,20 @@ export class MatchEngine {
 
     private generateEventDescription(action: ActionType, actor: PlayerState, success: boolean): string {
         const actionText = {
-            PASS_SHORT: 'çŸ­ä¼ ',
-            PASS_LONG: 'é•¿ä¼ ',
-            SHOOT: 'å°„é—¨',
-            SHOOT_LONG: 'è¿œå°„',
-            TACKLE: 'æŠ¢æ–­',
-            DRIBBLE: 'ç›˜å¸¦',
-            CROSS: 'ä¼ ä¸­',
-            INTERCEPT: 'æ‹¦æˆª',
-            HEADER: 'å¤´ç�ƒ',
-            FIRST_TOUCH: 'å�œç�ƒ',
-            CLEARANCE: 'è§£å›´'
+            PASS_SHORT: '短传',
+            PASS_LONG: '长传',
+            SHOOT: '射门',
+            SHOOT_LONG: '远射',
+            TACKLE: '抢断',
+            DRIBBLE: '盘带',
+            CROSS: '传中',
+            INTERCEPT: '拦截',
+            HEADER: '头球',
+            FIRST_TOUCH: '停球',
+            CLEARANCE: '解围'
         };
 
-        return `${actor.name} ${actionText[action]} - ${success ? 'æˆ�åŠŸ' : 'å¤±è´¥'}`;
+        return `${actor.name} ${actionText[action]} - ${success ? '成功' : '失败'}`;
     }
 
     private getPossessingTeam(): TeamState {
@@ -480,12 +615,14 @@ export class MatchEngine {
     private checkForFoul(actor: PlayerState, opponent: PlayerState | null): boolean {
         if (!opponent) return false;
 
-        let foulChance = 0.02;
+        // Base ~0.6% 每 tick，结合 tickDuration(4-7s) 目标 8-15 犯规/场
+        let foulChance = 0.006;
         const aggression = actor.attributes.Aggression || 10;
-        foulChance *= (aggression / 10);
+        // Aggression 5 -> 0.75x, 10 -> 1.1x, 20 -> 1.6x
+        foulChance *= Math.max(0.75, Math.min(1.6, aggression / 9));
 
         if (this.state.phase === 'DEFEND') {
-            foulChance *= 1.5;
+            foulChance *= 1.6;
         }
 
         return Math.random() < foulChance;
@@ -496,14 +633,22 @@ export class MatchEngine {
      */
     private handleFoul(player: PlayerState): CardType {
         const aggression = player.attributes.Aggression || 10;
-        const cardProb = (aggression / 20) * 0.20;
+        // 基础黄牌概率：约 22% * (Agg/12)，夹在 5%-35%
+        const baseCardProb = Math.max(0.05, Math.min(0.35, 0.22 * (aggression / 12)));
 
-        if (player.yellowCards >= 1 && Math.random() < cardProb * 0.4) {
+        // Second yellow 概率更高以提升红牌出现率
+        if (player.yellowCards >= 1 && Math.random() < baseCardProb * 0.5) {
             player.redCard = true;
             return 'RED';
         }
 
-        if (Math.random() < cardProb) {
+        // 直接红牌小概率（高侵略性更易触发）
+        if (aggression > 15 && Math.random() < 0.03) {
+            player.redCard = true;
+            return 'RED';
+        }
+
+        if (Math.random() < baseCardProb) {
             player.yellowCards++;
             return 'YELLOW';
         }
@@ -511,4 +656,3 @@ export class MatchEngine {
         return 'NONE';
     }
 }
-

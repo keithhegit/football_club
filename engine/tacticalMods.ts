@@ -244,5 +244,64 @@ export function getActionModifier(
     modifiers: TacticalModifiers,
     action: ActionType
 ): number {
-    return modifiers[action] || 1.0;
+    let modifier = 1.0;
+
+    // Legacy direct overrides
+    if (typeof modifiers[action] === 'number') {
+        modifier *= modifiers[action] as number;
+    }
+
+    // Tempo: riskier execution at high tempo
+    if (modifiers.tempo !== undefined) {
+        if (action === 'PASS_SHORT' || action === 'PASS_LONG' || action === 'DRIBBLE') {
+            modifier *= 1 - (modifiers.tempo * 0.03);
+        }
+    }
+
+    // Directness: long ball & crosses boosted, short passing slightly penalized
+    if (modifiers.directness !== undefined) {
+        if (action === 'PASS_LONG' || action === 'CROSS') {
+            modifier *= 1 + (modifiers.directness * 0.05);
+        }
+        if (action === 'PASS_SHORT') {
+            modifier *= 1 - Math.max(0, modifiers.directness) * 0.04;
+        }
+    }
+
+    // Width: wider aids crosses, central favors short passing slightly
+    if (modifiers.width !== undefined) {
+        if (action === 'CROSS') modifier *= 1 + (modifiers.width * 0.05);
+        if (action === 'PASS_SHORT') modifier *= 1 - Math.abs(modifiers.width) * 0.02;
+    }
+
+    // Pressing: tackles/intercepts slightly higher success (foul/decay handled elsewhere)
+    if (modifiers.pressingIntensity !== undefined) {
+        if (action === 'TACKLE' || action === 'INTERCEPT') {
+            modifier *= 1 + (modifiers.pressingIntensity * 0.04);
+        }
+    }
+
+    // Work Ball Into Box vs Shoot on Sight
+    if (modifiers.workBallIntoBox && (action === 'SHOOT' || action === 'SHOOT_LONG')) {
+        modifier *= 0.92;
+    }
+    if (modifiers.shootOnSight && (action === 'SHOOT' || action === 'SHOOT_LONG')) {
+        modifier *= 0.96;
+    }
+
+    // Hit Early Crosses
+    if (modifiers.hitEarlyCrosses && action === 'CROSS') {
+        modifier *= 1.05;
+    }
+
+    // Stay On Feet vs Tackle Harder
+    if (modifiers.stayOnFeet && action === 'TACKLE') modifier *= 0.96;
+    if (modifiers.tackleHarder && action === 'TACKLE') modifier *= 1.04;
+
+    // Focus play slight nudge
+    if ((modifiers.focusLeft || modifiers.focusRight || modifiers.focusCentre) && action === 'PASS_SHORT') {
+        modifier *= 1.01;
+    }
+
+    return modifier;
 }
