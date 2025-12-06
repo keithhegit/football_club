@@ -130,7 +130,10 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           const newMinute = prev + 1;
 
           // Find events for this minute
-          const newEvents = (fullMatchResult.events || fullMatchResult.eventLog).filter((e: MatchEvent) => e.minute === newMinute);
+          const newEvents = (fullMatchResult.events || fullMatchResult.eventLog).filter((e: any) => {
+            const eventTime = e.time !== undefined ? e.time : e.minute;
+            return Math.floor(eventTime) === newMinute;
+          });
 
           if (newEvents.length > 0) {
             setEvents(prevEvents => [...prevEvents, ...newEvents]);
@@ -235,9 +238,9 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
             className="flex-1 bg-slate-900/50 rounded-lg border border-slate-800 p-3 overflow-y-auto space-y-3"
           >
             {events.length === 0 && <div className="text-center text-slate-500 text-sm mt-10">The referee blows the whistle...</div>}
-            {events.map((e, idx) => (
+            {events.map((e: any, idx) => (
               <div key={idx} className={`text-sm flex space-x-3 ${e.type === 'GOAL' ? 'bg-slate-800/80 p-2 rounded border-l-4 border-emerald-500' : ''}`}>
-                <span className="text-slate-500 font-mono w-6">{e.minute}'</span>
+                <span className="text-slate-500 font-mono w-6">{e.time !== undefined ? e.time : e.minute}'</span>
                 <span className={e.type === 'GOAL' ? 'text-white font-bold' : e.type === 'CARD_YELLOW' ? 'text-yellow-200' : 'text-slate-300'}>
                   {e.description}
                 </span>
