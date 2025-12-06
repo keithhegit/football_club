@@ -483,18 +483,18 @@ export class MatchEngine {
             return weightedRandom<ActionType>(
                 ['TACKLE', 'INTERCEPT', 'CLEARANCE'],
                 [
-                    0.28 + (mods.pressingIntensity || 0) * 0.04 + (mods.tackleHarder ? 0.04 : 0),
-                    0.42 + (mods.engagementLine || 0) * 0.02,
-                    0.30 + (mods.defensiveLine || 0) * -0.02
+                    0.18 + (mods.pressingIntensity || 0) * 0.035 + (mods.tackleHarder ? 0.03 : 0),
+                    0.36 + (mods.engagementLine || 0) * 0.02,
+                    0.46 + (mods.defensiveLine || 0) * -0.015
                 ]
             );
         } else {
             return weightedRandom<ActionType>(
                 ['PASS_LONG', 'PASS_SHORT', 'DRIBBLE'],
                 [
-                    0.3 + directBias * 0.08 + counter * 0.02,
-                    0.6 - directBias * 0.08,
-                    0.1 + tempoBias * 0.02 + counterPress * 0.01
+                    0.25 + directBias * 0.06 + counter * 0.02,
+                    0.65 - directBias * 0.06 + (mods.workBallIntoBox ? 0.03 : 0),
+                    0.10 + tempoBias * 0.015 + counterPress * 0.01
                 ]
             );
         }

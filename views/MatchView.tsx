@@ -65,7 +65,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   const [events, setEvents] = useState<MatchEvent[]>([]);
   const [currentStats, setCurrentStats] = useState<any>(null); // Dynamic stats state
   const [matchState, setMatchState] = useState<MatchState>(MatchState.PRE_MATCH);
-  const [speed, setSpeed] = useState(100); // ms per tick
+  const [speed, setSpeed] = useState(1000); // ms per tick (default 1x)
   const [paused, setPaused] = useState(false);
   const [assistantReport, setAssistantReport] = useState<string>("");
   const [headline, setHeadline] = useState<string>("");
@@ -404,13 +404,12 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
               matchState === MatchState.FULL_TIME ? 'FULL TIME' :
                 `${minute}'`}
           </div>
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 flex-wrap justify-end">
             <button onClick={() => setSpeedPreset('1x')} className={`p-1 rounded ${speed === 1000 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>1x</button>
             <button onClick={() => setSpeedPreset('2x')} className={`p-1 rounded ${speed === 500 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>2x</button>
             <button onClick={() => setSpeedPreset('4x')} className={`p-1 rounded ${speed === 250 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>4x</button>
             <button onClick={handlePauseToggle} className={`p-1 rounded ${paused ? 'bg-yellow-700 text-white' : 'text-slate-500'}`}>{paused ? 'Resume' : 'Pause'}</button>
-            <button onClick={() => setShowTactics(!showTactics)} className={`p-1 rounded ${showTactics ? 'bg-emerald-700 text-white' : 'text-slate-500'}`}>Tactics</button>
-            <button onClick={handleBackToDashboard} className="p-1 rounded text-slate-300 border border-slate-700">Back</button>
+            <button onClick={() => setShowTactics(!showTactics)} className={`px-2 py-1 rounded border ${showTactics ? 'border-emerald-500 text-emerald-300' : 'border-slate-700 text-slate-300'}`}>Tactics</button>
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -611,6 +610,17 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           )}
         </div>
       </div>
+
+      {matchState === MatchState.FULL_TIME && (
+        <div className="p-4 border-t border-slate-800 bg-slate-900 flex justify-center">
+          <button
+            onClick={handleBackToDashboard}
+            className="px-4 py-2 rounded bg-emerald-600 text-white font-bold"
+          >
+            返回 Dashboard
+          </button>
+        </div>
+      )}
     </div>
   );
 };

@@ -250,10 +250,21 @@ export function useGameInit(clubId?: number) {
                 const convertToLegacyTeam = async (dbTeam: any): Promise<Team> => {
                     const dbPlayers = await getTeamPlayers(dbTeam.name);
                     const enginePlayers = convertPlayersToState(dbPlayers);
+                    const caMap = new Map<string, { ca?: number; pa?: number }>();
+                    dbPlayers.forEach((p: any) => {
+                        const id = (p.UID || p.id || p.playerId || '').toString();
+                        caMap.set(id, {
+                            ca: p.current_ability ?? p.CurrentAbility ?? p.ca,
+                            pa: p.potential_ability ?? p.PotentialAbility ?? p.pa
+                        });
+                    });
 
                     // Map Engine PlayerState -> Legacy Player Interface
                     const legacyPlayers: Player[] = enginePlayers.map(p => {
                         const attr = p.attributes; // Flat attributes from engine
+
+                        const rawCa = caMap.get(p.id.toString())?.ca;
+                        const rawPa = caMap.get(p.id.toString())?.pa;
 
                         return {
                             id: p.id.toString(),
@@ -261,9 +272,9 @@ export function useGameInit(clubId?: number) {
                             age: 20, // Default if missing
                             position: mapPosition(p.position),
                             nationality: 'Unknown',
-                            ca: 100, // Placeholder
-                            pa: 150,
-                            initialCA: 100,
+                            ca: rawCa ?? 100,
+                            pa: rawPa ?? 150,
+                            initialCA: rawCa ?? 100,
                             // Reconstruct nested attributes strictly for UI compatibility
                             attributes: {
                                 technical: {

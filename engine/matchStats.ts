@@ -59,7 +59,9 @@ export class MatchStatsTracker {
 
             case 'TACKLE':
             case 'INTERCEPT':
-                this.stats.tackles[teamIndex]++;
+                if (event.outcome === 'SUCCESS') {
+                    this.stats.tackles[teamIndex]++;
+                }
                 break;
 
             case 'CROSS':
