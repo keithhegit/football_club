@@ -69,6 +69,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   const [currentStats, setCurrentStats] = useState<any>(null); // Dynamic stats state
   const [matchState, setMatchState] = useState<MatchState>(MatchState.PRE_MATCH);
   const [speed, setSpeed] = useState(100); // ms per tick
+  const [paused, setPaused] = useState(false);
   const [assistantReport, setAssistantReport] = useState<string>("");
   const [headline, setHeadline] = useState<string>("");
   const [filter, setFilter] = useState<string>('IMPORTANT'); // Default filter to interesting events
@@ -166,7 +167,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
-    if (matchState === MatchState.PLAYING && fullMatchResult) {
+    if (matchState === MatchState.PLAYING && fullMatchResult && !paused) {
       interval = setInterval(() => {
         setMinute((prevMinute) => {
           if (prevMinute >= 90) {
@@ -276,7 +277,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
     }
 
     return () => clearInterval(interval);
-  }, [matchState, fullMatchResult, speed, homeTeam, awayTeam, headline]);
+  }, [matchState, fullMatchResult, speed, paused, homeTeam, awayTeam, headline]);
 
   // Initial Assistant Report
   useEffect(() => {
@@ -295,6 +296,14 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
 
   const handleBackToDashboard = () => {
     if (navigate) navigate('/dashboard');
+  };
+
+  const handlePauseToggle = () => setPaused((p) => !p);
+
+  const setSpeedPreset = (preset: '1x' | '2x' | '4x') => {
+    if (preset === '1x') setSpeed(1000);
+    if (preset === '2x') setSpeed(500);
+    if (preset === '4x') setSpeed(250);
   };
 
   return (
@@ -365,6 +374,28 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
               应用
             </button>
           </div>
+
+          {/* Lineups & Quick Subs (display only, up to 3 per team) */}
+          <div className="space-y-3">
+            <div className="text-xs text-slate-400 font-bold uppercase">球员状态 (Home)</div>
+            {homeTeam.players?.slice(0, 11).map((p: any, idx: number) => (
+              <div key={p.id} className="flex justify-between text-xs text-slate-200 border-b border-slate-800 py-1">
+                <span className="truncate w-24">{p.name}</span>
+                <span className="text-slate-400">体能 {p.stamina ?? 100}%</span>
+                <span className="text-slate-500">士气 {p.morale ?? 75}</span>
+                <span className="text-slate-600">Pos {p.position}</span>
+              </div>
+            ))}
+            <div className="text-xs text-slate-400 font-bold uppercase pt-2">球员状态 (Away)</div>
+            {awayTeam.players?.slice(0, 11).map((p: any, idx: number) => (
+              <div key={p.id} className="flex justify-between text-xs text-slate-200 border-b border-slate-800 py-1">
+                <span className="truncate w-24">{p.name}</span>
+                <span className="text-slate-400">体能 {p.stamina ?? 100}%</span>
+                <span className="text-slate-500">士气 {p.morale ?? 75}</span>
+                <span className="text-slate-600">Pos {p.position}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -377,12 +408,10 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                 `${minute}'`}
           </div>
           <div className="flex space-x-2">
-            {matchState === MatchState.PLAYING && (
-              <>
-                <button onClick={() => setSpeed(200)} className={`p-1 rounded ${speed === 200 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}><Play size={14} /></button>
-                <button onClick={() => setSpeed(50)} className={`p-1 rounded ${speed === 50 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}><FastForward size={14} /></button>
-              </>
-            )}
+            <button onClick={() => setSpeedPreset('1x')} className={`p-1 rounded ${speed === 1000 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>1x</button>
+            <button onClick={() => setSpeedPreset('2x')} className={`p-1 rounded ${speed === 500 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>2x</button>
+            <button onClick={() => setSpeedPreset('4x')} className={`p-1 rounded ${speed === 250 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>4x</button>
+            <button onClick={handlePauseToggle} className={`p-1 rounded ${paused ? 'bg-yellow-700 text-white' : 'text-slate-500'}`}>{paused ? 'Resume' : 'Pause'}</button>
             <button onClick={() => setShowTactics(!showTactics)} className={`p-1 rounded ${showTactics ? 'bg-emerald-700 text-white' : 'text-slate-500'}`}>Tactics</button>
             <button onClick={handleBackToDashboard} className="p-1 rounded text-slate-300 border border-slate-700">Back</button>
           </div>
