@@ -5,6 +5,7 @@ import { MatchEngine } from '../engine/matchEngine'; // Direct import of new eng
 import { TeamState, MatchEvent } from '../engine/types'; // Import new types
 import { Play, Pause, FastForward, CheckCircle2, SkipForward } from 'lucide-react';
 import { generatePostMatchComment, getAssistantReport } from '../services/geminiService';
+import { useNavigate } from 'react-router-dom';
 
 interface MatchViewProps {
   homeTeam: Team;
@@ -61,6 +62,7 @@ const StatRow: React.FC<{ label: string; homeValue: string; awayValue: string }>
 
 export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatchComplete, userTeamId, fixtureId }) => {
 
+  const navigate = useNavigate?.();
   const [minute, setMinute] = useState(0);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [events, setEvents] = useState<MatchEvent[]>([]);
@@ -291,6 +293,10 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
     onMatchComplete(scores.home, scores.away);
   };
 
+  const handleBackToDashboard = () => {
+    if (navigate) navigate('/dashboard');
+  };
+
   return (
     <div className="flex flex-col h-full bg-slate-950">
 
@@ -370,13 +376,16 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
               matchState === MatchState.FULL_TIME ? 'FULL TIME' :
                 `${minute}'`}
           </div>
-          {matchState === MatchState.PLAYING && (
-            <div className="flex space-x-2">
-              <button onClick={() => setSpeed(200)} className={`p-1 rounded ${speed === 200 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}><Play size={14} /></button>
-              <button onClick={() => setSpeed(50)} className={`p-1 rounded ${speed === 50 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}><FastForward size={14} /></button>
-              <button onClick={() => setShowTactics(!showTactics)} className={`p-1 rounded ${showTactics ? 'bg-emerald-700 text-white' : 'text-slate-500'}`}>Tactics</button>
-            </div>
-          )}
+          <div className="flex space-x-2">
+            {matchState === MatchState.PLAYING && (
+              <>
+                <button onClick={() => setSpeed(200)} className={`p-1 rounded ${speed === 200 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}><Play size={14} /></button>
+                <button onClick={() => setSpeed(50)} className={`p-1 rounded ${speed === 50 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}><FastForward size={14} /></button>
+              </>
+            )}
+            <button onClick={() => setShowTactics(!showTactics)} className={`p-1 rounded ${showTactics ? 'bg-emerald-700 text-white' : 'text-slate-500'}`}>Tactics</button>
+            <button onClick={handleBackToDashboard} className="p-1 rounded text-slate-300 border border-slate-700">Back</button>
+          </div>
         </div>
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-3 w-1/3">

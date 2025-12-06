@@ -210,9 +210,8 @@ export class MatchEngine {
         this.state.eventLog.push(matchEvent);
 
         // Update possession time
-        // Reduce tick duration to increase total events (aiming for ~400 passes)
-        // Slow down ticks以降低过高事件量与大比分
-        const tickDuration = randomBetween(4, 7) / 60; // 4-7 秒/事件，目标 ~700-1100 ticks
+        // Tick tuned for ~250-450 events，防止抢断/犯规爆量
+        const tickDuration = randomBetween(5, 8) / 60; // 5-8 秒/事件
         this.statsTracker.updatePossession(this.state.possession, tickDuration);
 
         // Update player stamina
@@ -484,9 +483,9 @@ export class MatchEngine {
             return weightedRandom<ActionType>(
                 ['TACKLE', 'INTERCEPT', 'CLEARANCE'],
                 [
-                    0.4 + (mods.pressingIntensity || 0) * 0.05 + (mods.tackleHarder ? 0.05 : 0),
-                    0.4 + (mods.engagementLine || 0) * 0.02,
-                    0.2 + (mods.defensiveLine || 0) * -0.03
+                    0.28 + (mods.pressingIntensity || 0) * 0.04 + (mods.tackleHarder ? 0.04 : 0),
+                    0.42 + (mods.engagementLine || 0) * 0.02,
+                    0.30 + (mods.defensiveLine || 0) * -0.02
                 ]
             );
         } else {

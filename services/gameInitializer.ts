@@ -72,7 +72,9 @@ export const gameInitializer = {
                 UID: p.id, // Map D1 id to local UID
                 // Ensure Club/League are present (API alias handles this, checking just in case)
                 Club: p.Club || p.club_name,
-                League: p.League || p.league_name
+                League: p.League || p.league_name,
+                CurrentAbility: p.current_ability ?? p.CurrentAbility ?? p.ca,
+                PotentialAbility: p.potential_ability ?? p.PotentialAbility ?? p.pa
             }));
             await saveBatch('players', mappedPlayers);
 

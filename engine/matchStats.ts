@@ -98,27 +98,13 @@ export class MatchStatsTracker {
      */
     finalize(): MatchStatistics {
         // Calculate pass accuracy from events
-        const homePassAttempts = this.events.filter(e =>
-            (e.type === 'PASS_SHORT' || e.type === 'PASS_LONG') &&
-            this.isHomeTeamEvent(e)
-        ).length;
+        const isPass = (e: MatchEvent) => (e.type === 'PASS_SHORT' || e.type === 'PASS_LONG');
 
-        const homePassSuccess = this.events.filter(e =>
-            (e.type === 'PASS_SHORT' || e.type === 'PASS_LONG') &&
-            this.isHomeTeamEvent(e) &&
-            e.outcome === 'SUCCESS'
-        ).length;
+        const homePassAttempts = this.events.filter(e => isPass(e) && this.isHomeTeamEvent(e)).length;
+        const homePassSuccess = this.events.filter(e => isPass(e) && this.isHomeTeamEvent(e) && e.outcome === 'SUCCESS').length;
 
-        const awayPassAttempts = this.events.filter(e =>
-            (e.type === 'PASS_SHORT' || e.type === 'PASS_LONG') &&
-            !this.isHomeTeamEvent(e)
-        ).length;
-
-        const awayPassSuccess = this.events.filter(e =>
-            (e.type === 'PASS_SHORT' || e.type === 'PASS_LONG') &&
-            !this.isHomeTeamEvent(e) &&
-            e.outcome === 'SUCCESS'
-        ).length;
+        const awayPassAttempts = this.events.filter(e => isPass(e) && !this.isHomeTeamEvent(e)).length;
+        const awayPassSuccess = this.events.filter(e => isPass(e) && !this.isHomeTeamEvent(e) && e.outcome === 'SUCCESS').length;
 
         this.stats.passAccuracy[0] = homePassAttempts > 0
             ? Math.round((homePassSuccess / homePassAttempts) * 100)

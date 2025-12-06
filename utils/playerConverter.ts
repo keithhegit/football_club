@@ -149,7 +149,7 @@ export function convertToPlayerState(csvPlayer: any): PlayerState {
             CommandOfArea: getAttr(csvPlayer, 'CommandOfArea', 'command_of_area', position.includes('GK') ? d : 1),
         },
 
-        // Match state
+        // Match state (do not inject CA/PA defaults here)
         condition: 100,
         stamina: getAttr(csvPlayer, 'Stamina', 'stamina', 100),
         morale: 75,  // Default morale
