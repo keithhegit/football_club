@@ -123,7 +123,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           const hTeamState: TeamState = {
             id: homeTeam.id.toString(),
             name: homeTeam.name,
-            players: (homeTeam.players || []).map((p: any) => ({
+            players: (homeTeam.players || []).slice(0, 11).map((p: any) => ({
               id: p.id,
               name: p.name,
               position: p.position || 'MC',
@@ -139,7 +139,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           const aTeamState: TeamState = {
             id: awayTeam.id.toString(),
             name: awayTeam.name,
-            players: (awayTeam.players || []).map((p: any) => ({
+            players: (awayTeam.players || []).slice(0, 11).map((p: any) => ({
               id: p.id,
               name: p.name,
               position: p.position || 'MC',

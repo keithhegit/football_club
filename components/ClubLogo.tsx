@@ -37,10 +37,14 @@ export const ClubLogo: React.FC<ClubLogoProps> = ({
         }
     }
 
-    // Priority: clubId > clubName
-    const logoId = numericClubId
-        ? getClubLogoIdByClubId(numericClubId)
-        : clubName ? getClubLogoId(clubName.trim()) : null;
+    // Priority: clubName > clubId (因为本地存档 id 已被自定义)
+    let logoId: string | null = null;
+    if (clubName) {
+        logoId = getClubLogoId(clubName.trim());
+    }
+    if (!logoId && numericClubId) {
+        logoId = getClubLogoIdByClubId(numericClubId);
+    }
 
     if (error || !logoId) {
         return (

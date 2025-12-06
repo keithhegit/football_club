@@ -211,7 +211,7 @@ export class MatchEngine {
 
         // Update possession time
         // Tick tuned for ~200-350 events，进一步降低事件量
-        const tickDuration = randomBetween(6, 9) / 60; // 6-9 秒/事件
+        const tickDuration = randomBetween(7, 11) / 60; // 7-11 秒/事件进一步降频
         this.statsTracker.updatePossession(this.state.possession, tickDuration);
 
         // Update player stamina
@@ -483,17 +483,17 @@ export class MatchEngine {
             return weightedRandom<ActionType>(
                 ['TACKLE', 'INTERCEPT', 'CLEARANCE'],
                 [
-                    0.12 + (mods.pressingIntensity || 0) * 0.03 + (mods.tackleHarder ? 0.025 : 0),
-                    0.34 + (mods.engagementLine || 0) * 0.02,
-                    0.54 + (mods.defensiveLine || 0) * -0.01
+                    0.10 + (mods.pressingIntensity || 0) * 0.025 + (mods.tackleHarder ? 0.02 : 0),
+                    0.32 + (mods.engagementLine || 0) * 0.02,
+                    0.58 + (mods.defensiveLine || 0) * -0.01
                 ]
             );
         } else {
             return weightedRandom<ActionType>(
                 ['PASS_LONG', 'PASS_SHORT', 'DRIBBLE'],
                 [
-                    0.22 + directBias * 0.05 + counter * 0.02,
-                    0.68 - directBias * 0.05 + (mods.workBallIntoBox ? 0.03 : 0),
+                    0.20 + directBias * 0.05 + counter * 0.02,
+                    0.70 - directBias * 0.05 + (mods.workBallIntoBox ? 0.03 : 0),
                     0.10 + tempoBias * 0.01 + counterPress * 0.01
                 ]
             );
