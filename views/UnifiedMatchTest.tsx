@@ -33,7 +33,8 @@ export const UnifiedMatchTest: React.FC = () => {
             playersPerTeam: homeTeam.players.length
         });
 
-        const engine = new MatchEngine(homeTeam, awayTeam, (state) => {
+        const engine = new MatchEngine(homeTeam, awayTeam);
+        engine.setUpdateCallback((state) => {
             setMatchState({ ...state });
         });
 
@@ -228,16 +229,16 @@ export const UnifiedMatchTest: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Main Content Grid */}
-                <div className={`grid ${showStats ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'} gap-6`}>
-                    {/* Pitch Visualization */}
+                {/* Main Content Grid - Adjusted for Stats Only */}
+                <div className="grid grid-cols-1 gap-6 max-w-4xl mx-auto">
+                    {/* Pitch Visualization - TEMPORARILY HIDDEN */}
+                    {/* 
                     <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
                         <h2 className="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2">
                             <span className="text-2xl">⚽</span>
                             Live Match
                         </h2>
 
-                        {/* Score Display */}
                         <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-4 rounded-lg mb-4 text-center">
                             <div className="text-3xl font-bold">
                                 <span className="text-emerald-400">{matchState.homeTeam.name}</span>
@@ -250,7 +251,6 @@ export const UnifiedMatchTest: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Pitch */}
                         <div className="flex justify-center">
                             <PitchCanvas
                                 homeTeam={matchState.homeTeam}
@@ -262,6 +262,19 @@ export const UnifiedMatchTest: React.FC = () => {
                             />
                         </div>
                     </div>
+                    */}
+
+                    {/* Score Display (Standalone since pitch is hidden) */}
+                    <div className="bg-slate-800 p-6 rounded-lg border border-slate-700 text-center">
+                        <div className="text-5xl font-bold mb-2">
+                            <span className="text-emerald-400">{matchState.homeTeam.name}</span>
+                            <span className="text-slate-500 mx-4">vs</span>
+                            <span className="text-blue-400">{matchState.awayTeam.name}</span>
+                        </div>
+                        <div className="text-6xl font-black text-white bg-slate-900 inline-block px-8 py-4 rounded-xl border border-slate-700">
+                            {matchState.score[0]} - {matchState.score[1]}
+                        </div>
+                    </div>
 
                     {/* Statistics Panel */}
                     {showStats && (
@@ -270,65 +283,83 @@ export const UnifiedMatchTest: React.FC = () => {
                             <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
                                 <h3 className="text-lg font-bold text-slate-100 mb-4">📊 Match Statistics</h3>
                                 <div className="space-y-3 text-sm">
-                                    <StatRow label="Possession" homeValue={`${matchState.statistics.possession[0]}%`} awayValue={`${matchState.statistics.possession[1]}%`} />
-                                    <StatRow label="Shots (on target)" homeValue={`${matchState.statistics.shots[0]} (${matchState.statistics.shotsOnTarget[0]})`} awayValue={`${matchState.statistics.shots[1]} (${matchState.statistics.shotsOnTarget[1]})`} />
-                                    <StatRow label="xG" homeValue={matchState.statistics.xG[0].toFixed(2)} awayValue={matchState.statistics.xG[1].toFixed(2)} />
-                                    <StatRow label="Passes" homeValue={`${matchState.statistics.passes[0]} (${matchState.statistics.passAccuracy[0]}%)`} awayValue={`${matchState.statistics.passes[1]} (${matchState.statistics.passAccuracy[1]}%)`} />
-                                    <StatRow label="Tackles" homeValue={matchState.statistics.tackles[0].toString()} awayValue={matchState.statistics.tackles[1].toString()} />
-                                    <StatRow label="Fouls" homeValue={matchState.statistics.fouls[0].toString()} awayValue={matchState.statistics.fouls[1].toString()} />
-                                    <StatRow label="Yellow Cards" homeValue={matchState.statistics.yellowCards[0].toString()} awayValue={matchState.statistics.yellowCards[1].toString()} />
-                                    <StatRow label="Corners" homeValue={matchState.statistics.corners[0].toString()} awayValue={matchState.statistics.corners[1].toString()} />
+                                    <StatRow label="Possession" homeValue={`${matchState.statistics?.possession?.[0] || 0}%`} awayValue={`${matchState.statistics?.possession?.[1] || 0}%`} />
+                                    <StatRow label="Shots (on target)" homeValue={`${matchState.statistics?.shots?.[0] || 0} (${matchState.statistics?.shotsOnTarget?.[0] || 0})`} awayValue={`${matchState.statistics?.shots?.[1] || 0} (${matchState.statistics?.shotsOnTarget?.[1] || 0})`} />
+                                    <StatRow label="xG" homeValue={(matchState.statistics?.xG?.[0] || 0).toFixed(2)} awayValue={(matchState.statistics?.xG?.[1] || 0).toFixed(2)} />
+                                    <StatRow label="Passes" homeValue={`${matchState.statistics?.passes?.[0] || 0} (${matchState.statistics?.passAccuracy?.[0] || 0}%)`} awayValue={`${matchState.statistics?.passes?.[1] || 0} (${matchState.statistics?.passAccuracy?.[1] || 0}%)`} />
+                                    <StatRow label="Tackles" homeValue={(matchState.statistics?.tackles?.[0] || 0).toString()} awayValue={(matchState.statistics?.tackles?.[1] || 0).toString()} />
+                                    <StatRow label="Fouls" homeValue={(matchState.statistics?.fouls?.[0] || 0).toString()} awayValue={(matchState.statistics?.fouls?.[1] || 0).toString()} />
+                                    <StatRow label="Yellow Cards" homeValue={(matchState.statistics?.yellowCards?.[0] || 0).toString()} awayValue={(matchState.statistics?.yellowCards?.[1] || 0).toString()} />
+                                    <StatRow label="Corners" homeValue={(matchState.statistics?.corners?.[0] || 0).toString()} awayValue={(matchState.statistics?.corners?.[1] || 0).toString()} />
                                 </div>
                             </div>
 
-                            {/* Recent Events - FILTERED */}
+                            {/* Player Ratings / Stats */}
                             <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
-                                <h3 className="text-lg font-bold text-slate-100 mb-4">📋 Key Events</h3>
-                                <div className="space-y-1 max-h-96 overflow-y-auto">
+                                <h3 className="text-lg font-bold text-slate-100 mb-4">🏃 Player Stats</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    {/* Home Team Key Players */}
+                                    <div>
+                                        <div className="text-xs font-bold text-emerald-400 mb-2 uppercase border-b border-emerald-900 pb-1">{matchState.homeTeam.name}</div>
+                                        <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
+                                            {matchState.homeTeam.players.map(p => {
+                                                const goals = matchState.eventLog.filter(e => e.type === 'SHOOT' && e.outcome === 'SUCCESS' && e.actor?.id === p.id).length;
+                                                const rating = calculateMockRating(p, matchState.eventLog);
+
+                                                if (rating < 6.5 && goals === 0) return null; // Filter for "key" performers to save space
+
+                                                return (
+                                                    <div key={p.id} className="flex justify-between items-center text-xs">
+                                                        <span className="text-slate-300 w-24 truncate">{p.name}</span>
+                                                        <div className="flex gap-2">
+                                                            {goals > 0 && <span className="text-emerald-400 font-bold">{goals}⚽</span>}
+                                                            <span className={`font-semibold ${rating >= 8 ? 'text-yellow-400' : rating >= 7 ? 'text-green-400' : 'text-slate-400'}`}>{rating.toFixed(1)}</span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Away Team Key Players */}
+                                    <div>
+                                        <div className="text-xs font-bold text-blue-400 mb-2 uppercase border-b border-blue-900 pb-1">{matchState.awayTeam.name}</div>
+                                        <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
+                                            {matchState.awayTeam.players.map(p => {
+                                                const goals = matchState.eventLog.filter(e => e.type === 'SHOOT' && e.outcome === 'SUCCESS' && e.actor?.id === p.id).length;
+                                                const rating = calculateMockRating(p, matchState.eventLog);
+
+                                                if (rating < 6.5 && goals === 0) return null; // Filter for "key" performers to save space
+
+                                                return (
+                                                    <div key={p.id} className="flex justify-between items-center text-xs">
+                                                        <span className="text-slate-300 w-24 truncate">{p.name}</span>
+                                                        <div className="flex gap-2">
+                                                            {goals > 0 && <span className="text-emerald-400 font-bold">{goals}⚽</span>}
+                                                            <span className={`font-semibold ${rating >= 8 ? 'text-yellow-400' : rating >= 7 ? 'text-green-400' : 'text-slate-400'}`}>{rating.toFixed(1)}</span>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Key Events Log (Restored) */}
+                            <div className="bg-slate-800 p-6 rounded-lg border border-slate-700">
+                                <h3 className="text-lg font-bold text-slate-100 mb-4">📜 Key Match Events</h3>
+                                <div className="space-y-2 max-h-60 overflow-y-auto font-mono text-sm">
                                     {matchState.eventLog
-                                        .filter(event => {
-                                            // Only show important events
-                                            const desc = event.description.toLowerCase();
-                                            return (
-                                                desc.includes('goal') ||
-                                                desc.includes('card') ||
-                                                desc.includes('save') ||
-                                                desc.includes('corner') ||
-                                                desc.includes('foul') ||
-                                                desc.includes('offside') ||
-                                                desc.includes('free kick') ||
-                                                desc.includes('substitution') ||
-                                                desc.includes('half time') ||
-                                                desc.includes('full time')
-                                            );
-                                        })
-                                        .slice(-15)
-                                        .reverse()
-                                        .map((event, index) => (
-                                            <div
-                                                key={index}
-                                                className={`text-xs py-1.5 px-2 rounded ${event.description.includes('GOAL')
-                                                        ? 'bg-emerald-900/30 text-emerald-200 font-semibold'
-                                                        : event.description.includes('CARD')
-                                                            ? 'bg-yellow-900/30 text-yellow-200'
-                                                            : 'bg-slate-900 text-slate-300'
-                                                    }`}
-                                            >
-                                                <span className="text-emerald-400 font-mono font-bold">{event.time}'</span>
-                                                {' '}
-                                                <span>{event.description}</span>
+                                        .filter(e => ['GOAL', 'CARD_YELLOW', 'CARD_RED', 'SUBSTITUTION', 'SAVE', 'CORNER', 'FOUL', 'OFFSIDE', 'FREE_KICK', 'HALF_TIME', 'FULL_TIME'].includes(e.type) || e.description.includes('Goal') || e.description.includes('Card'))
+                                        .slice().reverse()
+                                        .map((e, idx) => (
+                                            <div key={idx} className={`flex gap-3 pb-1 border-b border-slate-700/50 last:border-0 ${e.type === 'GOAL' ? 'text-emerald-400 font-bold' : e.type.includes('CARD') ? 'text-yellow-400' : 'text-slate-400'}`}>
+                                                <span className="w-8 shrink-0 text-slate-500">{Math.floor(e.time)}'</span>
+                                                <span>{e.description}</span>
                                             </div>
                                         ))}
-                                </div>
-                            </div>
-
-                            {/* System Info */}
-                            <div className="bg-slate-800 p-4 rounded-lg border border-slate-700">
-                                <h3 className="text-sm font-bold text-slate-100 mb-2">🔧 System Info</h3>
-                                <div className="text-xs text-slate-400 space-y-1">
-                                    <div>Total Events: {matchState.eventLog.length}</div>
-                                    <div>Simulation Speed: {speed}x</div>
-                                    <div>Console: Check browser console (F12) for detailed logs</div>
+                                    {matchState.eventLog.length === 0 && <div className="text-slate-600 italic">No key events yet...</div>}
                                 </div>
                             </div>
                         </div>
@@ -339,14 +370,44 @@ export const UnifiedMatchTest: React.FC = () => {
     );
 };
 
+// Simple pseudo-rating calculator
+function calculateMockRating(player: any, events: any[]): number {
+    let rating = 6.0;
+    const playerEvents = events.filter(e => e.actor?.id === player.id);
+
+    // Positive actions
+    const successPasses = playerEvents.filter(e => e.type.includes('PASS') && e.outcome === 'SUCCESS').length;
+    const successDribbles = playerEvents.filter(e => e.type === 'DRIBBLE' && e.outcome === 'SUCCESS').length;
+    const tackles = playerEvents.filter(e => (e.type === 'TACKLE' || e.type === 'INTERCEPT') && e.outcome === 'SUCCESS').length;
+    const goals = playerEvents.filter(e => e.type === 'SHOOT' && e.outcome === 'SUCCESS').length;
+    const shotsOnTarget = playerEvents.filter(e => e.type === 'SHOOT' && e.outcome === 'SUCCESS' && !e.description.includes('GOAL')).length;
+
+    // Negative actions
+    const fouls = playerEvents.filter(e => e.type === 'FOUL').length;
+    const failedPasses = playerEvents.filter(e => e.type.includes('PASS') && e.outcome === 'FAILURE').length;
+
+    rating += (successPasses * 0.05);
+    rating += (successDribbles * 0.2);
+    rating += (tackles * 0.3);
+    rating += (goals * 1.5);
+    rating += (shotsOnTarget * 0.3);
+
+    rating -= (fouls * 0.4);
+    rating -= (failedPasses * 0.05);
+
+    return Math.min(10, Math.max(4, rating));
+}
+
 // Stat Row Component
-const StatRow: React.FC<{ label: string; homeValue: string; awayValue: string }> = ({ label, homeValue, awayValue }) => (
-    <div className="flex justify-between items-center py-1 border-b border-slate-700/50">
-        <span className="text-emerald-400 font-semibold w-24 text-right">{homeValue}</span>
-        <span className="text-slate-400 flex-1 text-center text-xs">{label}</span>
-        <span className="text-blue-400 font-semibold w-24 text-left">{awayValue}</span>
-    </div>
-);
+function StatRow({ label, homeValue, awayValue }: { label: string; homeValue: string; awayValue: string }) {
+    return (
+        <div className="flex justify-between items-center py-1 border-b border-slate-700/50">
+            <span className="text-emerald-400 font-semibold w-24 text-right">{homeValue}</span>
+            <span className="text-slate-400 flex-1 text-center text-xs">{label}</span>
+            <span className="text-blue-400 font-semibold w-24 text-left">{awayValue}</span>
+        </div>
+    );
+}
 
 // Mock team creation with realistic attributes
 function createMockTeam(name: string, side: 'home' | 'away'): TeamState {

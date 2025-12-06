@@ -14,7 +14,53 @@ interface MatchViewProps {
   fixtureId?: string; // New prop for local simulation
 }
 
+// -----------------------------------------------------------------------------
+// Helper Components & Functions (Unified Features)
+// -----------------------------------------------------------------------------
+
+// Simple pseudo-rating calculator
+function calculateMockRating(player: any, events: any[]): number {
+  let rating = 6.0;
+  const playerEvents = events.filter(e => e.actor?.id === player.id);
+
+  // Positive actions
+  const successPasses = playerEvents.filter(e => e.type.includes('PASS') && e.outcome === 'SUCCESS').length;
+  const successDribbles = playerEvents.filter(e => e.type === 'DRIBBLE' && e.outcome === 'SUCCESS').length;
+  const tackles = playerEvents.filter(e => (e.type === 'TACKLE' || e.type === 'INTERCEPT') && e.outcome === 'SUCCESS').length;
+  const goals = playerEvents.filter(e => e.type === 'SHOOT' && e.outcome === 'SUCCESS').length;
+  const shotsOnTarget = playerEvents.filter(e => e.type === 'SHOOT' && e.outcome === 'SUCCESS' && !e.description.includes('GOAL')).length;
+
+  // Negative actions
+  const fouls = playerEvents.filter(e => e.type === 'FOUL').length;
+  const failedPasses = playerEvents.filter(e => e.type.includes('PASS') && e.outcome === 'FAILURE').length;
+
+  rating += (successPasses * 0.05);
+  rating += (successDribbles * 0.2);
+  rating += (tackles * 0.3);
+  rating += (goals * 1.5);
+  rating += (shotsOnTarget * 0.3);
+
+  rating -= (fouls * 0.4);
+  rating -= (failedPasses * 0.05);
+
+  return Math.min(10, Math.max(4, rating));
+}
+
+// Stat Row Component
+const StatRow: React.FC<{ label: string; homeValue: string; awayValue: string }> = ({ label, homeValue, awayValue }) => (
+  <div className="flex justify-between items-center py-1 border-b border-slate-700/50">
+    <span className="text-emerald-400 font-semibold w-16 text-right text-xs">{homeValue}</span>
+    <span className="text-slate-400 flex-1 text-center text-[10px] uppercase tracking-wider">{label}</span>
+    <span className="text-blue-400 font-semibold w-16 text-left text-xs">{awayValue}</span>
+  </div>
+);
+
+// -----------------------------------------------------------------------------
+// MatchView Component
+// -----------------------------------------------------------------------------
+
 export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatchComplete, userTeamId, fixtureId }) => {
+
   const [minute, setMinute] = useState(0);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [events, setEvents] = useState<MatchEvent[]>([]);
@@ -74,6 +120,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                 // ... other REQUIRED fields for PlayerState
                 morale: 75, form: 75, yellowCards: 0, redCard: false
               })),
+              formation: '4-4-2',
               tacticalModifiers: {
                 tempo: 0, width: 0, defensiveLine: 0, passingDirectness: 0,
                 closingDown: 0, timeWasting: 0, mentality: 0
@@ -93,6 +140,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                 currentPosition: { x: 50, y: 50 },
                 morale: 75, form: 75, yellowCards: 0, redCard: false
               })),
+              formation: '4-4-2',
               tacticalModifiers: {
                 tempo: 0, width: 0, defensiveLine: 0, passingDirectness: 0,
                 closingDown: 0, timeWasting: 0, mentality: 0
@@ -210,57 +258,134 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
         </div>
       </div>
 
-      {/* Match Content */}
-      <div className="flex-1 overflow-hidden flex flex-col p-4 space-y-4">
+      {/* Match Content (Grid Layout) */}
+      <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
 
-        {/* Assistant Report (Pre-Match) */}
-        {matchState === MatchState.PRE_MATCH && (
-          <div className="bg-slate-900 p-4 rounded-lg border border-slate-800 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h3 className="text-emerald-400 text-xs font-bold uppercase mb-2 flex items-center gap-2">
-              <CheckCircle2 size={14} /> Assistant Manager Report
-            </h3>
-            <p className="text-sm text-slate-300 italic whitespace-pre-line leading-relaxed">
-              {assistantReport || "Analyzing opponent data..."}
-            </p>
-            <button
-              onClick={handleStart}
-              className="mt-6 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded shadow-lg transition-all"
+        {/* LEFT COLUMN: Statistics & Ratings */}
+        <div className="lg:col-span-1 space-y-4 overflow-y-auto pr-2">
+
+          {/* Match Statistics */}
+          {(matchState === MatchState.PLAYING || matchState === MatchState.FULL_TIME) && fullMatchResult?.statistics && (
+            <div className="bg-slate-900/80 p-4 rounded-lg border border-slate-800">
+              <h3 className="text-xs font-bold text-slate-300 uppercase mb-3 border-b border-slate-700 pb-2">Match Stats</h3>
+              <div className="space-y-2">
+                <StatRow label="Possession"
+                  homeValue={`${fullMatchResult.statistics.possession[0]}%`}
+                  awayValue={`${fullMatchResult.statistics.possession[1]}%`}
+                />
+                <StatRow label="xG"
+                  homeValue={fullMatchResult.statistics.xG[0].toFixed(2)}
+                  awayValue={fullMatchResult.statistics.xG[1].toFixed(2)}
+                />
+                <StatRow label="Shots (Target)"
+                  homeValue={`${fullMatchResult.statistics.shots[0]} (${fullMatchResult.statistics.shotsOnTarget[0]})`}
+                  awayValue={`${fullMatchResult.statistics.shots[1]} (${fullMatchResult.statistics.shotsOnTarget[1]})`}
+                />
+                <StatRow label="Passes"
+                  homeValue={`${fullMatchResult.statistics.passes[0]}`}
+                  awayValue={`${fullMatchResult.statistics.passes[1]}`}
+                />
+                <StatRow label="Tackles"
+                  homeValue={`${fullMatchResult.statistics.tackles[0]}`}
+                  awayValue={`${fullMatchResult.statistics.tackles[1]}`}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Top Performers (Simplified Player Stats) */}
+          {(matchState === MatchState.PLAYING || matchState === MatchState.FULL_TIME) && (
+            <div className="bg-slate-900/80 p-4 rounded-lg border border-slate-800">
+              <h3 className="text-xs font-bold text-slate-300 uppercase mb-3 border-b border-slate-700 pb-2">Key Players</h3>
+              <div className="space-y-3">
+                {/* Home Key Players */}
+                <div>
+                  <div className="text-[10px] font-bold text-emerald-500 mb-1 uppercase">{homeTeam.name}</div>
+                  {homeTeam.players?.slice(0, 11).map((p: any) => {
+                    const rating = calculateMockRating(p, events);
+                    if (rating < 7.0) return null; // Only show good performers
+                    return (
+                      <div key={p.id} className="flex justify-between items-center text-xs">
+                        <span className="text-slate-400 truncate w-24">{p.name}</span>
+                        <span className="text-emerald-400 font-bold">{rating.toFixed(1)}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+                {/* Away Key Players */}
+                <div>
+                  <div className="text-[10px] font-bold text-blue-500 mb-1 uppercase">{awayTeam.name}</div>
+                  {awayTeam.players?.slice(0, 11).map((p: any) => {
+                    const rating = calculateMockRating(p, events);
+                    if (rating < 7.0) return null; // Only show good performers
+                    return (
+                      <div key={p.id} className="flex justify-between items-center text-xs">
+                        <span className="text-slate-400 truncate w-24">{p.name}</span>
+                        <span className="text-blue-400 font-bold">{rating.toFixed(1)}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+
+        {/* RIGHT COLUMN: Log & Assistant */}
+        <div className="lg:col-span-2 flex flex-col h-full overflow-hidden space-y-4">
+
+          {/* Assistant Report (Pre-Match) */}
+          {matchState === MatchState.PRE_MATCH && (
+            <div className="bg-slate-900 p-6 rounded-lg border border-slate-800 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h3 className="text-emerald-400 text-sm font-bold uppercase mb-4 flex items-center gap-2">
+                <CheckCircle2 size={16} /> Assistant Manager Report
+              </h3>
+              <p className="text-sm text-slate-300 italic whitespace-pre-line leading-relaxed">
+                {assistantReport || "Analyzing opponent data..."}
+              </p>
+              <button
+                onClick={handleStart}
+                className="mt-6 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded shadow-lg transition-all text-lg"
+              >
+                Kick Off
+              </button>
+            </div>
+          )}
+
+          {/* Live Commentary Log (Filtered) */}
+          {(matchState === MatchState.PLAYING || matchState === MatchState.FULL_TIME) && (
+            <div
+              ref={scrollRef}
+              className="flex-1 bg-slate-900/50 rounded-lg border border-slate-800 p-4 overflow-y-auto space-y-3"
             >
-              Kick Off
-            </button>
-          </div>
-        )}
+              {events.length === 0 && <div className="text-center text-slate-500 text-sm mt-10">The referee blows the whistle...</div>}
+              {events
+                .filter(e => ['GOAL', 'CARD_YELLOW', 'CARD_RED', 'SUBSTITUTION', 'SAVE', 'CORNER', 'FOUL', 'OFFSIDE', 'HALFTIME', 'FULL_TIME'].includes(e.type) || e.description.includes('Goal') || e.description.includes('Card') || e.description.includes('Sub'))
+                .map((e: any, idx) => (
+                  <div key={idx} className={`text-sm flex space-x-3 ${e.type === 'GOAL' ? 'bg-slate-800/80 p-3 rounded border-l-4 border-emerald-500 shadow-md' : ''}`}>
+                    <span className="text-slate-500 font-mono w-8 text-right">{e.time !== undefined ? e.time : e.minute}'</span>
+                    <span className={e.type === 'GOAL' ? 'text-white font-bold text-base' : e.type.includes('CARD') ? 'text-yellow-200' : 'text-slate-300'}>
+                      {e.description}
+                    </span>
+                  </div>
+                ))}
 
-        {/* Live Commentary Log */}
-        {(matchState === MatchState.PLAYING || matchState === MatchState.FULL_TIME) && (
-          <div
-            ref={scrollRef}
-            className="flex-1 bg-slate-900/50 rounded-lg border border-slate-800 p-3 overflow-y-auto space-y-3"
-          >
-            {events.length === 0 && <div className="text-center text-slate-500 text-sm mt-10">The referee blows the whistle...</div>}
-            {events.map((e: any, idx) => (
-              <div key={idx} className={`text-sm flex space-x-3 ${e.type === 'GOAL' ? 'bg-slate-800/80 p-2 rounded border-l-4 border-emerald-500' : ''}`}>
-                <span className="text-slate-500 font-mono w-6">{e.time !== undefined ? e.time : e.minute}'</span>
-                <span className={e.type === 'GOAL' ? 'text-white font-bold' : e.type === 'CARD_YELLOW' ? 'text-yellow-200' : 'text-slate-300'}>
-                  {e.description}
-                </span>
-              </div>
-            ))}
-
-            {matchState === MatchState.FULL_TIME && (
-              <div className="border-t border-slate-700 pt-4 mt-4">
-                <div className="text-center text-slate-400 text-xs uppercase mb-2">Full Time Summary</div>
-                <div className="text-center font-serif text-lg text-white italic px-4">"{headline || '...'}"</div>
-                <button
-                  onClick={handleFinish}
-                  className="mt-6 w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded transition-all"
-                >
-                  Return to Dashboard
-                </button>
-              </div>
-            )}
-          </div>
-        )}
+              {matchState === MatchState.FULL_TIME && (
+                <div className="border-t border-slate-700 pt-6 mt-6 pb-4">
+                  <div className="text-center text-slate-400 text-xs uppercase mb-3">Full Time Analysis</div>
+                  <div className="text-center font-serif text-xl text-white italic px-6 mb-6">"{headline || 'Wait for it...'}"</div>
+                  <button
+                    onClick={handleFinish}
+                    className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 rounded transition-all text-lg shadow-lg"
+                  >
+                    Return to Dashboard
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
