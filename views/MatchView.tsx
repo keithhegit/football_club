@@ -83,197 +83,175 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
     }
   }, [events]);
 
-  // Initialize Engine and Simulate Full Match on Mount (or Start)
+  // 1. Initialize Engine and Simulate Full Match on Mount (or Start)
   useEffect(() => {
     if (matchState === MatchState.PLAYING && !fullMatchResult) {
-
-      const simulate = async () => {
-        try {
-          let result;
-
-          // PLAN A: Use Local Simulator (Real Data)
-          if (fixtureId) {
-            console.log("Starting LOCAL simulation for fixture:", fixtureId);
-            // We need to map team IDs to strings if they are numbers
-            const hId = homeTeam.id.toString();
-            const aId = awayTeam.id.toString();
-            result = await matchSimulator.simulateFixture(fixtureId, hId, aId);
-          }
-          // PLAN B: Legacy/Direct Simulation (Fallback)
-          else {
-            console.log("Starting LEGACY simulation (No Fixture ID)");
-            // Convert legacy teams to TeamState structure if needed
-            // For now, simpler to use the Engine directly with casting or mapping
-            // Assuming props `homeTeam` has `players` array
-
-            // Quick mapping for legacy props -> TeamState
-            const hTeamState: TeamState = {
-              id: homeTeam.id.toString(),
-              name: homeTeam.name,
-              players: (homeTeam.players || []).map((p: any) => ({
-                id: p.id,
-                name: p.name,
-                position: p.position || 'MC',
-                attributes: p.attributes || {},
-                condition: 100,
-                stamina: 100,
-                currentPosition: { x: 50, y: 50 },
-                // ... other REQUIRED fields for PlayerState
-                morale: 75, form: 75, yellowCards: 0, redCard: false
-              })),
-              formation: '4-4-2',
-              tacticalModifiers: {
-                tempo: 0, width: 0, defensiveLine: 0, passingDirectness: 0,
-                closingDown: 0, timeWasting: 0, mentality: 0
-              }
-            };
-
-            const aTeamState: TeamState = {
-              id: awayTeam.id.toString(),
-              name: awayTeam.name,
-              players: (awayTeam.players || []).map((p: any) => ({
-                id: p.id,
-                name: p.name,
-                position: p.position || 'MC',
-                attributes: p.attributes || {},
-                condition: 100,
-                stamina: 100,
-                currentPosition: { x: 50, y: 50 },
-                morale: 75, form: 75, yellowCards: 0, redCard: false
-              })),
-              formation: '4-4-2',
-              tacticalModifiers: {
-                tempo: 0, width: 0, defensiveLine: 0, passingDirectness: 0,
-                closingDown: 0, timeWasting: 0, mentality: 0
-              }
-            };
-
-            const engine = new MatchEngine(hTeamState, aTeamState);
-            result = engine.simulateMatch();
-          }
-
-          setFullMatchResult(result);
-          // Initialize empty stats
-          setCurrentStats({
-            possession: [50, 50],
-            shots: [0, 0],
-            shotsOnTarget: [0, 0],
-            passes: [0, 0],
-            passAccuracy: [0, 0],
-            xG: [0, 0],
-            tackles: [0, 0],
-            fouls: [0, 0],
-            corners: [0, 0],
-            yellowCards: [0, 0],
-            redCards: [0, 0]
-          });
-          console.log("Match Simulated:", result);
-
-        } catch (error) {
-          console.error("Simulation failed:", error);
+      const runSimulation = async () => {
+        let result;
+        // PLAN A: Use Local Simulator (Real Data)
+        if (fixtureId) {
+          console.log("Starting LOCAL simulation for fixture:", fixtureId);
+          const hId = homeTeam.id.toString();
+          const aId = awayTeam.id.toString();
+          result = await matchSimulator.simulateFixture(fixtureId, hId, aId);
         }
+        // PLAN B: Legacy/Direct Simulation (Fallback)
+        else {
+          console.log("Starting LEGACY simulation (No Fixture ID)");
+          const hTeamState: TeamState = {
+            id: homeTeam.id.toString(),
+            name: homeTeam.name,
+            players: (homeTeam.players || []).map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              position: p.position || 'MC',
+              attributes: p.attributes || {},
+              condition: 100, stamina: 100,
+              currentPosition: { x: 50, y: 50 },
+              morale: 75, form: 75, yellowCards: 0, redCard: false
+            })),
+            formation: '4-4-2',
+            tacticalModifiers: {
+              tempo: 0, width: 0, defensiveLine: 0, passingDirectness: 0,
+              closingDown: 0, timeWasting: 0, mentality: 0
+            }
+          };
+
+          const aTeamState: TeamState = {
+            id: awayTeam.id.toString(),
+            name: awayTeam.name,
+            players: (awayTeam.players || []).map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              position: p.position || 'MC',
+              attributes: p.attributes || {},
+              condition: 100, stamina: 100,
+              currentPosition: { x: 50, y: 50 },
+              morale: 75, form: 75, yellowCards: 0, redCard: false
+            })),
+            formation: '4-4-2',
+            tacticalModifiers: {
+              tempo: 0, width: 0, defensiveLine: 0, passingDirectness: 0,
+              closingDown: 0, timeWasting: 0, mentality: 0
+            }
+          };
+
+          const engine = new MatchEngine(hTeamState, aTeamState);
+          result = engine.simulateMatch();
+        }
+        setFullMatchResult(result);
       };
-
-      simulate();
+      runSimulation();
     }
-  }, [matchState, homeTeam, awayTeam, fullMatchResult, fixtureId]);
+  }, [matchState, fullMatchResult, fixtureId, homeTeam, awayTeam]);
 
-  // Replay Loop (Visualizer)
+  // 2. Replay Loop & Dynamic Stats Calculation
   useEffect(() => {
-    let interval: any;
+    let interval: NodeJS.Timeout;
 
     if (matchState === MatchState.PLAYING && fullMatchResult) {
       interval = setInterval(() => {
-        setMinute(prev => {
-          if (prev >= 90) {
+        setMinute((prevMinute) => {
+          if (prevMinute >= 90) {
             setMatchState(MatchState.FULL_TIME);
-            return prev;
+            return 90;
           }
+          const currentMinute = prevMinute + 1;
 
-          const newMinute = prev + 1;
+          // Filter events up to current minute
+          const currentEvents = fullMatchResult.events.filter((e: any) => e.minute <= currentMinute);
+          setEvents(currentEvents);
 
-          // Find events for this minute
-          const newEvents = (fullMatchResult.events || fullMatchResult.eventLog).filter((e: any) => {
-            const eventTime = e.time !== undefined ? e.time : e.minute;
-            return Math.floor(eventTime) === newMinute;
+          // Update Score
+          // Use == for loose equality (string/number)
+          const homeGoals = currentEvents.filter((e: any) => (e.type === 'SHOOT' || e.type === 'SHOOT_LONG') && e.outcome === 'SUCCESS' && e.teamId == homeTeam.id).length;
+          const awayGoals = currentEvents.filter((e: any) => (e.type === 'SHOOT' || e.type === 'SHOOT_LONG') && e.outcome === 'SUCCESS' && e.teamId == awayTeam.id).length;
+          setScores({ home: homeGoals, away: awayGoals });
+
+          // Calculate Dynamic Stats
+          // Initialize with default structure
+          const stats = {
+            possession: [50, 50],
+            xG: [0, 0],
+            shots: [0, 0],
+            shotsOnTarget: [0, 0],
+            passes: [0, 0],
+            passAttempts: [0, 0],
+            passSuccess: [0, 0],
+            tackles: [0, 0],
+            fouls: [0, 0],
+            yellowCards: [0, 0],
+            redCards: [0, 0]
+          };
+
+          // Basic possession fluctuation
+          const fluctuation = Math.floor(Math.random() * 5) - 2;
+          stats.possession[0] = 50 + fluctuation;
+          stats.possession[1] = 50 - fluctuation;
+
+          // Aggregate stats from events
+          currentEvents.forEach((e: any) => {
+            const isHome = e.teamId == homeTeam.id;
+            const idx = isHome ? 0 : 1;
+
+            // xG Accumulation (if available)
+            if (e.xG) stats.xG[idx] += e.xG;
+            else if (e.type === 'SHOOT') stats.xG[idx] += 0.1; // Fallback estimate
+
+            // Shots
+            if (e.type === 'SHOOT' || e.type === 'SHOOT_LONG') {
+              stats.shots[idx]++;
+              if (e.outcome === 'SUCCESS' || e.type === 'SAVE' || e.description.includes('saved')) {
+                // Note: SAVE event is for the goalkeeper, so it implies a shot ON TARGET for the OPPONENT.
+                // But here we are processing the 'SHOOT' event itself usually.
+                // If e.type is SAVE, it belongs to the Goalkeeper's team (defending).
+                // So we shouldn't count SAVE as a shot for the teamId.
+                // We should only count 'SHOOT' events.
+                if (e.outcome === 'SUCCESS') stats.shotsOnTarget[idx]++;
+              }
+            }
+            // Fix: Also check for SAVE events which are separate
+            if (e.type === 'SAVE') {
+              // If teamId made a SAVE, then the OPPOSING team had a shot on target.
+              const opponentIdx = idx === 0 ? 1 : 0;
+              stats.shotsOnTarget[opponentIdx]++;
+            }
+
+            // Passes
+            if (e.type.includes('PASS')) {
+              stats.passAttempts[idx]++;
+              if (e.outcome === 'SUCCESS') {
+                stats.passes[idx]++;
+                stats.passSuccess[idx]++;
+              }
+            }
+
+            // Tackles
+            if ((e.type === 'TACKLE' || e.type === 'INTERCEPT') && e.outcome === 'SUCCESS') {
+              stats.tackles[idx]++;
+            }
+
+            // Fouls & Cards
+            if (e.type === 'FOUL') {
+              stats.fouls[idx]++;
+            }
+            if (e.description.includes('Yellow Card')) stats.yellowCards[idx]++;
+            if (e.description.includes('Red Card')) stats.redCards[idx]++;
           });
 
-          if (newEvents.length > 0) {
-            setEvents(prevEvents => {
-              const updatedEvents = [...prevEvents, ...newEvents];
-
-              // Update specific counts for dynamic display
-              // Note: accurate possession requires complex logic not available here, 
-              // so we interpolating final stats or keeping possession static/random fluctuation
-              return updatedEvents;
-            });
-
-            // Update score based on events
-            newEvents.forEach((e: MatchEvent) => {
-              // Goal Logic: SHOOT/SHOOT_LONG + SUCCESS or description includes GOAL
-              // Note: MatchEngine adds 'GOAL' string to description on goal
-              if ((e.type === 'SHOOT' || e.type === 'SHOOT_LONG') && e.outcome === 'SUCCESS') {
-                const isHome = e.actor.id < 11; // Simplified team check
-                if (isHome) setScores(s => ({ ...s, home: s.home + 1 }));
-                else setScores(s => ({ ...s, away: s.away + 1 }));
-              }
-
-              // Update Dynamic Stats
-              setCurrentStats((prev: any) => {
-                if (!prev) return prev;
-                const newStats = { ...prev };
-                const isHome = e.actor.id < 11; // Simplified team check (assuming 0-10 is home)
-                const teamIndex = isHome ? 0 : 1;
-
-                if (e.type === 'SHOOT' || e.type === 'SHOOT_LONG') {
-                  newStats.shots[teamIndex]++;
-                  if (e.outcome === 'SUCCESS' && !e.description.includes('GOAL')) { // Goal is handled separately or included? 
-                    // If goal, it's also on target. 
-                    newStats.shotsOnTarget[teamIndex]++;
-                  }
-                  if (e.outcome === 'SUCCESS') newStats.shotsOnTarget[teamIndex]++; // Fix: always convert success shot to target or goal
-
-                  if (e.xGContribution) newStats.xG[teamIndex] += e.xGContribution;
-                }
-                else if (e.type === 'PASS_SHORT' || e.type === 'PASS_LONG') {
-                  newStats.passes[teamIndex]++;
-                }
-                else if (e.type === 'TACKLE' || e.type === 'INTERCEPT') {
-                  newStats.tackles[teamIndex]++;
-                }
-                else if (e.type === 'FOUL') {
-                  newStats.fouls[teamIndex]++;
-                }
-                else if (e.type === 'CORNER') {
-                  newStats.corners[teamIndex]++;
-                }
-
-                // Interpolate Possession gradually towards final result
-                // Or just keep it around 50/50 +- random for visual effect if we can't calculate real time
-                // For now, let's use a simple random fluctuation to make it look "alive"
-                if (Math.random() > 0.7) {
-                  const fluctuation = Math.random() > 0.5 ? 1 : -1;
-                  newStats.possession[0] = Math.min(100, Math.max(0, newStats.possession[0] + fluctuation));
-                  newStats.possession[1] = 100 - newStats.possession[0];
-                }
-
-                return newStats;
-              });
-            });
-          }
-
-          return newMinute;
+          setCurrentStats(stats);
+          return currentMinute;
         });
       }, speed);
-    } else if (matchState === MatchState.FULL_TIME) {
-      // Trigger Gemini Headline only once
+    }
+    else if (matchState === MatchState.FULL_TIME) {
       if (!headline) {
         generatePostMatchComment(homeTeam, awayTeam, scores.home, scores.away).then(setHeadline);
       }
     }
 
     return () => clearInterval(interval);
-  }, [matchState, speed, fullMatchResult, homeTeam, awayTeam, scores, headline]);
+  }, [matchState, fullMatchResult, speed, homeTeam, awayTeam, headline]);
 
   // Initial Assistant Report
   useEffect(() => {
@@ -348,13 +326,17 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                   homeValue={`${currentStats?.shots[0] || 0} (${currentStats?.shotsOnTarget[0] || 0})`}
                   awayValue={`${currentStats?.shots[1] || 0} (${currentStats?.shotsOnTarget[1] || 0})`}
                 />
-                <StatRow label="Passes"
-                  homeValue={`${currentStats?.passes[0] || 0}`}
-                  awayValue={`${currentStats?.passes[1] || 0}`}
+                <StatRow label="Passes (Accuracy)"
+                  homeValue={`${currentStats?.passes[0] || 0} (${currentStats?.passAttempts[0] > 0 ? Math.round((currentStats?.passSuccess[0] / currentStats?.passAttempts[0]) * 100) : 0}%)`}
+                  awayValue={`${currentStats?.passes[1] || 0} (${currentStats?.passAttempts[1] > 0 ? Math.round((currentStats?.passSuccess[1] / currentStats?.passAttempts[1]) * 100) : 0}%)`}
                 />
                 <StatRow label="Tackles"
                   homeValue={`${currentStats?.tackles[0] || 0}`}
                   awayValue={`${currentStats?.tackles[1] || 0}`}
+                />
+                <StatRow label="Fouls (Y/R)"
+                  homeValue={`${currentStats?.fouls[0] || 0} (${currentStats?.yellowCards[0] || 0}/${currentStats?.redCards[0] || 0})`}
+                  awayValue={`${currentStats?.fouls[1] || 0} (${currentStats?.yellowCards[1] || 0}/${currentStats?.redCards[1] || 0})`}
                 />
               </div>
             </div>

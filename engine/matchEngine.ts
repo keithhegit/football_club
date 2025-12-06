@@ -54,7 +54,7 @@ export class MatchEngine {
             }
         };
 
-        this.statsTracker = new MatchStatsTracker();
+        this.statsTracker = new MatchStatsTracker(homeTeam.id, awayTeam.id);
     }
 
     /**
@@ -112,7 +112,8 @@ export class MatchEngine {
                 opponent: opponent || undefined,
                 outcome: 'FAILURE',
                 position: this.state.ballPosition,
-                description: `${actor.name} commits a foul${card !== 'NONE' ? ` and receives a ${card} CARD` : ''}`
+                description: `${actor.name} commits a foul${card !== 'NONE' ? ` and receives a ${card} CARD` : ''}`,
+                teamId: possessingTeam.id // Actor is from possessing team
             };
 
             this.statsTracker.recordEvent(foulEvent, this.state.possession);
@@ -159,7 +160,8 @@ export class MatchEngine {
             outcome: success ? 'SUCCESS' : 'FAILURE',
             position: this.state.ballPosition,
             xGContribution: xgValue,
-            description: this.generateEventDescription(event, actor, success)
+            description: this.generateEventDescription(event, actor, success),
+            teamId: possessingTeam.id
         };
 
         // Handle outcome
@@ -272,7 +274,8 @@ export class MatchEngine {
                         opponent: event.actor,
                         outcome: 'SUCCESS',
                         position: event.position,
-                        description: `${defender.name} tackles ${event.actor.name}`
+                        description: `${defender.name} tackles ${event.actor.name}`,
+                        teamId: this.getDefendingTeam().id
                     };
                     this.statsTracker.recordEvent(defensiveEvent, this.state.possession === 'home' ? 'away' : 'home');
                     this.state.statistics.tackles[this.state.possession === 'home' ? 1 : 0]++;
@@ -287,7 +290,8 @@ export class MatchEngine {
                             opponent: event.actor,
                             outcome: 'SUCCESS',
                             position: event.position,
-                            description: `${defender.name} intercepts the pass`
+                            description: `${defender.name} intercepts the pass`,
+                            teamId: this.getDefendingTeam().id
                         };
                         this.statsTracker.recordEvent(defensiveEvent, this.state.possession === 'home' ? 'away' : 'home');
                     }
@@ -295,15 +299,15 @@ export class MatchEngine {
                 else if (action === 'SHOOT' || action === 'SHOOT_LONG') {
                     // Shot fail -> Save or Block or Miss
                     if (Math.random() < 0.4) {
-                        // SAVE (simplified, attribute to a random defender or GK if we had one)
-                        // For now, attribute to the "opponent" (closest defender) or generic
+                        // SAVE
                         defensiveEvent = {
                             time: event.time,
                             type: 'SAVE',
                             actor: defender,
                             outcome: 'SUCCESS',
                             position: event.position,
-                            description: `Good save by ${defender.name}!` // Ideally GK
+                            description: `Good save by ${defender.name}!`,
+                            teamId: this.getDefendingTeam().id
                         };
                         this.statsTracker.recordEvent(defensiveEvent, this.state.possession === 'home' ? 'away' : 'home');
                     }
@@ -316,13 +320,13 @@ export class MatchEngine {
                             actor: event.actor, // Team taking corner
                             outcome: 'SUCCESS',
                             position: { x: this.state.possession === 'home' ? 100 : 0, y: 0 },
-                            description: `Corner kick for ${this.state.homeTeam.id === event.actor?.id ? this.state.homeTeam.name : this.state.awayTeam.name}` // Quick team check
+                            description: `Corner kick for ${this.state.homeTeam.id === event.actor?.id ? this.state.homeTeam.name : this.state.awayTeam.name}`,
+                            teamId: this.state.possession === 'home' ? this.state.homeTeam.id : this.state.awayTeam.id
                         };
                         this.statsTracker.recordEvent(cornerEvent, this.state.possession);
                         this.state.eventLog.push(cornerEvent);
                         this.state.statistics.corners[this.state.possession === 'home' ? 0 : 1]++;
-                        return false; // Don't turnover immediately, let corner logic handle (simplified: turnover for now or reset)
-                        // Simplification: Corner -> Turnover (goal kick/cleared) for now to avoid loop complexity
+                        return false;
                     }
                 }
 
@@ -338,7 +342,6 @@ export class MatchEngine {
         return scoredGoal;
     }
 
-    // ... rest of methods remain the same
     private generateEvent(): ActionType {
         const phase = this.state.phase;
         const ballY = this.state.ballPosition.y;

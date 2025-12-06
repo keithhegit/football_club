@@ -119,6 +119,7 @@ export interface MatchEvent {
     position: Position;
     xGContribution?: number;
     description: string;
+    teamId: string | number;
 }
 
 export interface MatchStatistics {
@@ -149,7 +150,7 @@ export interface MatchState {
 }
 
 export interface TeamState {
-    id: number;
+    id: number | string;
     name: string;
     players: PlayerState[];
     formation: string; // e.g., "4-3-3"

@@ -8,7 +8,12 @@ export class MatchStatsTracker {
     private events: MatchEvent[];
     private possessionTime: { home: number; away: number };
 
-    constructor() {
+    private homeTeamId: string | number;
+    private awayTeamId: string | number;
+
+    constructor(homeTeamId: string | number, awayTeamId: string | number) {
+        this.homeTeamId = homeTeamId;
+        this.awayTeamId = awayTeamId;
         this.stats = {
             possession: [0, 0],
             shots: [0, 0],
@@ -57,8 +62,8 @@ export class MatchStatsTracker {
                 break;
 
             case 'CROSS':
-            // Only ~25% of failed crosses result in corners
-            if (event.outcome === 'FAILURE' && Math.random() < 0.25) {
+                // Only ~25% of failed crosses result in corners
+                if (event.outcome === 'FAILURE' && Math.random() < 0.25) {
                     this.stats.corners[teamIndex === 0 ? 1 : 0]++; // Opponent corner
                 }
                 break;
@@ -122,9 +127,11 @@ export class MatchStatsTracker {
     }
 
     private isHomeTeamEvent(event: MatchEvent): boolean {
-        // Simple heuristic: check if actor ID is in home team range (0-10)
-        // This should be improved with proper team tracking
-        return event.actor.id < 11;
+        if (event.teamId !== undefined) {
+            return event.teamId === this.homeTeamId;
+        }
+        // Fallback for events without teamId (should not happen with new engine)
+        return false;
     }
 
     getStats(): MatchStatistics {
