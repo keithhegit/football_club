@@ -13,7 +13,10 @@ export type ActionType =
     | 'CROSS'
     | 'FIRST_TOUCH'
     | 'CLEARANCE'
-    | 'FOUL';
+    | 'FOUL'
+    | 'SAVE'
+    | 'CORNER'
+    | 'OFFSIDE';
 
 export type CardType = 'YELLOW' | 'RED' | 'NONE';
 

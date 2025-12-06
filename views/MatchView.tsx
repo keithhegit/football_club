@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Team, MatchEvent, MatchState } from '../types';
+import { Team, MatchState } from '../types';
 import { matchSimulator } from '../services/matchSimulator';
 import { MatchEngine } from '../engine/matchEngine'; // Direct import of new engine
-import { TeamState } from '../engine/types'; // Import new types
+import { TeamState, MatchEvent } from '../engine/types'; // Import new types
 import { Play, Pause, FastForward, CheckCircle2, SkipForward } from 'lucide-react';
 import { generatePostMatchComment, getAssistantReport } from '../services/geminiService';
 
@@ -64,6 +64,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   const [minute, setMinute] = useState(0);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [events, setEvents] = useState<MatchEvent[]>([]);
+  const [currentStats, setCurrentStats] = useState<any>(null); // Dynamic stats state
   const [matchState, setMatchState] = useState<MatchState>(MatchState.PRE_MATCH);
   const [speed, setSpeed] = useState(100); // ms per tick
   const [assistantReport, setAssistantReport] = useState<string>("");
@@ -152,6 +153,20 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           }
 
           setFullMatchResult(result);
+          // Initialize empty stats
+          setCurrentStats({
+            possession: [50, 50],
+            shots: [0, 0],
+            shotsOnTarget: [0, 0],
+            passes: [0, 0],
+            passAccuracy: [0, 0],
+            xG: [0, 0],
+            tackles: [0, 0],
+            fouls: [0, 0],
+            corners: [0, 0],
+            yellowCards: [0, 0],
+            redCards: [0, 0]
+          });
           console.log("Match Simulated:", result);
 
         } catch (error) {
@@ -184,14 +199,66 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           });
 
           if (newEvents.length > 0) {
-            setEvents(prevEvents => [...prevEvents, ...newEvents]);
+            setEvents(prevEvents => {
+              const updatedEvents = [...prevEvents, ...newEvents];
+
+              // Update specific counts for dynamic display
+              // Note: accurate possession requires complex logic not available here, 
+              // so we interpolating final stats or keeping possession static/random fluctuation
+              return updatedEvents;
+            });
 
             // Update score based on events
             newEvents.forEach((e: MatchEvent) => {
-              if (e.type === 'GOAL') {
-                if (e.teamId === homeTeam.id) setScores(s => ({ ...s, home: s.home + 1 }));
+              // Goal Logic: SHOOT/SHOOT_LONG + SUCCESS or description includes GOAL
+              // Note: MatchEngine adds 'GOAL' string to description on goal
+              if ((e.type === 'SHOOT' || e.type === 'SHOOT_LONG') && e.outcome === 'SUCCESS') {
+                const isHome = e.actor.id < 11; // Simplified team check
+                if (isHome) setScores(s => ({ ...s, home: s.home + 1 }));
                 else setScores(s => ({ ...s, away: s.away + 1 }));
               }
+
+              // Update Dynamic Stats
+              setCurrentStats((prev: any) => {
+                if (!prev) return prev;
+                const newStats = { ...prev };
+                const isHome = e.actor.id < 11; // Simplified team check (assuming 0-10 is home)
+                const teamIndex = isHome ? 0 : 1;
+
+                if (e.type === 'SHOOT' || e.type === 'SHOOT_LONG') {
+                  newStats.shots[teamIndex]++;
+                  if (e.outcome === 'SUCCESS' && !e.description.includes('GOAL')) { // Goal is handled separately or included? 
+                    // If goal, it's also on target. 
+                    newStats.shotsOnTarget[teamIndex]++;
+                  }
+                  if (e.outcome === 'SUCCESS') newStats.shotsOnTarget[teamIndex]++; // Fix: always convert success shot to target or goal
+
+                  if (e.xGContribution) newStats.xG[teamIndex] += e.xGContribution;
+                }
+                else if (e.type === 'PASS_SHORT' || e.type === 'PASS_LONG') {
+                  newStats.passes[teamIndex]++;
+                }
+                else if (e.type === 'TACKLE' || e.type === 'INTERCEPT') {
+                  newStats.tackles[teamIndex]++;
+                }
+                else if (e.type === 'FOUL') {
+                  newStats.fouls[teamIndex]++;
+                }
+                else if (e.type === 'CORNER') {
+                  newStats.corners[teamIndex]++;
+                }
+
+                // Interpolate Possession gradually towards final result
+                // Or just keep it around 50/50 +- random for visual effect if we can't calculate real time
+                // For now, let's use a simple random fluctuation to make it look "alive"
+                if (Math.random() > 0.7) {
+                  const fluctuation = Math.random() > 0.5 ? 1 : -1;
+                  newStats.possession[0] = Math.min(100, Math.max(0, newStats.possession[0] + fluctuation));
+                  newStats.possession[1] = 100 - newStats.possession[0];
+                }
+
+                return newStats;
+              });
             });
           }
 
@@ -270,24 +337,24 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
               <h3 className="text-xs font-bold text-slate-300 uppercase mb-3 border-b border-slate-700 pb-2">Match Stats</h3>
               <div className="space-y-2">
                 <StatRow label="Possession"
-                  homeValue={`${fullMatchResult.statistics.possession[0]}%`}
-                  awayValue={`${fullMatchResult.statistics.possession[1]}%`}
+                  homeValue={`${currentStats?.possession[0] || 50}%`}
+                  awayValue={`${currentStats?.possession[1] || 50}%`}
                 />
                 <StatRow label="xG"
-                  homeValue={fullMatchResult.statistics.xG[0].toFixed(2)}
-                  awayValue={fullMatchResult.statistics.xG[1].toFixed(2)}
+                  homeValue={(currentStats?.xG[0] || 0).toFixed(2)}
+                  awayValue={(currentStats?.xG[1] || 0).toFixed(2)}
                 />
                 <StatRow label="Shots (Target)"
-                  homeValue={`${fullMatchResult.statistics.shots[0]} (${fullMatchResult.statistics.shotsOnTarget[0]})`}
-                  awayValue={`${fullMatchResult.statistics.shots[1]} (${fullMatchResult.statistics.shotsOnTarget[1]})`}
+                  homeValue={`${currentStats?.shots[0] || 0} (${currentStats?.shotsOnTarget[0] || 0})`}
+                  awayValue={`${currentStats?.shots[1] || 0} (${currentStats?.shotsOnTarget[1] || 0})`}
                 />
                 <StatRow label="Passes"
-                  homeValue={`${fullMatchResult.statistics.passes[0]}`}
-                  awayValue={`${fullMatchResult.statistics.passes[1]}`}
+                  homeValue={`${currentStats?.passes[0] || 0}`}
+                  awayValue={`${currentStats?.passes[1] || 0}`}
                 />
                 <StatRow label="Tackles"
-                  homeValue={`${fullMatchResult.statistics.tackles[0]}`}
-                  awayValue={`${fullMatchResult.statistics.tackles[1]}`}
+                  homeValue={`${currentStats?.tackles[0] || 0}`}
+                  awayValue={`${currentStats?.tackles[1] || 0}`}
                 />
               </div>
             </div>
@@ -361,11 +428,22 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
             >
               {events.length === 0 && <div className="text-center text-slate-500 text-sm mt-10">The referee blows the whistle...</div>}
               {events
-                .filter(e => ['GOAL', 'CARD_YELLOW', 'CARD_RED', 'SUBSTITUTION', 'SAVE', 'CORNER', 'FOUL', 'OFFSIDE', 'HALFTIME', 'FULL_TIME'].includes(e.type) || e.description.includes('Goal') || e.description.includes('Card') || e.description.includes('Sub'))
+                .filter(e => {
+                  // Always show Goals
+                  if ((e.type === 'SHOOT' || e.type === 'SHOOT_LONG') && e.outcome === 'SUCCESS') return true;
+
+                  // Show significant defensive/set-piece events
+                  if (['SAVE', 'CORNER', 'FOUL', 'OFFSIDE'].includes(e.type)) return true;
+
+                  // Fallback string checks for other event types if description is rich
+                  if (e.description.includes('Goal') || e.description.includes('Card') || e.description.includes('Sub')) return true;
+
+                  return false;
+                })
                 .map((e: any, idx) => (
-                  <div key={idx} className={`text-sm flex space-x-3 ${e.type === 'GOAL' ? 'bg-slate-800/80 p-3 rounded border-l-4 border-emerald-500 shadow-md' : ''}`}>
+                  <div key={idx} className={`text-sm flex space-x-3 ${(e.type.includes('SHOOT') && e.outcome === 'SUCCESS') ? 'bg-slate-800/80 p-3 rounded border-l-4 border-emerald-500 shadow-md' : ''}`}>
                     <span className="text-slate-500 font-mono w-8 text-right">{e.time !== undefined ? e.time : e.minute}'</span>
-                    <span className={e.type === 'GOAL' ? 'text-white font-bold text-base' : e.type.includes('CARD') ? 'text-yellow-200' : 'text-slate-300'}>
+                    <span className={(e.type.includes('SHOOT') && e.outcome === 'SUCCESS') ? 'text-white font-bold text-base' : e.description.includes('Card') ? 'text-yellow-200' : 'text-slate-300'}>
                       {e.description}
                     </span>
                   </div>

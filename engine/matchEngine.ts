@@ -88,9 +88,8 @@ export class MatchEngine {
         const defendingTeam = this.getDefendingTeam();
 
         const actor = this.selectPlayer(possessingTeam, event, true);
-        const opponent = event !== 'DRIBBLE' && event !== 'SHOOT'
-            ? this.selectPlayer(defendingTeam, event, false)
-            : null;
+        // Always select an opponent for interaction
+        const opponent = this.selectPlayer(defendingTeam, event, false);
 
         // Calculate success probability
         const probability = computeActionSuccess(
@@ -233,7 +232,7 @@ export class MatchEngine {
                     // Goal!
                     const teamIndex = this.state.possession === 'home' ? 0 : 1;
                     this.state.score[teamIndex]++;
-                    event.description += ' âš?GOAL!';
+                    event.description += ' ⚽GOAL!';
                     scoredGoal = true;
                     this.resetToKickoff();
                     break;
@@ -258,10 +257,82 @@ export class MatchEngine {
                     break;
             }
         } else {
-            // Most failures result in turnover
-            if (action !== 'SHOOT' && action !== 'SHOOT_LONG') {
-                this.turnover();
+            // Failure Outcomes - Generate Defensive Events
+            const defender = event.opponent;
+
+            if (defender) {
+                let defensiveEvent: MatchEvent | null = null;
+
+                if (action === 'DRIBBLE') {
+                    // Dribble fail -> Tackle
+                    defensiveEvent = {
+                        time: event.time,
+                        type: 'TACKLE',
+                        actor: defender,
+                        opponent: event.actor,
+                        outcome: 'SUCCESS',
+                        position: event.position,
+                        description: `${defender.name} tackles ${event.actor.name}`
+                    };
+                    this.statsTracker.recordEvent(defensiveEvent, this.state.possession === 'home' ? 'away' : 'home');
+                    this.state.statistics.tackles[this.state.possession === 'home' ? 1 : 0]++;
+                }
+                else if (action === 'PASS_SHORT' || action === 'PASS_LONG' || action === 'CROSS') {
+                    // Pass fail -> Intercept (50% chance log)
+                    if (Math.random() < 0.5) {
+                        defensiveEvent = {
+                            time: event.time,
+                            type: 'INTERCEPT',
+                            actor: defender,
+                            opponent: event.actor,
+                            outcome: 'SUCCESS',
+                            position: event.position,
+                            description: `${defender.name} intercepts the pass`
+                        };
+                        this.statsTracker.recordEvent(defensiveEvent, this.state.possession === 'home' ? 'away' : 'home');
+                    }
+                }
+                else if (action === 'SHOOT' || action === 'SHOOT_LONG') {
+                    // Shot fail -> Save or Block or Miss
+                    if (Math.random() < 0.4) {
+                        // SAVE (simplified, attribute to a random defender or GK if we had one)
+                        // For now, attribute to the "opponent" (closest defender) or generic
+                        defensiveEvent = {
+                            time: event.time,
+                            type: 'SAVE',
+                            actor: defender,
+                            outcome: 'SUCCESS',
+                            position: event.position,
+                            description: `Good save by ${defender.name}!` // Ideally GK
+                        };
+                        this.statsTracker.recordEvent(defensiveEvent, this.state.possession === 'home' ? 'away' : 'home');
+                    }
+
+                    // Possible Corner
+                    if (Math.random() < 0.25) {
+                        const cornerEvent: MatchEvent = {
+                            time: event.time,
+                            type: 'CORNER',
+                            actor: event.actor, // Team taking corner
+                            outcome: 'SUCCESS',
+                            position: { x: this.state.possession === 'home' ? 100 : 0, y: 0 },
+                            description: `Corner kick for ${this.state.homeTeam.id === event.actor?.id ? this.state.homeTeam.name : this.state.awayTeam.name}` // Quick team check
+                        };
+                        this.statsTracker.recordEvent(cornerEvent, this.state.possession);
+                        this.state.eventLog.push(cornerEvent);
+                        this.state.statistics.corners[this.state.possession === 'home' ? 0 : 1]++;
+                        return false; // Don't turnover immediately, let corner logic handle (simplified: turnover for now or reset)
+                        // Simplification: Corner -> Turnover (goal kick/cleared) for now to avoid loop complexity
+                    }
+                }
+
+                if (defensiveEvent) {
+                    this.state.eventLog.push(defensiveEvent);
+                }
             }
+
+            // Most failures result in turnover
+            this.turnover();
         }
 
         return scoredGoal;
@@ -356,7 +427,7 @@ export class MatchEngine {
             const baseY = 80 - (idx * 7);
             const targetY = baseY * 0.7 + ballY * 0.3;
             player.currentPosition = {
-                x: 30 + (idx %3) * 20,
+                x: 30 + (idx % 3) * 20,
                 y: Math.max(5, Math.min(95, targetY))
             };
         });
