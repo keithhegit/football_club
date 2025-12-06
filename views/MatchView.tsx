@@ -130,7 +130,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           const newMinute = prev + 1;
 
           // Find events for this minute
-          const newEvents = fullMatchResult.events.filter((e: MatchEvent) => e.minute === newMinute);
+          const newEvents = (fullMatchResult.events || fullMatchResult.eventLog).filter((e: MatchEvent) => e.minute === newMinute);
 
           if (newEvents.length > 0) {
             setEvents(prevEvents => [...prevEvents, ...newEvents]);

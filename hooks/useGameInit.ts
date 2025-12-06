@@ -252,23 +252,71 @@ export function useGameInit(clubId?: number) {
                     const enginePlayers = convertPlayersToState(dbPlayers);
 
                     // Map Engine PlayerState -> Legacy Player Interface
-                    const legacyPlayers: Player[] = enginePlayers.map(p => ({
-                        id: p.id.toString(),
-                        name: p.name,
-                        age: 20, // Default if missing
-                        position: mapPosition(p.position),
-                        nationality: 'Unknown',
-                        ca: 100, // Placeholder
-                        pa: 150,
-                        initialCA: 100,
-                        attributes: p.attributes as any, // Cast/Map as needed
-                        hidden: { consistency: 10, importantMatches: 10, injuryProneness: 10 },
-                        condition: p.condition,
-                        morale: p.morale,
-                        goals: 0, assists: 0, cleanSheets: 0,
-                        value: 1000000,
-                        seasonStats: { appearances: 0, goals: 0, assists: 0, cleanSheets: 0, averageRating: 0, mom: 0 }
-                    }));
+                    const legacyPlayers: Player[] = enginePlayers.map(p => {
+                        const attr = p.attributes; // Flat attributes from engine
+
+                        return {
+                            id: p.id.toString(),
+                            name: p.name,
+                            age: 20, // Default if missing
+                            position: mapPosition(p.position),
+                            nationality: 'Unknown',
+                            ca: 100, // Placeholder
+                            pa: 150,
+                            initialCA: 100,
+                            // Reconstruct nested attributes strictly for UI compatibility
+                            attributes: {
+                                technical: {
+                                    corners: attr.Corners,
+                                    crossing: attr.Crossing,
+                                    dribbling: attr.Dribbling,
+                                    finishing: attr.Finishing,
+                                    firstTouch: attr.FirstTouch,
+                                    freeKicks: attr.FreeKickTaking,
+                                    heading: attr.Heading,
+                                    longShots: attr.LongShots,
+                                    longThrows: attr.LongThrows,
+                                    marking: attr.Marking,
+                                    passing: attr.Passing,
+                                    penaltyTaking: attr.PenaltyTaking,
+                                    tackling: attr.Tackling,
+                                    technique: attr.Technique
+                                },
+                                mental: {
+                                    aggression: attr.Aggression,
+                                    anticipation: attr.Anticipation,
+                                    bravery: attr.Bravery,
+                                    composure: attr.Composure,
+                                    concentration: attr.Concentration,
+                                    decisions: attr.Decisions,
+                                    determination: attr.Determination,
+                                    flair: attr.Flair,
+                                    leadership: attr.Leadership,
+                                    offTheBall: attr.OffTheBall,
+                                    positioning: attr.Positioning,
+                                    teamwork: attr.Teamwork,
+                                    vision: attr.Vision,
+                                    workRate: attr.WorkRate
+                                },
+                                physical: {
+                                    acceleration: attr.Acceleration,
+                                    agility: attr.Agility,
+                                    balance: attr.Balance,
+                                    jumpingReach: attr.JumpingReach,
+                                    naturalFitness: attr.NaturalFitness,
+                                    pace: attr.Pace,
+                                    stamina: attr.Stamina,
+                                    strength: attr.Strength
+                                }
+                            },
+                            hidden: { consistency: 10, importantMatches: 10, injuryProneness: 10 },
+                            condition: p.condition,
+                            morale: p.morale,
+                            goals: 0, assists: 0, cleanSheets: 0,
+                            value: 1000000,
+                            seasonStats: { appearances: 0, goals: 0, assists: 0, cleanSheets: 0, averageRating: 0, mom: 0 }
+                        };
+                    });
 
                     return {
                         id: dbTeam.id,
