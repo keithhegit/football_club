@@ -74,7 +74,9 @@ export const gameInitializer = {
                 Club: p.Club || p.club_name,
                 League: p.League || p.league_name,
                 CurrentAbility: p.current_ability ?? p.CurrentAbility ?? p.ca,
-                PotentialAbility: p.potential_ability ?? p.PotentialAbility ?? p.pa
+                PotentialAbility: p.potential_ability ?? p.PotentialAbility ?? p.pa,
+                ca: p.current_ability ?? p.CurrentAbility ?? p.ca,
+                pa: p.potential_ability ?? p.PotentialAbility ?? p.pa
             }));
             await saveBatch('players', mappedPlayers);
 

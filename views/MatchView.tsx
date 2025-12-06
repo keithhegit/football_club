@@ -532,21 +532,29 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
         {/* RIGHT COLUMN: Log & Assistant */}
         <div className="lg:col-span-2 flex flex-col h-full overflow-hidden space-y-4">
 
-          {/* Assistant Report (Pre-Match) */}
+          {/* Pre-Match: Tactics / Subs prompt */}
           {matchState === MatchState.PRE_MATCH && (
             <div className="bg-slate-900 p-6 rounded-lg border border-slate-800 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
               <h3 className="text-emerald-400 text-sm font-bold uppercase mb-4 flex items-center gap-2">
-                <CheckCircle2 size={16} /> Assistant Manager Report
+                <CheckCircle2 size={16} /> 战术与换人准备
               </h3>
-              <p className="text-sm text-slate-300 italic whitespace-pre-line leading-relaxed">
-                {assistantReport || "Analyzing opponent data..."}
+              <p className="text-sm text-slate-300 leading-relaxed mb-4">
+                开赛前/中场请调整阵型、指令与体能（点右上 Tactics）。可预先安排换人计划。
               </p>
-              <button
-                onClick={handleStart}
-                className="mt-6 w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded shadow-lg transition-all text-lg"
-              >
-                Kick Off
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowTactics(true)}
+                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold py-3 rounded border border-slate-600"
+                >
+                  打开战术
+                </button>
+                <button
+                  onClick={handleStart}
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded shadow-lg transition-all text-lg"
+                >
+                  Kick Off
+                </button>
+              </div>
             </div>
           )}
 
