@@ -159,7 +159,9 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           const currentMinute = prevMinute + 1;
 
           // Filter events up to current minute
-          const currentEvents = fullMatchResult.events.filter((e: any) => e.minute <= currentMinute);
+          // Use 'eventLog' as per MatchResult interface in types.ts
+          // Use 'time' as per MatchEvent interface
+          const currentEvents = (fullMatchResult.eventLog || []).filter((e: any) => e.time <= currentMinute);
           setEvents(currentEvents);
 
           // Update Score
