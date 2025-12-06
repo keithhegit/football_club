@@ -324,7 +324,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   };
 
   const handleBackToDashboard = () => {
-    window.location.href = '/';
+    onMatchComplete(scores.home, scores.away);
   };
 
   const handlePauseToggle = () => setPaused((p) => !p);
@@ -454,7 +454,6 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
             <button onClick={() => setSpeedPreset('2x')} className={`p-1 rounded ${speed === 500 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>2x</button>
             <button onClick={() => setSpeedPreset('4x')} className={`p-1 rounded ${speed === 250 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>4x</button>
             <button onClick={handlePauseToggle} className={`p-1 rounded ${paused ? 'bg-yellow-700 text-white' : 'text-slate-500'}`}>{paused ? 'Resume' : 'Pause'}</button>
-            <button onClick={() => setShowTactics(!showTactics)} className={`px-2 py-1 rounded border ${showTactics ? 'border-emerald-500 text-emerald-300' : 'border-slate-700 text-slate-300'}`}>Tactics</button>
           </div>
         </div>
         <div className="flex justify-between items-center">
@@ -462,16 +461,25 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
             <div className="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center text-xs font-bold border border-blue-700">{homeTeam.shortName}</div>
             <span className="font-bold text-lg truncate">{homeTeam.name}</span>
           </div>
-          <div className="flex items-center space-x-3 bg-slate-950 px-4 py-1 rounded border border-slate-800">
-            <span className="text-3xl font-black text-white">{scores.home}</span>
-            <span className="text-slate-600 text-xl">:</span>
-            <span className="text-3xl font-black text-white">{scores.away}</span>
-          </div>
-          <div className="flex items-center space-x-3 w-1/3 justify-end">
-            <span className="font-bold text-lg truncate text-right">{awayTeam.name}</span>
-            <div className="w-8 h-8 rounded-full bg-red-900 flex items-center justify-center text-xs font-bold border border-red-700">{awayTeam.shortName}</div>
-          </div>
+        <div className="flex items-center space-x-3 bg-slate-950 px-4 py-1 rounded border border-slate-800">
+          <span className="text-3xl font-black text-white">{scores.home}</span>
+          <span className="text-slate-600 text-xl">:</span>
+          <span className="text-3xl font-black text-white">{scores.away}</span>
         </div>
+        <div className="flex items-center space-x-3 w-1/3 justify-end">
+          <span className="font-bold text-lg truncate text-right">{awayTeam.name}</span>
+          <div className="w-8 h-8 rounded-full bg-red-900 flex items-center justify-center text-xs font-bold border border-red-700">{awayTeam.shortName}</div>
+        </div>
+      </div>
+      {/* Tactics entry under score */}
+      <div className="flex justify-center mt-2">
+        <button
+          onClick={() => setShowTactics(true)}
+          className="px-4 py-2 rounded bg-emerald-600 text-white font-bold border border-emerald-500"
+        >
+          战术部署
+        </button>
+      </div>
       </div>
 
       {/* Match Content (Grid Layout) */}

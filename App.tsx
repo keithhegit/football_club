@@ -207,13 +207,18 @@ const App: React.FC = () => {
       return team;
     });
 
-    setGameState({
+    const newState = {
       ...gameState,
       fixtures: updatedFixtures,
       teams: updatedTeams,
       currentView: 'DASHBOARD',
       activeMatchId: null
-    });
+    };
+
+    setGameState(newState);
+    // Persist result
+    saveService.saveGame(`${gameState.manager?.name || 'Save'} - ${userTeam?.name || ''}`, newState)
+      .catch(err => console.error('Failed to save game after match:', err));
   };
 
   const handleTransferComplete = (player: Player, fee: number) => {
