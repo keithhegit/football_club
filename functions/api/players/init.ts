@@ -13,14 +13,15 @@ export async function onRequestPost(context) {
 
         console.log(`[API] mapped '${targetLeague}' to '${dbLeagueName}'`);
 
-        // 1. Fetch Players with Club info using JOINs
-        // Schema: players -> clubs -> leagues
+        // 1. Fetch Players with Club info + ability using JOINs
+        // Schema: players -> player_ability -> clubs -> leagues
         console.log(`[API] Executing JOIN query for players in ${dbLeagueName}...`);
 
         // Note: returning as snake_case as per schema, client side converter handles attribute mapping
         const playersQuery = context.env.DB.prepare(`
-            SELECT p.*, c.name as Club, l.name as League 
+            SELECT p.*, pa.current_ability, pa.potential_ability, c.name as Club, l.name as League 
             FROM players p 
+            JOIN player_ability pa ON pa.player_id = p.id
             JOIN clubs c ON p.club_id = c.id 
             JOIN leagues l ON c.league_id = l.id 
             WHERE l.name = ? OR l.name = ?

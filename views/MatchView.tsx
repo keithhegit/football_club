@@ -67,6 +67,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   const [matchState, setMatchState] = useState<MatchState>(MatchState.PRE_MATCH);
   const [speed, setSpeed] = useState(1000); // ms per tick (default 1x)
   const [paused, setPaused] = useState(false);
+  const [mvp, setMvp] = useState<{ name: string; rating: number; isHome: boolean } | null>(null);
   const [assistantReport, setAssistantReport] = useState<string>("");
   const [headline, setHeadline] = useState<string>("");
   const [filter, setFilter] = useState<string>('IMPORTANT'); // Default filter to interesting events
@@ -173,6 +174,12 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           }
           const currentMinute = prevMinute + 1;
 
+          // Auto-pause at half-time
+          if (currentMinute === 45 && !paused) {
+            setPaused(true);
+            setShowTactics(true);
+          }
+
           // Filter events up to current minute
           // Use 'eventLog' as per MatchResult interface in types.ts
           // Use 'time' as per MatchEvent interface
@@ -276,7 +283,32 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
     return () => clearInterval(interval);
   }, [matchState, fullMatchResult, speed, paused, homeTeam, awayTeam, headline]);
 
-  // Initial Assistant Report
+  // Compute MVP after full time using playerRatings if available, fallback to event-based rating
+  useEffect(() => {
+    if (matchState !== MatchState.FULL_TIME || !fullMatchResult) return;
+    let best: { name: string; rating: number; isHome: boolean } | null = null;
+
+    if (fullMatchResult.playerRatings && fullMatchResult.playerRatings.size > 0) {
+      fullMatchResult.playerRatings.forEach((rating: number, pid: number) => {
+        const player = homeTeam.players.find((p: any) => p.id == pid) || awayTeam.players.find((p: any) => p.id == pid);
+        if (player && (best === null || rating > best.rating)) {
+          best = { name: player.name, rating, isHome: !!homeTeam.players.find((p: any) => p.id == pid) };
+        }
+      });
+    } else {
+      // fallback using mock rating
+      const allPlayers = [...(homeTeam.players || []), ...(awayTeam.players || [])];
+      allPlayers.forEach(p => {
+        const r = calculateMockRating(p, fullMatchResult.eventLog || []);
+        if (best === null || r > best.rating) {
+          best = { name: p.name, rating: r, isHome: !!homeTeam.players.find((hp: any) => hp.id === p.id) };
+        }
+      });
+    }
+    setMvp(best);
+  }, [matchState, fullMatchResult, homeTeam, awayTeam]);
+
+  // Initial Assistant Report (optional)
   useEffect(() => {
     if (matchState === MatchState.PRE_MATCH && !assistantReport) {
       const myTeam = userTeamId === homeTeam.id ? homeTeam : awayTeam;
@@ -372,26 +404,39 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
             </button>
           </div>
 
-          {/* Lineups & Quick Subs (display only, up to 3 per team) */}
+          {/* Lineups & Quick Subs (user team only) */}
           <div className="space-y-3">
-            <div className="text-xs text-slate-400 font-bold uppercase">球员状态 (Home)</div>
-            {homeTeam.players?.slice(0, 11).map((p: any, idx: number) => (
-              <div key={p.id} className="flex justify-between text-xs text-slate-200 border-b border-slate-800 py-1">
-                <span className="truncate w-24">{p.name}</span>
-                <span className="text-slate-400">体能 {p.stamina ?? 100}%</span>
-                <span className="text-slate-500">士气 {p.morale ?? 75}</span>
-                <span className="text-slate-600">Pos {p.position}</span>
-              </div>
-            ))}
-            <div className="text-xs text-slate-400 font-bold uppercase pt-2">球员状态 (Away)</div>
-            {awayTeam.players?.slice(0, 11).map((p: any, idx: number) => (
-              <div key={p.id} className="flex justify-between text-xs text-slate-200 border-b border-slate-800 py-1">
-                <span className="truncate w-24">{p.name}</span>
-                <span className="text-slate-400">体能 {p.stamina ?? 100}%</span>
-                <span className="text-slate-500">士气 {p.morale ?? 75}</span>
-                <span className="text-slate-600">Pos {p.position}</span>
-              </div>
-            ))}
+            <div className="text-xs text-slate-400 font-bold uppercase">球员状态 (Your Team)</div>
+            {(() => {
+              const isHome = userTeamId === homeTeam.id;
+              const squad = isHome ? homeTeam.players : awayTeam.players;
+              return squad?.slice(0, 23).map((p: any) => {
+                const staminaVal = Math.min(100, p.stamina ?? p.condition ?? 100);
+                const moraleVal = Math.min(100, p.morale ?? 75);
+                return (
+                  <div key={p.id} className="flex flex-col gap-1 text-xs text-slate-200 border-b border-slate-800 py-2">
+                    <div className="flex justify-between items-center">
+                      <span className="truncate w-32">{p.name}</span>
+                      <span className="text-slate-500">Pos {p.position}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-500 w-10">体能</span>
+                      <div className="w-full h-2 bg-slate-800 rounded">
+                        <div className="h-2 rounded bg-emerald-500" style={{ width: `${staminaVal}%` }} />
+                      </div>
+                      <span className="text-[10px] text-slate-500 w-8 text-right">{staminaVal}%</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-500 w-10">士气</span>
+                      <div className="w-full h-2 bg-slate-800 rounded">
+                        <div className="h-2 rounded bg-blue-500" style={{ width: `${moraleVal}%` }} />
+                      </div>
+                      <span className="text-[10px] text-slate-500 w-8 text-right">{moraleVal}%</span>
+                    </div>
+                  </div>
+                );
+              });
+            })()}
           </div>
         </div>
       </div>
@@ -478,32 +523,15 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
               <h3 className="text-xs font-bold text-slate-300 uppercase mb-3 border-b border-slate-700 pb-2">Match Highlights</h3>
 
               {/* MVP Calculation */}
-              {(() => {
-                const allPlayers = [...(homeTeam.players || []), ...(awayTeam.players || [])];
-                let mvp = null;
-                let maxRating = 0;
-
-                allPlayers.forEach(p => {
-                  const r = calculateMockRating(p, events);
-                  if (r > maxRating) {
-                    maxRating = r;
-                    mvp = p;
-                  }
-                });
-
-                if (!mvp) return null;
-
-                const isHomeMvp = homeTeam.players?.find((p: any) => p.id === (mvp as any).id);
-                return (
-                  <div className="mb-4 bg-slate-800/50 p-3 rounded">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Man of the Match</div>
-                    <div className="flex justify-between items-center">
-                      <span className={`font-bold text-sm ${isHomeMvp ? 'text-emerald-400' : 'text-blue-400'}`}>{(mvp as any).name}</span>
-                      <span className="bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded text-xs font-bold">{maxRating.toFixed(1)}</span>
-                    </div>
+              {mvp && (
+                <div className="mb-4 bg-slate-800/50 p-3 rounded">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Man of the Match</div>
+                  <div className="flex justify-between items-center">
+                    <span className={`font-bold text-sm ${mvp.isHome ? 'text-emerald-400' : 'text-blue-400'}`}>{mvp.name}</span>
+                    <span className="bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded text-xs font-bold">{mvp.rating.toFixed(1)}</span>
                   </div>
-                );
-              })()}
+                </div>
+              )}
 
               {/* Goalscorers */}
               <div className="space-y-3">
