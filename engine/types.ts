@@ -194,6 +194,20 @@ export interface MatchResult {
     statistics: MatchStatistics;
     eventLog: MatchEvent[];
     playerRatings: Map<number, number>; // playerId -> rating (1-10)
+    snapshots?: PlayerSnapshot[];
+}
+
+export interface PlayerSnapshotEntry {
+    id: number | string;
+    stamina: number;
+    morale: number;
+    condition: number;
+}
+
+export interface PlayerSnapshot {
+    minute: number;
+    home: PlayerSnapshotEntry[];
+    away: PlayerSnapshotEntry[];
 }
 
 // Attribute combination formula definition
