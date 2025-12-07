@@ -62,6 +62,28 @@ const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
   return fixtures;
 };
 
+const FIXTURE_CACHE_KEY = 'fm2023_fixtures_cache';
+
+const loadCachedFixtures = (): Fixture[] | null => {
+  try {
+    const raw = localStorage.getItem(FIXTURE_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
+const persistFixtures = (fixtures: Fixture[]) => {
+  try {
+    localStorage.setItem(FIXTURE_CACHE_KEY, JSON.stringify(fixtures));
+  } catch {
+    /* ignore */
+  }
+};
+
 const App: React.FC = () => {
   // Check for test mode via URL parameter
   const urlParams = new URLSearchParams(window.location.search);
@@ -104,11 +126,16 @@ const App: React.FC = () => {
   // Initialize game state once data is loaded after club selection
   useEffect(() => {
     if (!loading && !error && initialUserTeam && initialTeams.length > 0 && managerData && user) {
+      // Load cached fixtures if any, else generate then cache
+      const cached = loadCachedFixtures();
+      const fixtures = cached && cached.length > 0 ? cached : generateSeasonFixtures(initialTeams);
+      if (!cached || cached.length === 0) persistFixtures(fixtures);
+
       const newGameState: GameState = {
         currentWeek: 1,
         userTeamId: initialUserTeam.id,
         teams: initialTeams,
-        fixtures: generateSeasonFixtures(initialTeams),
+        fixtures,
         currentView: 'DASHBOARD',
         activeMatchId: null,
         manager: managerData
@@ -117,7 +144,6 @@ const App: React.FC = () => {
       setGameState(newGameState);
 
       // Auto-save the new game immediately
-      // This ensures the randomized PA values are locked in for this save
       const saveName = `${managerData.name} - ${initialUserTeam.name}`;
       saveService.saveGame(saveName, newGameState).then(() => {
         console.log('New game auto-saved:', saveName);
@@ -248,6 +274,7 @@ const App: React.FC = () => {
 
     setGameState(newState);
     // Persist result (ignore errors for now)
+    persistFixtures(updatedFixtures);
     saveService.saveGame(`${gameState.manager?.name || 'Save'} - ${userTeam?.name || ''}`, newState).catch(() => {});
   };
 
