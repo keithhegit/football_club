@@ -89,18 +89,48 @@ export const GUIDED_FORMATIONS: Record<string, Formation> = {
 };
 
 export const TEAM_TACTIC_PRESETS: Record<string, { formation: string; mentality: string; style: '控球' | '高压反抢' | '反击' | '平衡' }> = {
-  // 英超（示例，可扩充到西甲20队）
-  't_arsenal': { formation: '4-3-3', mentality: 'Positive', style: '高压反抢' },
-  't_manufc': { formation: '4-2-3-1', mentality: 'Positive', style: '平衡' },
-  't_mancity': { formation: '4-3-3', mentality: 'Positive', style: '控球' },
-  't_liverpool': { formation: '4-3-3', mentality: 'Positive', style: '高压反抢' },
-  't_chelsea': { formation: '4-2-3-1', mentality: 'Balanced', style: '控球' },
-  't_tottenham': { formation: '4-2-3-1', mentality: 'Positive', style: '反击' },
-  't_newcastle': { formation: '4-3-3', mentality: 'Positive', style: '高压反抢' },
-  't_astonvilla': { formation: '4-4-2', mentality: 'Balanced', style: '反击' },
-  't_brighton': { formation: '4-2-3-1', mentality: 'Positive', style: '控球' },
-  't_westham': { formation: '4-2-3-1', mentality: 'Balanced', style: '反击' },
-  // …其余英超与西甲队伍可依 FM23 风格补齐
+  // 英超 20
+  'man city': { formation: '4-3-3', mentality: 'Positive', style: '控球' },
+  'liverpool': { formation: '4-3-3', mentality: 'Positive', style: '高压反抢' },
+  'tottenham': { formation: '3-4-3', mentality: 'Positive', style: '反击' },
+  'man ufc': { formation: '4-2-3-1', mentality: 'Positive', style: '平衡' },
+  'chelsea': { formation: '4-2-3-1', mentality: 'Balanced', style: '控球' },
+  'arsenal': { formation: '4-3-3', mentality: 'Positive', style: '高压反抢' },
+  'west ham': { formation: '4-2-3-1', mentality: 'Balanced', style: '反击' },
+  'aston villa': { formation: '4-4-2', mentality: 'Balanced', style: '反击' },
+  'everton': { formation: '4-2-3-1', mentality: 'Balanced', style: '反击' },
+  'bournemouth': { formation: '4-2-3-1', mentality: 'Cautious', style: '反击' },
+  'newcastle': { formation: '4-3-3', mentality: 'Positive', style: '高压反抢' },
+  'leicester': { formation: '4-1-4-1', mentality: 'Balanced', style: '控球' },
+  'wolves': { formation: '4-2-3-1', mentality: 'Balanced', style: '反击' },
+  'crystal palace': { formation: '4-2-3-1', mentality: 'Balanced', style: '高压反抢' },
+  'leeds': { formation: '4-2-3-1', mentality: 'Positive', style: '高压反抢' },
+  'fulham': { formation: '4-2-3-1', mentality: 'Balanced', style: '平衡' },
+  'southampton': { formation: '4-4-2', mentality: 'Cautious', style: '反击' },
+  'nottm forest': { formation: '3-4-3', mentality: 'Cautious', style: '反击' },
+  'brighton': { formation: '4-2-3-1', mentality: 'Positive', style: '控球' },
+  'brentford': { formation: '3-4-3', mentality: 'Balanced', style: '反击' },
+  // 西甲 20
+  'barcelona': { formation: '4-3-3', mentality: 'Positive', style: '控球' },
+  'r. madrid': { formation: '4-3-3', mentality: 'Positive', style: '控球' },
+  'a. madrid': { formation: '4-4-2', mentality: 'Balanced', style: '反击' },
+  'sevilla': { formation: '4-3-3', mentality: 'Balanced', style: '控球' },
+  'real san sebastián': { formation: '4-3-3', mentality: 'Balanced', style: '控球' },
+  'valencia': { formation: '4-4-2', mentality: 'Balanced', style: '反击' },
+  'cádiz': { formation: '4-4-2', mentality: 'Cautious', style: '反击' },
+  'real hispalis': { formation: '4-2-3-1', mentality: 'Balanced', style: '控球' },
+  'a. bilbao': { formation: '4-4-2', mentality: 'Balanced', style: '反击' },
+  'getafe': { formation: '3-4-3', mentality: 'Cautious', style: '反击' },
+  'villarreal': { formation: '4-4-2', mentality: 'Balanced', style: '控球' },
+  'espanyol': { formation: '4-2-3-1', mentality: 'Balanced', style: '平衡' },
+  'vallecano': { formation: '4-2-3-1', mentality: 'Balanced', style: '高压反抢' },
+  'vigo': { formation: '4-4-2', mentality: 'Balanced', style: '控球' },
+  'mallorca': { formation: '3-4-3', mentality: 'Cautious', style: '反击' },
+  'valladolid': { formation: '4-3-3', mentality: 'Balanced', style: '平衡' },
+  'girona': { formation: '3-4-3', mentality: 'Positive', style: '高压反抢' },
+  'atlético pamplona': { formation: '4-4-2', mentality: 'Balanced', style: '反击' },
+  'almería': { formation: '4-3-3', mentality: 'Balanced', style: '反击' },
+  'elche': { formation: '4-4-2', mentality: 'Cautious', style: '反击' },
 };
 
 // Map simple style to instruction defaults
@@ -138,7 +168,8 @@ export const STYLE_TO_INSTRUCTIONS = (style: '控球' | '高压反抢' | '反击
 };
 
 export const applyTeamPreset = (team: Team): Team => {
-  const preset = TEAM_TACTIC_PRESETS[String(team.id)];
+  const key = String(team.name || '').toLowerCase();
+  const preset = TEAM_TACTIC_PRESETS[key];
   if (!preset) return team;
   const instr = STYLE_TO_INSTRUCTIONS(preset.style);
   return {

@@ -291,7 +291,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {filteredBench.map(p => (
                       <div
                         key={p.id}
@@ -299,7 +299,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                         onClick={() => setBenchProfile(p)}
                       >
                         <div className="flex items-center gap-3">
-                          <PlayerAvatar playerId={p.id} alt={p.name} size="sm" className="border-emerald-500" />
+                          <PlayerAvatar playerId={p.id} alt={p.name} size="md" className="border-emerald-500" />
                           <div className="min-w-0">
                             <div className="text-sm font-bold text-slate-100 truncate">{p.name}</div>
                             <div className="text-[11px] text-slate-400 flex gap-2">

@@ -2,24 +2,57 @@ import { useState, useEffect } from 'react';
 import { Team, Player, Formation, PlayerPosition, Duty } from '../types';
 
 // Default Formations
-import { GUIDED_FORMATIONS } from '../utils/tacticsPresets';
+import { GUIDED_FORMATIONS, TEAM_TACTIC_PRESETS } from '../utils/tacticsPresets';
 
 export function useTactics(initialTeam: Team | null) {
-    const [currentFormationId, setCurrentFormationId] = useState<string>(initialTeam?.tactics?.formation || '4-4-2');
+    const [currentFormationId, setCurrentFormationId] = useState<string>(initialTeam?.tactics?.formation || (() => {
+        const key = (initialTeam?.name || '').toLowerCase();
+        return TEAM_TACTIC_PRESETS[key]?.formation || '4-4-2';
+    })());
     const [lineup, setLineup] = useState<{ positionId: string; playerId: string }[]>([]);
 
     // Initialize lineup when team loads
     useEffect(() => {
         if (initialTeam && initialTeam.players.length > 0) {
             const formation = GUIDED_FORMATIONS[currentFormationId] || GUIDED_FORMATIONS['4-4-2'];
-            // If team has saved lineup, use it; else auto-pick first 11
+            // If team has saved lineup, use it; else auto-pick by position / CA
             const saved = initialTeam.tactics?.lineup;
+            const chooseByPosition = () => {
+                const remaining = [...initialTeam.players];
+                const pickBest = (targetId: string) => {
+                    const target = targetId.toUpperCase();
+                    let bestIdx = -1;
+                    let bestScore = -1;
+                    remaining.forEach((p, idx) => {
+                        const pos = (p.position || '').toUpperCase();
+                        let score = 0;
+                        if (pos.includes(target)) score += 100;
+                        // broad buckets
+                        if (target === 'GK' && pos.includes('GK')) score += 50;
+                        if (target.startsWith('D') && (pos.includes('D') || pos.includes('WB'))) score += 40;
+                        if (target.startsWith('M') && (pos.includes('M') || pos.includes('DM') || pos.includes('AM'))) score += 40;
+                        if (target.startsWith('A') || target === 'ST') {
+                            if (pos.includes('ST') || pos.includes('AM')) score += 40;
+                        }
+                        score += p.ca || 0;
+                        if (score > bestScore) {
+                            bestScore = score;
+                            bestIdx = idx;
+                        }
+                    });
+                    if (bestIdx === -1) return '';
+                    const chosen = remaining.splice(bestIdx, 1)[0];
+                    return chosen?.id || '';
+                };
+                return formation.positions.map(pos => ({
+                    positionId: pos.id,
+                    playerId: pickBest(pos.id)
+                })).filter(l => l.playerId);
+            };
+
             const newLineup = (saved && saved.length > 0)
                 ? saved.map(l => ({ positionId: l.positionId, playerId: l.playerId }))
-                : formation.positions.map((pos, index) => ({
-                    positionId: pos.id,
-                    playerId: initialTeam.players[index]?.id || ''
-                })).filter(l => l.playerId !== '');
+                : chooseByPosition();
 
             setLineup(newLineup);
         }

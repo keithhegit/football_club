@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Team, Position } from '../types';
 import { PlayerAvatar } from '../components/PlayerAvatar';
 import { PlayerProfileCard } from '../components/PlayerProfileCard';
@@ -11,6 +11,7 @@ interface SquadViewProps {
 export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
     const [selectedPosition, setSelectedPosition] = useState<Position | 'ALL'>('ALL');
     const [selectedPlayer, setSelectedPlayer] = useState<typeof team.players[0] | null>(null);
+    const [page, setPage] = useState(0);
 
     // Smart position filtering
     const filteredPlayers = selectedPosition === 'ALL'
@@ -33,6 +34,15 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
         // Within same position, sort by CA descending
         return b.ca - a.ca;
     });
+
+    const pageSize = 12;
+    const totalPages = Math.max(1, Math.ceil(sortedPlayers.length / pageSize));
+    const pagePlayers = sortedPlayers.slice(page * pageSize, page * pageSize + pageSize);
+
+    // Reset page when filter changes
+    useEffect(() => {
+        setPage(0);
+    }, [selectedPosition]);
 
     return (
         <div className="p-4 space-y-4 h-full flex flex-col relative">
@@ -70,14 +80,14 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
                         No players in this position.
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {sortedPlayers.map(player => (
+                    <div className="grid grid-cols-3 gap-4">
+                        {pagePlayers.map(player => (
                             <div
                                 key={player.id}
                                 onClick={() => setSelectedPlayer(player)}
-                                className="bg-slate-800/80 p-3 rounded border border-slate-700 hover:border-emerald-600 cursor-pointer transition shadow-sm flex flex-col items-center gap-2"
+                                className="bg-slate-800/80 p-3 rounded border border-slate-700 hover:border-emerald-600 cursor-pointer transition shadow-sm flex flex-col items-center gap-3"
                             >
-                                <PlayerAvatar playerId={player.id} alt={player.name} size="md" className="border-emerald-500" />
+                                <PlayerAvatar playerId={player.id} alt={player.name} size="lg" className="border-emerald-500" />
                                 <div className="text-center">
                                     <div className="font-bold text-slate-200 truncate max-w-[140px]">{player.name}</div>
                                     <div className="text-[11px] text-slate-400 flex items-center justify-center gap-2">
@@ -100,6 +110,23 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
                                 )}
                             </div>
                         ))}
+                    </div>
+                    <div className="flex justify-center items-center gap-3 mt-3">
+                        <button
+                            onClick={() => setPage(p => Math.max(0, p - 1))}
+                            disabled={page === 0}
+                            className={`px-3 py-1 rounded ${page === 0 ? 'bg-slate-800 text-slate-600 border border-slate-700' : 'bg-slate-700 text-white border border-slate-600 hover:bg-slate-600'}`}
+                        >
+                            上一页
+                        </button>
+                        <span className="text-xs text-slate-400">第 {page + 1} / {totalPages} 页</span>
+                        <button
+                            onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                            disabled={page >= totalPages - 1}
+                            className={`px-3 py-1 rounded ${page >= totalPages - 1 ? 'bg-slate-800 text-slate-600 border border-slate-700' : 'bg-slate-700 text-white border border-slate-600 hover:bg-slate-600'}`}
+                        >
+                            下一页
+                        </button>
                     </div>
                 )}
             </div>
