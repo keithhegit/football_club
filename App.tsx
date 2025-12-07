@@ -33,13 +33,23 @@ const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
   const teamIds = teams.map(t => t.id);
   let week = 1;
 
-  // Simple round robin generation logic (simplified for brevity)
+  // Double round robin: each pair plays twice (home/away)
   for (let i = 0; i < teamIds.length; i++) {
     for (let j = i + 1; j < teamIds.length; j++) {
       fixtures.push({
-        id: `f_${week}_${i}_${j}`,
+        id: `f_${week}_${i}_${j}_h`,
         homeTeamId: teamIds[i],
         awayTeamId: teamIds[j],
+        played: false,
+        homeScore: 0,
+        awayScore: 0,
+        week: week
+      });
+      week++;
+      fixtures.push({
+        id: `f_${week}_${j}_${i}_h`,
+        homeTeamId: teamIds[j],
+        awayTeamId: teamIds[i],
         played: false,
         homeScore: 0,
         awayScore: 0,

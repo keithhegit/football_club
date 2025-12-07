@@ -186,17 +186,5 @@ export const generateTeam = (id: string, name: string, shortName: string, primar
   };
 };
 
-// Use the new DB loader for our user team and main rival
-const userTeam = generateTeamFromDB("t1", "London Blue", "CHE", "#1e3a8a", "che", 155);
-const rivalTeam = generateTeamFromDB("t3", "Manchester Blue", "MCI", "#0ea5e9", "mci", 175);
-
-export const INITIAL_TEAMS: Team[] = [
-  userTeam,
-  generateTeam("t2", "Manchester Red", "MUN", "#b91c1c", 152),
-  rivalTeam,
-  generateTeam("t4", "Liverpool Red", "LIV", "#dc2626", 160),
-  generateTeam("t5", "North London White", "TOT", "#f8fafc", 148),
-  generateTeam("t6", "North London Red", "ARS", "#ef4444", 158),
-  generateTeam("t7", "Newcastle Stripe", "NEW", "#171717", 145),
-  generateTeam("t8", "Birmingham Claret", "AVL", "#7f1d1d", 142),
-];
+// Note: INITIAL_TEAMS is unused after we moved to D1/IndexedDB league data; keep as placeholder.
+export const INITIAL_TEAMS: Team[] = [];
