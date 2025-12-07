@@ -29,6 +29,7 @@ import { UnifiedMatchTest } from './views/UnifiedMatchTest';
 import { LeagueView } from './views/LeagueView';
 import { applyTeamPreset, applySeasonPreset } from './utils/tacticsPresets';
 import { updateSeasonPlayerStats } from './services/matchStatsWriter';
+import { BgmToggle } from './components/BgmToggle';
 
 // Helper to generate a season fixture list (Double Round Robin) using circle method with proper week buckets
 const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
@@ -479,24 +480,36 @@ const App: React.FC = () => {
   };
 
   // Render Logic
+  const NonMatchBgm = () => (
+    <div className="fixed top-3 right-3 z-50">
+      <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Blur_Song_2_FIFA_98_com.mp3" />
+    </div>
+  );
+
   if (!gameState) return <div className="h-screen bg-slate-950 flex items-center justify-center text-white">Loading...</div>;
 
   // Auth Views
   if (gameState.currentView === 'LOGIN') {
     return (
-      <LoginView
-        onLoginSuccess={handleLoginSuccess}
-        onSwitchToRegister={() => setGameState({ ...gameState, currentView: 'REGISTER' })}
-      />
+      <div className="relative">
+        <NonMatchBgm />
+        <LoginView
+          onLoginSuccess={handleLoginSuccess}
+          onSwitchToRegister={() => setGameState({ ...gameState, currentView: 'REGISTER' })}
+        />
+      </div>
     );
   }
 
   if (gameState.currentView === 'REGISTER') {
     return (
-      <RegisterView
-        onRegisterSuccess={handleLoginSuccess}
-        onSwitchToLogin={() => setGameState({ ...gameState, currentView: 'LOGIN' })}
-      />
+      <div className="relative">
+        <NonMatchBgm />
+        <RegisterView
+          onRegisterSuccess={handleLoginSuccess}
+          onSwitchToLogin={() => setGameState({ ...gameState, currentView: 'LOGIN' })}
+        />
+      </div>
     );
   }
 
@@ -519,20 +532,31 @@ const App: React.FC = () => {
   }
 
   if (gameState?.currentView === 'MANAGER_CREATION') {
-    return <ManagerCreation onNext={handleManagerCreated} />;
+    return (
+      <div className="relative">
+        <NonMatchBgm />
+        <ManagerCreation onNext={handleManagerCreated} />
+      </div>
+    );
   }
 
   if (gameState?.currentView === 'CLUB_SELECTION') {
-    return <ClubSelection onConfirm={handleClubSelected} />;
+    return (
+      <div className="relative">
+        <NonMatchBgm />
+        <ClubSelection onConfirm={handleClubSelected} />
+      </div>
+    );
   }
 
   if (!gameState || !userTeam) {
-    return <div className="flex items-center justify-center h-screen bg-slate-950 text-slate-100">{t('common.loading')}</div>;
+    return (
+      <div className="relative flex items-center justify-center h-screen bg-slate-950 text-slate-100">
+        <NonMatchBgm />
+        {t('common.loading')}
+      </div>
+    );
   }
-
-  // ... (imports)
-
-  // ... (inside App component)
 
   // Views
   if (gameState.currentView === 'MATCH' && nextFixture && opponent) {
@@ -581,42 +605,6 @@ const App: React.FC = () => {
 
       {gameState.currentView === 'SQUAD' && (
         <SquadView team={userTeam} />
-      )}
-
-      {gameState.currentView === 'LEAGUE' && (
-        <div className="overflow-y-auto h-full p-4">
-          <h2 className="text-2xl font-bold mb-4 text-slate-100">League Table</h2>
-          <div className="bg-slate-900 rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-slate-800">
-              <thead className="bg-slate-800">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Pos</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Team</th>
-                  <th className="p-3 font-semibold text-center">P</th>
-                  <th className="p-3 font-semibold text-center">GD</th>
-                  <th className="p-3 font-semibold text-center text-white">Pts</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {leagueTable.map((team, idx) => (
-                  <tr key={team.id} className={team.id === userTeam.id ? 'bg-slate-800/50' : ''}>
-                    <td className={`p-3 font-mono ${idx < 4 ? 'text-emerald-400 border-l-2 border-emerald-500' : 'text-slate-500'}`}>{idx + 1}</td>
-                    <td className="p-3 font-medium text-slate-200">
-                      <div className="flex items-center gap-2">
-                        <ClubLogo clubId={team.id} clubName={team.name} size="sm" />
-                        <span className="md:hidden">{team.shortName}</span>
-                        <span className="hidden md:inline">{team.name}</span>
-                      </div>
-                    </td>
-                    <td className="p-3 text-center text-slate-400">{team.wins + team.draws + team.losses}</td>
-                    <td className="p-3 text-center text-slate-400">{team.goalsFor - team.goalsAgainst}</td>
-                    <td className="p-3 text-center font-bold text-white">{team.points}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
       )}
 
       {gameState.currentView === 'SEARCH' && (
