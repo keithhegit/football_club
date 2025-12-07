@@ -26,6 +26,7 @@ import { TrainingView } from './views/TrainingView';
 import { MatchEngineTest } from './views/MatchEngineTest';
 import { LiveMatchPlayer } from './views/LiveMatchPlayer';
 import { UnifiedMatchTest } from './views/UnifiedMatchTest';
+import { LeagueView } from './views/LeagueView';
 
 // Helper to generate a season fixture list (Double Round Robin)
 const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
@@ -246,9 +247,8 @@ const App: React.FC = () => {
     };
 
     setGameState(newState);
-    // Persist result
-    saveService.saveGame(`${gameState.manager?.name || 'Save'} - ${userTeam?.name || ''}`, newState)
-      .catch(err => console.error('Failed to save game after match:', err));
+    // Persist result (ignore errors for now)
+    saveService.saveGame(`${gameState.manager?.name || 'Save'} - ${userTeam?.name || ''}`, newState).catch(() => {});
   };
 
   const handleTransferComplete = (player: Player, fee: number) => {
@@ -502,6 +502,10 @@ const App: React.FC = () => {
 
       {gameState.currentView === 'TACTICS' && userTeam && (
         <TacticsView team={userTeam} onSave={handleSaveTactics} />
+      )}
+
+      {gameState.currentView === 'LEAGUE' && gameState && userTeam && (
+        <LeagueView teams={gameState.teams} fixtures={gameState.fixtures} userTeamId={userTeam.id} />
       )}
 
     </Layout>
