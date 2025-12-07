@@ -156,6 +156,26 @@ const App: React.FC = () => {
 
   const userTeam = gameState?.teams.find(t => t.id === gameState?.userTeamId);
 
+  const handleSaveTactics = (tacticsPayload: any) => {
+    if (!gameState || !userTeam) return;
+    const updatedTeams = gameState.teams.map(t => {
+      if (t.id === userTeam.id) {
+        return {
+          ...t,
+          tactics: {
+            ...t.tactics,
+            formation: tacticsPayload.formation,
+            instructions: tacticsPayload.instructions,
+            lineup: tacticsPayload.lineup
+          }
+        };
+      }
+      return t;
+    });
+    setGameState({ ...gameState, teams: updatedTeams });
+    // Persist to save slot if desired (skip auto-save for now)
+  };
+
   // Computed State
   const nextFixture = useMemo(() => {
     if (!gameState) return undefined;
@@ -480,8 +500,8 @@ const App: React.FC = () => {
         <PlayerSearchView />
       )}
 
-      {gameState.currentView === 'TACTICS' && (
-        <TacticsView team={userTeam} />
+      {gameState.currentView === 'TACTICS' && userTeam && (
+        <TacticsView team={userTeam} onSave={handleSaveTactics} />
       )}
 
     </Layout>

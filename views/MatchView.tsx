@@ -114,6 +114,34 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
     }
   }, [events]);
 
+  // Map team tactics instructions to tactical modifiers for match engine
+  const mapInstructionsToModifiers = (team: Team) => {
+    const instr = team.tactics?.instructions;
+    if (!instr) return tacticalModifiers;
+    const scale = (val: number) => Math.max(-2, Math.min(2, (val - 50) / 25));
+    return {
+      ...tacticalModifiers,
+      mentality: 0,
+      directness: scale(instr.inPossession.passingDirectness),
+      tempo: scale(instr.inPossession.tempo),
+      width: scale(instr.inPossession.width),
+      defensiveLine: scale(instr.outOfPossession.defensiveLine),
+      engagementLine: scale(instr.outOfPossession.lineOfEngagement),
+      pressingIntensity: scale(instr.outOfPossession.pressingIntensity),
+      counterPress: instr.inTransition.counterPress,
+      counter: instr.inTransition.counter,
+      distributeQuickly: instr.inTransition.distributeQuickly
+    };
+  };
+
+  // Preload tactical modifiers from user team tactics
+  useEffect(() => {
+    const userTeam = userTeamId === homeTeam.id ? homeTeam : awayTeam;
+    if (userTeam?.tactics?.instructions) {
+      setTacticalModifiers(mapInstructionsToModifiers(userTeam));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [homeTeam, awayTeam, userTeamId]);
   const getSnapshotMaps = (m: number) => {
     if (!snapshots || snapshots.length === 0) {
       // fallback: simple decay so halftime不再全100/75
@@ -202,7 +230,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
       };
       runSimulation();
     }
-  }, [matchState, fullMatchResult, fixtureId, homeTeam, awayTeam]);
+  }, [matchState, fullMatchResult, fixtureId, homeTeam, awayTeam, tacticalModifiers]);
 
   // Sync initial lineups/bench on teams change
   useEffect(() => {

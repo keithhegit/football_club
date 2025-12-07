@@ -57,18 +57,21 @@ const FORMATIONS: Record<string, Formation> = {
 };
 
 export function useTactics(initialTeam: Team | null) {
-    const [currentFormationId, setCurrentFormationId] = useState<string>('4-4-2');
+    const [currentFormationId, setCurrentFormationId] = useState<string>(initialTeam?.tactics?.formation || '4-4-2');
     const [lineup, setLineup] = useState<{ positionId: string; playerId: string }[]>([]);
 
     // Initialize lineup when team loads
     useEffect(() => {
         if (initialTeam && initialTeam.players.length > 0) {
-            // Auto-pick first 11 players for now
-            const formation = FORMATIONS[currentFormationId];
-            const newLineup = formation.positions.map((pos, index) => ({
-                positionId: pos.id,
-                playerId: initialTeam.players[index]?.id || ''
-            })).filter(l => l.playerId !== '');
+            const formation = FORMATIONS[currentFormationId] || FORMATIONS['4-4-2'];
+            // If team has saved lineup, use it; else auto-pick first 11
+            const saved = initialTeam.tactics?.lineup;
+            const newLineup = (saved && saved.length > 0)
+                ? saved.map(l => ({ positionId: l.positionId, playerId: l.playerId }))
+                : formation.positions.map((pos, index) => ({
+                    positionId: pos.id,
+                    playerId: initialTeam.players[index]?.id || ''
+                })).filter(l => l.playerId !== '');
 
             setLineup(newLineup);
         }

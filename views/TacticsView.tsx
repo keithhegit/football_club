@@ -8,10 +8,20 @@ import { RoleSelectionModal } from '../components/Tactics/RoleSelectionModal';
 
 interface TacticsViewProps {
   team: Team;
+  onSave?: (tactics: any) => void;
 }
 
-export const TacticsView: React.FC<TacticsViewProps> = ({ team }) => {
+export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
   const { currentFormation, availableFormations, lineup, setFormation, updatePlayerPosition } = useTactics(team);
+
+  const defaultInstructions = team.tactics?.instructions || {
+    mentality: 'Balanced',
+    inPossession: { passingDirectness: 50, tempo: 50, width: 50 },
+    inTransition: { counterPress: false, counter: false, distributeQuickly: false },
+    outOfPossession: { lineOfEngagement: 50, defensiveLine: 50, pressingIntensity: 50 }
+  };
+
+  const [instructions, setInstructions] = useState(defaultInstructions);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [showFormationSelect, setShowFormationSelect] = useState(false);
@@ -145,46 +155,156 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team }) => {
               {/* Mentality */}
               <div>
                 <label className="text-slate-500 text-xs mb-2 block">Mentality</label>
-                <div className="bg-slate-800 rounded p-2 text-center text-emerald-400 text-sm font-bold border border-emerald-500/30 cursor-pointer hover:bg-slate-700 transition-colors">
-                  Balanced
-                </div>
+                <select
+                  className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-slate-200"
+                  value={instructions.mentality}
+                  onChange={(e) => setInstructions(prev => ({ ...prev, mentality: e.target.value }))}
+                >
+                  {['Very Defensive', 'Defensive', 'Cautious', 'Balanced', 'Positive', 'Attacking', 'Very Attacking'].map(m => (
+                    <option key={m} value={m}>{m}</option>
+                  ))}
+                </select>
               </div>
 
               {/* In Possession */}
               <div>
                 <label className="text-slate-500 text-xs mb-2 block">In Possession</label>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <div className="flex justify-between text-xs text-slate-300">
-                    <span>Passing</span>
-                    <span className="text-emerald-400">Standard</span>
+                    <span>Passing Directness</span>
+                    <span className="text-emerald-400">{instructions.inPossession.passingDirectness}</span>
                   </div>
-                  <div className="h-1 bg-slate-700 rounded overflow-hidden">
-                    <div className="w-1/2 h-full bg-emerald-500"></div>
-                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={instructions.inPossession.passingDirectness}
+                    onChange={(e) => setInstructions(prev => ({
+                      ...prev,
+                      inPossession: { ...prev.inPossession, passingDirectness: Number(e.target.value) }
+                    }))}
+                  />
 
-                  <div className="flex justify-between text-xs text-slate-300 mt-2">
+                  <div className="flex justify-between text-xs text-slate-300">
                     <span>Tempo</span>
-                    <span className="text-emerald-400">Standard</span>
+                    <span className="text-emerald-400">{instructions.inPossession.tempo}</span>
                   </div>
-                  <div className="h-1 bg-slate-700 rounded overflow-hidden">
-                    <div className="w-1/2 h-full bg-emerald-500"></div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={instructions.inPossession.tempo}
+                    onChange={(e) => setInstructions(prev => ({
+                      ...prev,
+                      inPossession: { ...prev.inPossession, tempo: Number(e.target.value) }
+                    }))}
+                  />
+
+                  <div className="flex justify-between text-xs text-slate-300">
+                    <span>Width</span>
+                    <span className="text-emerald-400">{instructions.inPossession.width}</span>
                   </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={instructions.inPossession.width}
+                    onChange={(e) => setInstructions(prev => ({
+                      ...prev,
+                      inPossession: { ...prev.inPossession, width: Number(e.target.value) }
+                    }))}
+                  />
                 </div>
               </div>
 
               {/* Out of Possession */}
               <div>
                 <label className="text-slate-500 text-xs mb-2 block">Out of Possession</label>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <div className="flex justify-between text-xs text-slate-300">
-                    <span>Pressing</span>
-                    <span className="text-emerald-400">More Often</span>
+                    <span>Line of Engagement</span>
+                    <span className="text-emerald-400">{instructions.outOfPossession.lineOfEngagement}</span>
                   </div>
-                  <div className="h-1 bg-slate-700 rounded overflow-hidden">
-                    <div className="w-3/4 h-full bg-emerald-500"></div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={instructions.outOfPossession.lineOfEngagement}
+                    onChange={(e) => setInstructions(prev => ({
+                      ...prev,
+                      outOfPossession: { ...prev.outOfPossession, lineOfEngagement: Number(e.target.value) }
+                    }))}
+                  />
+
+                  <div className="flex justify-between text-xs text-slate-300">
+                    <span>Defensive Line</span>
+                    <span className="text-emerald-400">{instructions.outOfPossession.defensiveLine}</span>
                   </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={instructions.outOfPossession.defensiveLine}
+                    onChange={(e) => setInstructions(prev => ({
+                      ...prev,
+                      outOfPossession: { ...prev.outOfPossession, defensiveLine: Number(e.target.value) }
+                    }))}
+                  />
+
+                  <div className="flex justify-between text-xs text-slate-300">
+                    <span>Pressing Intensity</span>
+                    <span className="text-emerald-400">{instructions.outOfPossession.pressingIntensity}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={instructions.outOfPossession.pressingIntensity}
+                    onChange={(e) => setInstructions(prev => ({
+                      ...prev,
+                      outOfPossession: { ...prev.outOfPossession, pressingIntensity: Number(e.target.value) }
+                    }))}
+                  />
                 </div>
               </div>
+
+              {/* In Transition */}
+              <div className="space-y-2">
+                <label className="text-slate-500 text-xs mb-2 block">In Transition</label>
+                {['counterPress', 'counter', 'distributeQuickly'].map(key => (
+                  <label key={key} className="flex items-center gap-2 text-xs text-slate-300">
+                    <input
+                      type="checkbox"
+                      checked={(instructions.inTransition as any)[key]}
+                      onChange={(e) => setInstructions(prev => ({
+                        ...prev,
+                        inTransition: { ...prev.inTransition, [key]: e.target.checked }
+                      }))}
+                    />
+                    {key === 'counterPress' ? 'Counter-Press' : key === 'counter' ? 'Counter' : 'Distribute Quickly'}
+                  </label>
+                ))}
+              </div>
+
+              <button
+                onClick={() => {
+                  if (!onSave) return;
+                  const tacticsPayload = {
+                    formation: currentFormation.id,
+                    instructions,
+                    lineup: lineup.map(l => ({
+                      positionId: l.positionId,
+                      playerId: l.playerId,
+                      role: 'Generic',
+                      duty: 'Support'
+                    }))
+                  };
+                  onSave(tacticsPayload);
+                }}
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded shadow mt-2"
+              >
+                保存战术
+              </button>
             </div>
 
             {/* Bench Content */}
