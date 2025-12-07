@@ -186,6 +186,7 @@ export interface TeamState {
     players: PlayerState[];
     formation: string; // e.g., "4-3-3"
     tacticalModifiers: TacticalModifiers;
+    bench?: PlayerState[];
 }
 
 export interface MatchResult {

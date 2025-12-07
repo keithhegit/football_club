@@ -528,6 +528,23 @@ export class MatchEngine {
         this.turnover();
     }
 
+    /**
+     * Apply a substitution (UI-driven). Updates lineup and bench; does not rewrite past events.
+     */
+    applySubstitution(team: 'home' | 'away', outPlayerId: number | string, inPlayerId: number | string): boolean {
+        const teamState = team === 'home' ? this.state.homeTeam : this.state.awayTeam;
+        if (!teamState.bench) teamState.bench = [];
+        const outIdx = teamState.players.findIndex(p => p.id === outPlayerId);
+        const inIdx = teamState.bench.findIndex(p => p.id === inPlayerId);
+        if (outIdx === -1 || inIdx === -1) return false;
+        const outP = teamState.players[outIdx];
+        const inP = teamState.bench[inIdx];
+        teamState.players[outIdx] = inP;
+        teamState.bench.splice(inIdx, 1);
+        teamState.bench.push(outP);
+        return true;
+    }
+
     private moveBall(distance: number): void {
         if (this.state.possession === 'home') {
             this.state.ballPosition.y = Math.min(100, this.state.ballPosition.y + distance);

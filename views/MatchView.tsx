@@ -80,6 +80,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   const [subOutId, setSubOutId] = useState<string | number | undefined>(undefined);
   const [subInId, setSubInId] = useState<string | number | undefined>(undefined);
   const [subsUsed, setSubsUsed] = useState<number>(0);
+  const [engine, setEngine] = useState<any>(null);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -182,6 +183,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           };
 
           const engine = new MatchEngine(hTeamState, aTeamState);
+          setEngine(engine);
           result = engine.simulateMatch();
         }
         setFullMatchResult(result);
@@ -393,6 +395,10 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
     lineup[outIdx] = inPlayer;
     bench.splice(inIdx, 1);
     bench.push(outPlayer); // moved to bench
+    // Apply to engine state for downstream snapshots if engine exists
+    if (engine) {
+      engine.applySubstitution(isHome ? 'home' : 'away', outPlayer.id, inPlayer.id);
+    }
     if (isHome) {
       setHomeLineup(lineup);
       setHomeBench(bench);
