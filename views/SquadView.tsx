@@ -80,54 +80,56 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
                         No players in this position.
                     </div>
                 ) : (
-                    <div className="grid grid-cols-3 gap-4">
-                        {pagePlayers.map(player => (
-                            <div
-                                key={player.id}
-                                onClick={() => setSelectedPlayer(player)}
-                                className="bg-slate-800/80 p-3 rounded border border-slate-700 hover:border-emerald-600 cursor-pointer transition shadow-sm flex flex-col items-center gap-3"
-                            >
-                                <PlayerAvatar playerId={player.id} alt={player.name} size="lg" className="border-emerald-500" />
-                                <div className="text-center">
-                                    <div className="font-bold text-slate-200 truncate max-w-[140px]">{player.name}</div>
-                                    <div className="text-[11px] text-slate-400 flex items-center justify-center gap-2">
-                                        <span className={`${player.position === 'GK' ? 'text-yellow-400' :
-                                            player.position === 'DEF' ? 'text-blue-400' :
-                                                player.position === 'MID' ? 'text-emerald-400' :
-                                                    'text-red-400'
-                                            } font-bold`}>{player.position}</span>
-                                        <span className="text-slate-500">CA {player.ca}</span>
+                    <>
+                        <div className="grid grid-cols-3 gap-4">
+                            {pagePlayers.map(player => (
+                                <div
+                                    key={player.id}
+                                    onClick={() => setSelectedPlayer(player)}
+                                    className="bg-slate-800/80 p-3 rounded border border-slate-700 hover:border-emerald-600 cursor-pointer transition shadow-sm flex flex-col items-center gap-3"
+                                >
+                                    <PlayerAvatar playerId={player.id} alt={player.name} size="lg" className="border-emerald-500" />
+                                    <div className="text-center">
+                                        <div className="font-bold text-slate-200 truncate max-w-[140px]">{player.name}</div>
+                                        <div className="text-[11px] text-slate-400 flex items-center justify-center gap-2">
+                                            <span className={`${player.position === 'GK' ? 'text-yellow-400' :
+                                                player.position === 'DEF' ? 'text-blue-400' :
+                                                    player.position === 'MID' ? 'text-emerald-400' :
+                                                        'text-red-400'
+                                                } font-bold`}>{player.position}</span>
+                                            <span className="text-slate-500">CA {player.ca}</span>
+                                        </div>
                                     </div>
+                                    {player.pa > 0 && (
+                                        <div className="text-[11px] text-emerald-400 text-center">
+                                            {player.pa >= 170 ? '🌟 世界级' :
+                                                player.pa >= 150 ? '⭐ 顶级' :
+                                                    player.pa >= 130 ? '💎 关键' :
+                                                        player.pa >= 110 ? '🔹 主力' :
+                                                            player.pa >= 90 ? '📦 轮换' : '💤 替补'}
+                                        </div>
+                                    )}
                                 </div>
-                                {player.pa > 0 && (
-                                    <div className="text-[11px] text-emerald-400 text-center">
-                                        {player.pa >= 170 ? '🌟 世界级' :
-                                            player.pa >= 150 ? '⭐ 顶级' :
-                                                player.pa >= 130 ? '💎 关键' :
-                                                    player.pa >= 110 ? '🔹 主力' :
-                                                        player.pa >= 90 ? '📦 轮换' : '💤 替补'}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                    <div className="flex justify-center items-center gap-3 mt-3">
-                        <button
-                            onClick={() => setPage(p => Math.max(0, p - 1))}
-                            disabled={page === 0}
-                            className={`px-3 py-1 rounded ${page === 0 ? 'bg-slate-800 text-slate-600 border border-slate-700' : 'bg-slate-700 text-white border border-slate-600 hover:bg-slate-600'}`}
-                        >
-                            上一页
-                        </button>
-                        <span className="text-xs text-slate-400">第 {page + 1} / {totalPages} 页</span>
-                        <button
-                            onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
-                            disabled={page >= totalPages - 1}
-                            className={`px-3 py-1 rounded ${page >= totalPages - 1 ? 'bg-slate-800 text-slate-600 border border-slate-700' : 'bg-slate-700 text-white border border-slate-600 hover:bg-slate-600'}`}
-                        >
-                            下一页
-                        </button>
-                    </div>
+                            ))}
+                        </div>
+                        <div className="flex justify-center items-center gap-3 mt-3">
+                            <button
+                                onClick={() => setPage(p => Math.max(0, p - 1))}
+                                disabled={page === 0}
+                                className={`px-3 py-1 rounded ${page === 0 ? 'bg-slate-800 text-slate-600 border border-slate-700' : 'bg-slate-700 text-white border border-slate-600 hover:bg-slate-600'}`}
+                            >
+                                上一页
+                            </button>
+                            <span className="text-xs text-slate-400">第 {page + 1} / {totalPages} 页</span>
+                            <button
+                                onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                                disabled={page >= totalPages - 1}
+                                className={`px-3 py-1 rounded ${page >= totalPages - 1 ? 'bg-slate-800 text-slate-600 border border-slate-700' : 'bg-slate-700 text-white border border-slate-600 hover:bg-slate-600'}`}
+                            >
+                                下一页
+                            </button>
+                        </div>
+                    </>
                 )}
             </div>
 
