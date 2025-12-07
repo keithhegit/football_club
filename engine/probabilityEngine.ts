@@ -64,6 +64,14 @@ export function computeActionSuccess(
         probability *= (1 - defenseScore);
     }
 
+    // 6.5 Action-specific tweaks
+    if (action === 'PASS_SHORT' || action === 'PASS_LONG') {
+        probability *= 1.1; // Boost passes toward realistic 70-90%
+    }
+    if (action === 'TACKLE') {
+        probability *= 0.9; // Slightly lower tackle success to curb totals
+    }
+
     // 7. Apply weather/pitch conditions
     const environmentMod = getEnvironmentModifier(action, conditions);
     probability *= environmentMod;

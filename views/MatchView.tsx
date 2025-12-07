@@ -72,6 +72,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   const [headline, setHeadline] = useState<string>("");
   const [filter, setFilter] = useState<string>('IMPORTANT'); // Default filter to interesting events
   const [showTactics, setShowTactics] = useState<boolean>(false);
+  const [snapshots, setSnapshots] = useState<any[]>([]);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -105,6 +106,19 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
     }
   }, [events]);
 
+  const getSnapshotMaps = (m: number) => {
+    if (!snapshots || snapshots.length === 0) return { home: new Map(), away: new Map() };
+    // pick latest snapshot <= minute
+    let snap = snapshots[0];
+    for (const s of snapshots) {
+      if (s.minute <= m) snap = s;
+      else break;
+    }
+    const home = new Map(snap.home?.map((p: any) => [p.id, p]));
+    const away = new Map(snap.away?.map((p: any) => [p.id, p]));
+    return { home, away };
+  };
+
   // 1. Initialize Engine and Simulate Full Match on Mount (or Start)
   useEffect(() => {
     if (matchState === MatchState.PLAYING && !fullMatchResult) {
@@ -128,9 +142,13 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
               name: p.name,
               position: p.position || 'MC',
               attributes: p.attributes || {},
-              condition: 100, stamina: 100,
+              condition: p.condition ?? p.stamina ?? 100,
+              stamina: p.stamina ?? p.condition ?? 100,
               currentPosition: { x: 50, y: 50 },
-              morale: 75, form: 75, yellowCards: 0, redCard: false
+              morale: p.morale ?? 75,
+              form: p.form ?? 75,
+              yellowCards: 0,
+              redCard: false
             })),
             formation: '4-4-2',
             tacticalModifiers: tacticalModifiers
@@ -144,9 +162,13 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
               name: p.name,
               position: p.position || 'MC',
               attributes: p.attributes || {},
-              condition: 100, stamina: 100,
+              condition: p.condition ?? p.stamina ?? 100,
+              stamina: p.stamina ?? p.condition ?? 100,
               currentPosition: { x: 50, y: 50 },
-              morale: 75, form: 75, yellowCards: 0, redCard: false
+              morale: p.morale ?? 75,
+              form: p.form ?? 75,
+              yellowCards: 0,
+              redCard: false
             })),
             formation: '4-4-2',
             tacticalModifiers: tacticalModifiers
@@ -156,6 +178,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           result = engine.simulateMatch();
         }
         setFullMatchResult(result);
+        setSnapshots(result?.snapshots || []);
       };
       runSimulation();
     }
@@ -335,6 +358,8 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
     if (preset === '4x') setSpeed(250);
   };
 
+  const snapshotMaps = getSnapshotMaps(minute);
+
   return (
     <div className="flex flex-col h-full bg-slate-950">
 
@@ -411,8 +436,9 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
               const isHome = userTeamId === homeTeam.id;
               const squad = isHome ? homeTeam.players : awayTeam.players;
               return squad?.slice(0, 23).map((p: any) => {
-                const staminaVal = Math.min(100, p.stamina ?? p.condition ?? 100);
-                const moraleVal = Math.min(100, p.morale ?? 75);
+                const snapEntry = (isHome ? snapshotMaps.home : snapshotMaps.away).get(p.id);
+                const staminaVal = Math.min(100, snapEntry?.stamina ?? p.stamina ?? p.condition ?? 100);
+                const moraleVal = Math.min(100, snapEntry?.morale ?? p.morale ?? 75);
                 return (
                   <div key={p.id} className="flex flex-col gap-1 text-xs text-slate-200 border-b border-slate-800 py-2">
                     <div className="flex justify-between items-center">
