@@ -29,41 +29,65 @@ import { UnifiedMatchTest } from './views/UnifiedMatchTest';
 import { LeagueView } from './views/LeagueView';
 import { applyTeamPreset } from './utils/tacticsPresets';
 
-// Helper to generate a season fixture list (Double Round Robin)
+// Helper to generate a season fixture list (Double Round Robin) using circle method with proper week buckets
 const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
-  const fixtures: Fixture[] = [];
-  const teamIds = teams.map(t => t.id);
-  let week = 1;
-
-  // Double round robin: each pair plays twice (home/away)
-  for (let i = 0; i < teamIds.length; i++) {
-    for (let j = i + 1; j < teamIds.length; j++) {
-      fixtures.push({
-        id: `f_${week}_${i}_${j}_h`,
-        homeTeamId: teamIds[i],
-        awayTeamId: teamIds[j],
-        played: false,
-        homeScore: 0,
-        awayScore: 0,
-        week: week
-      });
-      week++;
-      fixtures.push({
-        id: `f_${week}_${j}_${i}_h`,
-        homeTeamId: teamIds[j],
-        awayTeamId: teamIds[i],
-        played: false,
-        homeScore: 0,
-        awayScore: 0,
-        week: week
-      });
-      week++;
-    }
+  const teamIds = [...teams.map(t => t.id)];
+  // If odd number, add a bye (undefined) so algorithm works
+  if (teamIds.length % 2 === 1) {
+    teamIds.push(-1 as any); // sentinel for bye
   }
+  const n = teamIds.length;
+  const roundsPerLeg = n - 1;
+  const weeksTotal = roundsPerLeg * 2;
+  const fixtures: Fixture[] = [];
+
+  // Prepare arrays for rotation (circle method)
+  const fixed = teamIds[0];
+  let rotating = teamIds.slice(1);
+
+  const makeRound = (round: number, offset: number, reverseHomeAway: boolean) => {
+    const pairs: [number, number][] = [];
+    const half = rotating.length / 2;
+    for (let i = 0; i < half; i++) {
+      const home = rotating[i];
+      const away = rotating[rotating.length - 1 - i];
+      pairs.push([home, away]);
+    }
+    pairs.unshift([fixed, rotating[0]]); // fixed team vs first
+
+    pairs.forEach((pair, idx) => {
+      const [h, a] = reverseHomeAway ? [pair[1], pair[0]] : [pair[0], pair[1]];
+      if (h === -1 || a === -1) return; // skip bye
+      fixtures.push({
+        id: `f_${round}_${idx}_${offset}`,
+        homeTeamId: h,
+        awayTeamId: a,
+        played: false,
+        homeScore: 0,
+        awayScore: 0,
+        week: round
+      });
+    });
+  };
+
+  // First leg
+  for (let r = 0; r < roundsPerLeg; r++) {
+    makeRound(r + 1, 0, false);
+    // rotate
+    rotating = [rotating[0], ...rotating.slice(2), rotating[1]];
+  }
+  // Second leg (swap home/away)
+  rotating = teamIds.slice(1);
+  for (let r = 0; r < roundsPerLeg; r++) {
+    makeRound(roundsPerLeg + r + 1, 1, true);
+    rotating = [rotating[0], ...rotating.slice(2), rotating[1]];
+  }
+
   return fixtures;
 };
 
-const FIXTURE_CACHE_KEY = 'fm2023_fixtures_cache';
+// bump cache key to regenerate new week structure
+const FIXTURE_CACHE_KEY = 'fm2023_fixtures_cache_v2';
 
 const loadCachedFixtures = (): Fixture[] | null => {
   try {
