@@ -491,30 +491,26 @@ const App: React.FC = () => {
   // Global BGM unlock gate (appears before任何页面)
   if (!bgmUnlocked) {
     return (
-      <div className="relative h-screen w-screen bg-slate-950 flex items-center justify-center px-6">
-        <div className="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 space-y-4 text-center">
-          <img
-            src="https://pub-c98d5902eedf42f6a9765dfad981fd88.r2.dev/fmui/fm26wcup.png"
-            alt="FM World Cup"
-            className="w-full rounded-xl border border-slate-800 shadow-lg"
-          />
-          <div className="text-lg font-bold text-slate-100">开启音乐体验</div>
-          <div className="text-sm text-slate-400 leading-relaxed">
-            点击下方“足球滚动”以解锁并自动播放 BGM（浏览器需要一次用户操作）
-          </div>
-          <button
-            onClick={() => {
-              setBgmUnlocked(true);
-              setBgmUnlockKey(k => k + 1);
-            }}
-            className="w-full py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base shadow-lg transition transform hover:-translate-y-0.5 active:scale-98"
-          >
-            <span className="inline-flex items-center justify-center gap-2">
-              <span className="animate-bounce">⚽</span>
-              <span>足球滚动</span>
-            </span>
-          </button>
-        </div>
+      <div
+        className="relative h-screen w-screen bg-slate-950 flex items-center justify-center"
+        style={{
+          backgroundImage: 'url(https://pub-c98d5902eedf42f6a9765dfad981fd88.r2.dev/fmui/cup_98FM.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
+        <div className="absolute inset-0 bg-black/45" aria-hidden="true" />
+        <button
+          onClick={() => {
+            setBgmUnlocked(true);
+            setBgmUnlockKey(k => k + 1);
+          }}
+          className="relative z-10 px-8 py-4 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xl shadow-xl transition transform hover:-translate-y-0.5 active:scale-98 flex items-center gap-2"
+          aria-label="足球滚动"
+        >
+          <span className="animate-bounce">⚽</span>
+          <span>足球滚动</span>
+        </button>
       </div>
     );
   }
