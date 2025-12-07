@@ -29,10 +29,12 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
     updatePlayerPosition(playerId, targetPositionId);
   };
 
-  const benchPlayers = useMemo(
-    () => team.players.filter(p => !lineup.find(pos => pos.playerId === p.id)),
-    [team.players, lineup]
-  );
+  const benchPlayers = useMemo(() => {
+    const lineupIds = lineup.map(l => l.playerId);
+    return team.players
+      .filter(p => !lineupIds.includes(p.id))
+      .sort((a, b) => (b.ca || 0) - (a.ca || 0));
+  }, [team.players, lineup]);
 
   return (
     <div className="h-full flex flex-col relative bg-slate-950">
@@ -231,7 +233,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                           key={pos.id}
                           className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 cursor-pointer"
                           style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-                          onClick={() => player && setReplaceTarget({ positionId: pos.id, playerName: player.name })}
+                          onClick={() => setReplaceTarget({ positionId: pos.id, playerName: player?.name })}
                           draggable
                           onDragStart={(e) => {
                             if (player) {
