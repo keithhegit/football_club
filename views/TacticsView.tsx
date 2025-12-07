@@ -3,7 +3,8 @@ import { Team } from '../types';
 import { useTactics } from '../hooks/useTactics';
 import { Info, ChevronDown } from 'lucide-react';
 import { GUIDED_FORMATIONS } from '../utils/tacticsPresets';
-import { getPlayerAvatar } from '../utils/avatar';
+import { PlayerAvatar } from '../components/PlayerAvatar';
+import { PlayerProfileCard } from '../components/PlayerProfileCard';
 
 interface TacticsViewProps {
   team: Team;
@@ -227,7 +228,6 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                     {currentFormation.positions.map((pos) => {
                       const assigned = lineup.find(l => l.positionId === pos.id);
                       const player = team.players.find(p => p.id === assigned?.playerId);
-                      const avatar = getPlayerAvatar(player?.name || '', player?.id);
                       return (
                         <div
                           key={pos.id}
@@ -247,7 +247,12 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                             if (pid) handlePlayerDrop(pid, pos.id);
                           }}
                         >
-                          <img src={avatar} alt={player?.name || pos.name} className="w-12 h-12 rounded-full border-2 border-emerald-400 shadow" />
+                          <PlayerAvatar
+                            playerId={player?.id || pos.id}
+                            alt={player?.name || pos.name}
+                            size="md"
+                            className="border-2 border-emerald-400 shadow"
+                          />
                           <div className="px-2 py-1 bg-slate-900/80 rounded text-[10px] text-emerald-300 border border-emerald-700">
                             {pos.name} {player ? `· ${player.name}` : ''}
                           </div>
@@ -267,30 +272,22 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
           <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
             <div className="text-sm font-bold text-slate-200 mb-2">选择替换球员</div>
             <div className="text-xs text-slate-400 mb-3">当前位置：{replaceTarget.playerName || replaceTarget.positionId}</div>
-            <div className="max-h-64 overflow-y-auto space-y-2">
+            <div className="max-h-[70vh] overflow-y-auto space-y-3 pr-1">
               {benchPlayers.map(p => (
-                <button
-                  key={p.id}
-                  onClick={() => {
-                    handlePlayerDrop(String(p.id), replaceTarget.positionId);
-                    setReplaceTarget(null);
-                  }}
-                  className="w-full flex items-center gap-3 bg-slate-800 hover:bg-slate-700 text-left p-3 rounded border border-slate-700 transition"
-                >
-                  <img src={getPlayerAvatar(p.name, p.id)} className="w-10 h-10 rounded-full border border-emerald-600" />
-                  <div className="flex-1">
-                    <div className="text-sm font-bold text-slate-100">{p.name}</div>
-                    <div className="text-[11px] text-slate-400 flex gap-2">
-                      <span className={`${p.position === 'GK' ? 'text-yellow-400' :
-                          p.position === 'DEF' ? 'text-blue-400' :
-                            p.position === 'MID' ? 'text-emerald-400' :
-                              'text-red-400'
-                        } font-bold`}>{p.position}</span>
-                      <span className="text-slate-500">|</span>
-                      <span>CA: <span className="text-slate-300">{p.ca}</span></span>
-                    </div>
+                <div key={p.id} className="relative bg-slate-900/70 border border-slate-800 rounded-xl shadow">
+                  <div className="absolute right-3 top-3 z-10">
+                    <button
+                      onClick={() => {
+                        handlePlayerDrop(String(p.id), replaceTarget.positionId);
+                        setReplaceTarget(null);
+                      }}
+                      className="px-3 py-1 text-xs font-bold rounded bg-emerald-600 hover:bg-emerald-500 text-white shadow"
+                    >
+                      选择上场
+                    </button>
                   </div>
-                </button>
+                  <PlayerProfileCard player={p} hideActions userTeam={team} />
+                </div>
               ))}
               {benchPlayers.length === 0 && (
                 <div className="text-center text-slate-500 text-xs py-4">无可用替补</div>
