@@ -13,9 +13,10 @@ interface LayoutProps {
   onSaveGame?: (name: string) => Promise<void>;
   onTransferComplete?: (player: any, fee: number) => void;
   userTeam?: any;
+  bgmUnlockKey?: number;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeView, teamName, onSaveGame, onTransferComplete, userTeam }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeView, teamName, onSaveGame, onTransferComplete, userTeam, bgmUnlockKey }) => {
   const { t } = useI18n();
   const [showSaveModal, setShowSaveModal] = useState(false);
   const isWide = currentView === 'TACTICS' || currentView === 'LEAGUE';
@@ -39,7 +40,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeV
           {teamName}
         </div>
         <div className="flex items-center gap-2">
-          <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Blur_Song_2_FIFA_98_com.mp3" />
+          <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Blur_Song_2_FIFA_98_com.mp3" unlockKey={bgmUnlockKey} />
           {onSaveGame && (
             <button
               onClick={() => setShowSaveModal(true)}

@@ -13,6 +13,7 @@ interface MatchViewProps {
   onMatchComplete: (homeScore: number, awayScore: number) => void;
   userTeamId: string;
   fixtureId?: string; // New prop for local simulation
+  bgmUnlockKey?: number;
 }
 
 // -----------------------------------------------------------------------------
@@ -644,7 +645,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                 `${minute}'`}
           </div>
           <div className="flex items-center gap-3 flex-wrap justify-end">
-            <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Chumbawamb_Tubthumping_com.mp3" />
+            <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Chumbawamb_Tubthumping_com.mp3" unlockKey={bgmUnlockKey} />
             <div className="flex space-x-2 flex-wrap justify-end">
               <button onClick={() => setSpeedPreset('1x')} className={`p-1 rounded ${speed === 1000 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>1x</button>
               <button onClick={() => setSpeedPreset('2x')} className={`p-1 rounded ${speed === 500 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>2x</button>

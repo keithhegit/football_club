@@ -3,9 +3,10 @@ import React, { useEffect, useRef, useState } from 'react';
 interface BgmToggleProps {
   src: string;
   size?: number;
+  unlockKey?: number; // when changes, re-attempt play after user gesture
 }
 
-export const BgmToggle: React.FC<BgmToggleProps> = ({ src, size = 18 }) => {
+export const BgmToggle: React.FC<BgmToggleProps> = ({ src, size = 18, unlockKey }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(true);
 
@@ -28,7 +29,7 @@ export const BgmToggle: React.FC<BgmToggleProps> = ({ src, size = 18 }) => {
     return () => {
       audio.pause();
     };
-  }, [src]);
+  }, [src, unlockKey]);
 
   const toggle = async () => {
     const audio = audioRef.current;

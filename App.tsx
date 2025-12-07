@@ -148,6 +148,8 @@ const App: React.FC = () => {
     activeMatchId: null,
     manager: undefined
   });
+  const [bgmUnlocked, setBgmUnlocked] = useState<boolean>(false);
+  const [bgmUnlockKey, setBgmUnlockKey] = useState<number>(0);
 
   // Initialize game state once data is loaded after club selection
   // Initialize game state once data is loaded after club selection
@@ -492,11 +494,29 @@ const App: React.FC = () => {
   if (gameState.currentView === 'LOGIN') {
     return (
       <div className="relative">
-        <NonMatchBgm />
+        {bgmUnlocked && <NonMatchBgm />}
         <LoginView
           onLoginSuccess={handleLoginSuccess}
           onSwitchToRegister={() => setGameState({ ...gameState, currentView: 'REGISTER' })}
         />
+        {!bgmUnlocked && (
+          <div className="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center px-6 text-center">
+            <div className="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+              <img src="https://pub-c98d5902eedf42f6a9765dfad981fd88.r2.dev/fmui/cup_98FM.png" alt="FM Cup" className="w-32 h-32 mx-auto mb-2" />
+              <div className="text-lg font-bold text-slate-100">开启音乐体验</div>
+              <div className="text-sm text-slate-400">点击下方“足球滚动”以解锁并自动播放 BGM（浏览器需要一次用户操作）</div>
+              <button
+                onClick={() => {
+                  setBgmUnlocked(true);
+                  setBgmUnlockKey(k => k + 1);
+                }}
+                className="w-full py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base"
+              >
+                足球滚动
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -504,11 +524,29 @@ const App: React.FC = () => {
   if (gameState.currentView === 'REGISTER') {
     return (
       <div className="relative">
-        <NonMatchBgm />
+        {bgmUnlocked && <NonMatchBgm />}
         <RegisterView
           onRegisterSuccess={handleLoginSuccess}
           onSwitchToLogin={() => setGameState({ ...gameState, currentView: 'LOGIN' })}
         />
+        {!bgmUnlocked && (
+          <div className="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center px-6 text-center">
+            <div className="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
+              <img src="https://pub-c98d5902eedf42f6a9765dfad981fd88.r2.dev/fmui/cup_98FM.png" alt="FM Cup" className="w-32 h-32 mx-auto mb-2" />
+              <div className="text-lg font-bold text-slate-100">开启音乐体验</div>
+              <div className="text-sm text-slate-400">点击下方“足球滚动”以解锁并自动播放 BGM（浏览器需要一次用户操作）</div>
+              <button
+                onClick={() => {
+                  setBgmUnlocked(true);
+                  setBgmUnlockKey(k => k + 1);
+                }}
+                className="w-full py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base"
+              >
+                足球滚动
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -552,7 +590,7 @@ const App: React.FC = () => {
   if (!gameState || !userTeam) {
     return (
       <div className="relative flex items-center justify-center h-screen bg-slate-950 text-slate-100">
-        <NonMatchBgm />
+        {bgmUnlocked && <NonMatchBgm />}
         {t('common.loading')}
       </div>
     );
@@ -567,6 +605,7 @@ const App: React.FC = () => {
         userTeamId={userTeam.id}
         onMatchComplete={handleMatchComplete}
         fixtureId={nextFixture.id}
+        bgmUnlockKey={bgmUnlockKey}
       />
     );
   }
@@ -589,6 +628,7 @@ const App: React.FC = () => {
       currentView={gameState.currentView}
       onChangeView={(view) => setGameState(prev => prev ? { ...prev, currentView: view } : null)}
       teamName={userTeam.name}
+      bgmUnlockKey={bgmUnlockKey}
       onSaveGame={user ? handleSaveGame : undefined}
       onTransferComplete={handleTransferComplete}
       userTeam={userTeam}
