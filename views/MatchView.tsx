@@ -115,7 +115,18 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   }, [events]);
 
   const getSnapshotMaps = (m: number) => {
-    if (!snapshots || snapshots.length === 0) return { home: new Map(), away: new Map() };
+    if (!snapshots || snapshots.length === 0) {
+      // fallback: simple decay so halftime不再全100/75
+      const decay = Math.min(70, m * 0.8);
+      const moraleAdj = Math.max(-15, -(m * 0.1));
+      const fallbackMap = (team: any[]) => new Map(team.map(p => [p.id, {
+        id: p.id,
+        stamina: Math.max(30, (p.stamina ?? p.condition ?? 100) - decay),
+        morale: Math.max(50 + moraleAdj, p.morale ?? 75),
+        condition: Math.max(30, (p.condition ?? p.stamina ?? 100) - decay)
+      }]));
+      return { home: fallbackMap(homeLineup), away: fallbackMap(awayLineup) };
+    }
     // pick latest snapshot <= minute
     let snap = snapshots[0];
     for (const s of snapshots) {
@@ -492,21 +503,52 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
           </div>
 
           {/* Lineups & Quick Subs (user team only) */}
-          <div className="space-y-3">
+            <div className="space-y-3">
             <div className="text-xs text-slate-400 font-bold uppercase">球员状态 (Your Team)</div>
             {(() => {
               const isHome = userTeamId === homeTeam.id;
               const lineup = isHome ? homeLineup : awayLineup;
               const bench = isHome ? homeBench : awayBench;
-              return [...lineup, ...bench].map((p: any) => {
+              return (
+                <>
+                  <div className="text-[10px] text-slate-500">首发 11 人</div>
+                  {lineup.map((p: any) => {
+                    const snapEntry = (isHome ? snapshotMaps.home : snapshotMaps.away).get(p.id);
+                    const staminaVal = Math.min(100, snapEntry?.stamina ?? p.stamina ?? p.condition ?? 100);
+                    const moraleVal = Math.min(100, snapEntry?.morale ?? p.morale ?? 75);
+                    return (
+                      <div key={p.id} className="flex flex-col gap-1 text-xs text-slate-200 border-b border-slate-800 py-2">
+                        <div className="flex justify-between items-center">
+                          <span className="truncate w-32">{p.name}</span>
+                          <span className="text-slate-500">Pos {p.position} · XI</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-slate-500 w-10">体能</span>
+                          <div className="w-full h-2 bg-slate-800 rounded">
+                            <div className="h-2 rounded bg-emerald-500" style={{ width: `${staminaVal}%` }} />
+                          </div>
+                          <span className="text-[10px] text-slate-500 w-8 text-right">{staminaVal}%</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-slate-500 w-10">士气</span>
+                          <div className="w-full h-2 bg-slate-800 rounded">
+                            <div className="h-2 rounded bg-blue-500" style={{ width: `${moraleVal}%` }} />
+                          </div>
+                          <span className="text-[10px] text-slate-500 w-8 text-right">{moraleVal}%</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <div className="text-[10px] text-slate-500 pt-2">替补 {bench.length} 人</div>
+                  {bench.map((p: any) => {
                 const snapEntry = (isHome ? snapshotMaps.home : snapshotMaps.away).get(p.id);
                 const staminaVal = Math.min(100, snapEntry?.stamina ?? p.stamina ?? p.condition ?? 100);
                 const moraleVal = Math.min(100, snapEntry?.morale ?? p.morale ?? 75);
                 return (
                   <div key={p.id} className="flex flex-col gap-1 text-xs text-slate-200 border-b border-slate-800 py-2">
                     <div className="flex justify-between items-center">
-                      <span className="truncate w-32">{p.name}</span>
-                      <span className="text-slate-500">Pos {p.position}{lineup.includes(p) ? ' · XI' : ' · Bench'}</span>
+                          <span className="truncate w-32">{p.name}</span>
+                          <span className="text-slate-500">Pos {p.position} · Bench</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] text-slate-500 w-10">体能</span>
@@ -523,8 +565,10 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                       <span className="text-[10px] text-slate-500 w-8 text-right">{moraleVal}%</span>
                     </div>
                   </div>
-                );
-              });
+                    );
+                  })}
+                </>
+              );
             })()}
 
             {/* Substitutions UI (3 max) */}
