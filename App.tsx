@@ -226,6 +226,18 @@ const App: React.FC = () => {
 
   const userLeaguePos = gameState ? leagueTable.findIndex(t => t.id === gameState.userTeamId) + 1 : 0;
 
+  const simulateQuickResult = (home: any, away: any) => {
+    const homeCA = home.players.reduce((s: number, p: any) => s + (p.ca || 100), 0) / home.players.length;
+    const awayCA = away.players.reduce((s: number, p: any) => s + (p.ca || 100), 0) / away.players.length;
+    const diff = (homeCA - awayCA) / 20; // scale
+    const baseHome = 1.1 + diff * 0.3;
+    const baseAway = 1.1 - diff * 0.3;
+    const clampScore = (v: number) => Math.max(0, Math.min(4, Math.round(v + Math.random() * 1.2)));
+    const homeGoals = clampScore(baseHome);
+    const awayGoals = clampScore(baseAway);
+    return { homeGoals, awayGoals };
+  };
+
   // Actions
   const handleMatchComplete = (homeScore: number, awayScore: number) => {
     if (!nextFixture || !gameState) return;
@@ -273,10 +285,61 @@ const App: React.FC = () => {
       activeMatchId: null
     };
 
+    // Auto-simulate other fixtures in same week
+    const currentWeek = nextFixture.week;
+    const otherFixtures = newState.fixtures.filter(f => !f.played && f.week === currentWeek);
+    let teamsAfterSim = [...newState.teams];
+    const fixturesAfterSim = newState.fixtures.map(f => ({ ...f }));
+
+    otherFixtures.forEach(fx => {
+      const home = teamsAfterSim.find(t => t.id === fx.homeTeamId);
+      const away = teamsAfterSim.find(t => t.id === fx.awayTeamId);
+      if (!home || !away) return;
+      const { homeGoals, awayGoals } = simulateQuickResult(home, away);
+      fx.played = true;
+      fx.homeScore = homeGoals;
+      fx.awayScore = awayGoals;
+      fixturesAfterSim[fixturesAfterSim.findIndex(ff => ff.id === fx.id)] = fx;
+      teamsAfterSim = teamsAfterSim.map(t => {
+        if (t.id === home.id) {
+          return {
+            ...t,
+            goalsFor: t.goalsFor + homeGoals,
+            goalsAgainst: t.goalsAgainst + awayGoals,
+            points: t.points + (homeGoals > awayGoals ? 3 : homeGoals === awayGoals ? 1 : 0),
+            wins: t.wins + (homeGoals > awayGoals ? 1 : 0),
+            draws: t.draws + (homeGoals === awayGoals ? 1 : 0),
+            losses: t.losses + (homeGoals < awayGoals ? 1 : 0)
+          };
+        }
+        if (t.id === away.id) {
+          return {
+            ...t,
+            goalsFor: t.goalsFor + awayGoals,
+            goalsAgainst: t.goalsAgainst + homeGoals,
+            points: t.points + (awayGoals > homeGoals ? 3 : awayGoals === homeGoals ? 1 : 0),
+            wins: t.wins + (awayGoals > homeGoals ? 1 : 0),
+            draws: t.draws + (awayGoals === homeGoals ? 1 : 0),
+            losses: t.losses + (awayGoals < homeGoals ? 1 : 0)
+          };
+        }
+        return t;
+      });
+    });
+
+    const advancedWeek = Math.max(currentWeek + 1, newState.currentWeek);
+    const finalState = {
+      ...newState,
+      fixtures: fixturesAfterSim,
+      teams: teamsAfterSim,
+      currentWeek: advancedWeek
+    };
+
+    setGameState(finalState);
     setGameState(newState);
     // Persist result (ignore errors for now)
-    persistFixtures(updatedFixtures);
-    saveService.saveGame(`${gameState.manager?.name || 'Save'} - ${userTeam?.name || ''}`, newState).catch(() => {});
+    persistFixtures(fixturesAfterSim);
+    saveService.saveGame(`${gameState.manager?.name || 'Save'} - ${userTeam?.name || ''}`, finalState).catch(() => {});
   };
 
   const handleTransferComplete = (player: Player, fee: number) => {
