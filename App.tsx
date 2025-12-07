@@ -336,7 +336,6 @@ const App: React.FC = () => {
     };
 
     setGameState(finalState);
-    setGameState(newState);
     // Persist result (ignore errors for now)
     persistFixtures(fixturesAfterSim);
     saveService.saveGame(`${gameState.manager?.name || 'Save'} - ${userTeam?.name || ''}`, finalState).catch(() => {});
