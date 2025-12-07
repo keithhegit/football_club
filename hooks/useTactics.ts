@@ -2,59 +2,7 @@ import { useState, useEffect } from 'react';
 import { Team, Player, Formation, PlayerPosition, Duty } from '../types';
 
 // Default Formations
-const FORMATIONS: Record<string, Formation> = {
-    '4-4-2': {
-        id: '4-4-2',
-        name: '4-4-2 Standard',
-        positions: [
-            { id: 'GK', name: 'GK', x: 50, y: 90 },
-            { id: 'DR', name: 'DR', x: 90, y: 75 },
-            { id: 'DCR', name: 'DCR', x: 65, y: 75 },
-            { id: 'DCL', name: 'DCL', x: 35, y: 75 },
-            { id: 'DL', name: 'DL', x: 10, y: 75 },
-            { id: 'MR', name: 'MR', x: 90, y: 45 },
-            { id: 'MCR', name: 'MCR', x: 65, y: 45 },
-            { id: 'MCL', name: 'MCL', x: 35, y: 45 },
-            { id: 'ML', name: 'ML', x: 10, y: 45 },
-            { id: 'STR', name: 'ST', x: 65, y: 15 },
-            { id: 'STL', name: 'ST', x: 35, y: 15 },
-        ]
-    },
-    '4-3-3': {
-        id: '4-3-3',
-        name: '4-3-3 DM Wide',
-        positions: [
-            { id: 'GK', name: 'GK', x: 50, y: 90 },
-            { id: 'DR', name: 'DR', x: 90, y: 75 },
-            { id: 'DCR', name: 'DCR', x: 65, y: 75 },
-            { id: 'DCL', name: 'DCL', x: 35, y: 75 },
-            { id: 'DL', name: 'DL', x: 10, y: 75 },
-            { id: 'DM', name: 'DM', x: 50, y: 60 },
-            { id: 'MCR', name: 'MC', x: 65, y: 45 },
-            { id: 'MCL', name: 'MC', x: 35, y: 45 },
-            { id: 'AMR', name: 'AMR', x: 90, y: 25 },
-            { id: 'AML', name: 'AML', x: 10, y: 25 },
-            { id: 'ST', name: 'ST', x: 50, y: 15 },
-        ]
-    },
-    '4-2-3-1': {
-        id: '4-2-3-1',
-        name: '4-2-3-1 Wide',
-        positions: [
-            { id: 'GK', name: 'GK', x: 50, y: 90 },
-            { id: 'DR', name: 'DR', x: 90, y: 75 },
-            { id: 'DCR', name: 'DCR', x: 65, y: 75 },
-            { id: 'DCL', name: 'DCL', x: 35, y: 75 },
-            { id: 'DL', name: 'DL', x: 10, y: 75 },
-            { id: 'MCR', name: 'MC', x: 60, y: 60 },
-            { id: 'MCL', name: 'MC', x: 40, y: 60 },
-            { id: 'AMR', name: 'AMR', x: 90, y: 30 },
-            { id: 'AMC', name: 'AMC', x: 50, y: 30 },
-            { id: 'AML', name: 'AML', x: 10, y: 30 },
-            { id: 'ST', name: 'ST', x: 50, y: 15 },
-        ]
-    }
-};
+import { GUIDED_FORMATIONS } from '../utils/tacticsPresets';
 
 export function useTactics(initialTeam: Team | null) {
     const [currentFormationId, setCurrentFormationId] = useState<string>(initialTeam?.tactics?.formation || '4-4-2');
@@ -63,7 +11,7 @@ export function useTactics(initialTeam: Team | null) {
     // Initialize lineup when team loads
     useEffect(() => {
         if (initialTeam && initialTeam.players.length > 0) {
-            const formation = FORMATIONS[currentFormationId] || FORMATIONS['4-4-2'];
+            const formation = GUIDED_FORMATIONS[currentFormationId] || GUIDED_FORMATIONS['4-4-2'];
             // If team has saved lineup, use it; else auto-pick first 11
             const saved = initialTeam.tactics?.lineup;
             const newLineup = (saved && saved.length > 0)
@@ -78,10 +26,8 @@ export function useTactics(initialTeam: Team | null) {
     }, [initialTeam, currentFormationId]);
 
     const setFormation = (formationId: string) => {
-        if (FORMATIONS[formationId]) {
+        if (GUIDED_FORMATIONS[formationId]) {
             setCurrentFormationId(formationId);
-            // Logic to remap players to new positions could go here
-            // For now, we just keep the players in index order or reset
         }
     };
 
@@ -117,8 +63,8 @@ export function useTactics(initialTeam: Team | null) {
     };
 
     return {
-        currentFormation: FORMATIONS[currentFormationId],
-        availableFormations: Object.values(FORMATIONS),
+        currentFormation: GUIDED_FORMATIONS[currentFormationId],
+        availableFormations: Object.values(GUIDED_FORMATIONS),
         lineup,
         setFormation,
         updatePlayerPosition

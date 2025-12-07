@@ -27,6 +27,7 @@ import { MatchEngineTest } from './views/MatchEngineTest';
 import { LiveMatchPlayer } from './views/LiveMatchPlayer';
 import { UnifiedMatchTest } from './views/UnifiedMatchTest';
 import { LeagueView } from './views/LeagueView';
+import { applyTeamPreset } from './utils/tacticsPresets';
 
 // Helper to generate a season fixture list (Double Round Robin)
 const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
@@ -134,7 +135,7 @@ const App: React.FC = () => {
       const newGameState: GameState = {
         currentWeek: 1,
         userTeamId: initialUserTeam.id,
-        teams: initialTeams,
+        teams: initialTeams.map(t => applyTeamPreset(t)),
         fixtures,
         currentView: 'DASHBOARD',
         activeMatchId: null,
