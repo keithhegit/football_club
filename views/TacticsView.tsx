@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Team, Player, Duty } from '../types';
+import { Team } from '../types';
 import { useTactics } from '../hooks/useTactics';
 import { Info, ChevronDown } from 'lucide-react';
 import { GUIDED_FORMATIONS } from '../utils/tacticsPresets';
@@ -21,36 +21,18 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
   };
 
   const [instructions, setInstructions] = useState(defaultInstructions);
-  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
-  const [showRoleModal, setShowRoleModal] = useState(false);
   const [showFormationSelect, setShowFormationSelect] = useState(false);
   const [activeTab, setActiveTab] = useState<'INSTRUCTIONS' | 'BENCH'>('INSTRUCTIONS');
-
-  // Temporary state to store role assignments (should be in useTactics/Team state ideally)
-  const [roleAssignments, setRoleAssignments] = useState<Record<string, { roleId: string, duty: Duty }>>({});
-
-  const handlePlayerClick = (playerId: string) => {
-    const player = team.players.find(p => p.id === playerId);
-    if (player) {
-      setSelectedPlayer(player);
-      setShowRoleModal(true);
-    }
-  };
-
-  const handleRoleSave = (roleId: string, duty: Duty) => {
-    if (selectedPlayer) {
-      setRoleAssignments(prev => ({
-        ...prev,
-        [selectedPlayer.id]: { roleId, duty }
-      }));
-      setShowRoleModal(false);
-      setSelectedPlayer(null);
-    }
-  };
+  const [replaceTarget, setReplaceTarget] = useState<{ positionId: string; playerName?: string } | null>(null);
 
   const handlePlayerDrop = (playerId: string, targetPositionId: string) => {
     updatePlayerPosition(playerId, targetPositionId);
   };
+
+  const benchPlayers = useMemo(
+    () => team.players.filter(p => !lineup.find(pos => pos.playerId === p.id)),
+    [team.players, lineup]
+  );
 
   return (
     <div className="h-full flex flex-col relative bg-slate-950">
@@ -229,12 +211,12 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
               </div>
             )}
 
-            {/* Bench Tab (with pitch + bench) */}
+            {/* Bench Tab (pitch only, click avatar to替换) */}
             {activeTab === 'BENCH' && (
               <div className="space-y-4">
                 <div className="bg-slate-900 rounded-xl border border-slate-800 p-4">
                   <div className="text-sm font-bold text-slate-200 mb-2">阵型 & 首发（拖拽替换，头像可点击）</div>
-                  <div className="aspect-[16/10] bg-emerald-950/40 rounded-lg border border-emerald-800/40 relative">
+                  <div className="aspect-[9/12] md:aspect-[16/10] bg-emerald-950/40 rounded-lg border border-emerald-800/40 relative">
                     <div className="absolute inset-0 flex flex-col">
                       <div className="flex-1 border-b border-emerald-800/30"></div>
                       <div className="flex-1 border-b border-emerald-800/30"></div>
@@ -249,7 +231,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                           key={pos.id}
                           className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 cursor-pointer"
                           style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-                          onClick={() => player && handlePlayerClick(player.id)}
+                          onClick={() => player && setReplaceTarget({ positionId: pos.id, playerName: player.name })}
                           draggable
                           onDragStart={(e) => {
                             if (player) {
@@ -273,47 +255,49 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                   </div>
                 </div>
 
-                <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 space-y-4">
-                  <div className="text-sm font-bold text-slate-200">替补（拖拽或点击位置替换）</div>
-                  {team.players
-                    .filter(p => !lineup.find(pos => pos.playerId === p.id))
-                    .map(player => (
-                      <div
-                        key={player.id}
-                        draggable
-                        onDragStart={(e) => {
-                          e.dataTransfer.setData('playerId', player.id);
-                          e.dataTransfer.effectAllowed = 'copy';
-                        }}
-                        className="bg-slate-800 p-3 rounded border border-slate-700 hover:bg-slate-700 cursor-move transition-colors flex items-center gap-3 group"
-                      >
-                        <img src={getPlayerAvatar(player.name, player.id)} className="w-10 h-10 rounded-full border border-emerald-600" />
-                        <div className="flex-1">
-                          <div className="font-bold text-slate-200 text-sm group-hover:text-emerald-400 transition-colors">{player.name}</div>
-                          <div className="text-xs text-slate-400 flex gap-2">
-                            <span className={`${player.position === 'GK' ? 'text-yellow-400' :
-                                player.position === 'DEF' ? 'text-blue-400' :
-                                  player.position === 'MID' ? 'text-emerald-400' :
-                                    'text-red-400'
-                              } font-bold`}>{player.position}</span>
-                            <span className="text-slate-500">|</span>
-                            <span>CA: <span className="text-slate-300">{player.ca}</span></span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-
-                  {team.players.filter(p => !lineup.find(pos => pos.playerId === p.id)).length === 0 && (
-                    <div className="text-center text-slate-500 py-4">
-                      No players on bench
-                    </div>
-                  )}
-                </div>
               </div>
             )}
           </div>
         </div>
       </div>
+      {replaceTarget && (
+        <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center px-4" onClick={() => setReplaceTarget(null)}>
+          <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
+            <div className="text-sm font-bold text-slate-200 mb-2">选择替换球员</div>
+            <div className="text-xs text-slate-400 mb-3">当前位置：{replaceTarget.playerName || replaceTarget.positionId}</div>
+            <div className="max-h-64 overflow-y-auto space-y-2">
+              {benchPlayers.map(p => (
+                <button
+                  key={p.id}
+                  onClick={() => {
+                    handlePlayerDrop(String(p.id), replaceTarget.positionId);
+                    setReplaceTarget(null);
+                  }}
+                  className="w-full flex items-center gap-3 bg-slate-800 hover:bg-slate-700 text-left p-3 rounded border border-slate-700 transition"
+                >
+                  <img src={getPlayerAvatar(p.name, p.id)} className="w-10 h-10 rounded-full border border-emerald-600" />
+                  <div className="flex-1">
+                    <div className="text-sm font-bold text-slate-100">{p.name}</div>
+                    <div className="text-[11px] text-slate-400 flex gap-2">
+                      <span className={`${p.position === 'GK' ? 'text-yellow-400' :
+                          p.position === 'DEF' ? 'text-blue-400' :
+                            p.position === 'MID' ? 'text-emerald-400' :
+                              'text-red-400'
+                        } font-bold`}>{p.position}</span>
+                      <span className="text-slate-500">|</span>
+                      <span>CA: <span className="text-slate-300">{p.ca}</span></span>
+                    </div>
+                  </div>
+                </button>
+              ))}
+              {benchPlayers.length === 0 && (
+                <div className="text-center text-slate-500 text-xs py-4">无可用替补</div>
+              )}
+            </div>
+            <button onClick={() => setReplaceTarget(null)} className="w-full mt-3 bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 rounded">取消</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
