@@ -127,8 +127,10 @@ function mapClubToTeam(club: Club, apiPlayers: ApiPlayer[]): Team {
 }
 
 // Generate starting lineup by selecting best players for each position
-function generateStartingLineup(players: Player[], formation: string) {
+function generateStartingLineup(players: Player[] = [], formation: string) {
     const lineup: { positionId: string; playerId: string; role: string; duty: string }[] = [];
+
+    if (!Array.isArray(players) || players.length === 0) return lineup;
 
     // Separate players by position
     const gks = players.filter(p => p.position === Position.GK).sort((a, b) => b.ca - a.ca);

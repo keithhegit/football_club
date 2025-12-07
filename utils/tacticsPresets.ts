@@ -292,22 +292,24 @@ const SEASON_PRESETS: Record<SeasonTag, Record<string, { formation: string; star
 export const applySeasonPreset = (team: Team, season: SeasonTag): Team => {
   const preset = SEASON_PRESETS[season][String(team.name || '').toLowerCase()];
   if (!preset) return team;
-  const formation = GUIDED_FORMATIONS[preset.formation] ? preset.formation : '4-2-3-1';
+  const formationId = GUIDED_FORMATIONS[preset.formation] ? preset.formation : '4-2-3-1';
+  const formationObj = GUIDED_FORMATIONS[formationId];
   const starters: { positionId: string; playerId: string }[] = [];
-  if (team.players?.length) {
+  if (team.players?.length && formationObj) {
     preset.starters.forEach((name, idx) => {
       const p = team.players.find(pl => pl.name.toLowerCase() === name.toLowerCase());
-      if (p && formation && formation.positions[idx]) {
-        starters.push({ positionId: formation.positions[idx].id, playerId: p.id });
+      const pos = formationObj.positions[idx];
+      if (p && pos) {
+        starters.push({ positionId: pos.id, playerId: p.id });
       }
     });
   }
-  const finalLineup = starters.length >= 8 ? starters : pickLineupForFormation(team, formation);
+  const finalLineup = starters.length >= 8 && formationObj ? starters : pickLineupForFormation(team, formationId);
   return {
     ...team,
     tactics: {
       ...team.tactics,
-      formation,
+      formation: formationId,
       lineup: finalLineup
     }
   };
