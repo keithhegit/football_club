@@ -6,6 +6,38 @@ import { GUIDED_FORMATIONS } from '../utils/tacticsPresets';
 import { PlayerAvatar } from '../components/PlayerAvatar';
 import { PlayerProfileCard } from '../components/PlayerProfileCard';
 
+const pickAutoLineup = (team: Team, formationId: string) => {
+  const formation = GUIDED_FORMATIONS[formationId];
+  if (!formation) return [];
+  const pool = [...team.players];
+  const selectBest = (posId: string) => {
+    const target = posId.toUpperCase();
+    let bestIdx = -1;
+    let bestScore = -1;
+    pool.forEach((p, idx) => {
+      const pos = (p.position || '').toUpperCase();
+      let score = 0;
+      if (pos.includes(target)) score += 100;
+      if (target === 'GK' && pos.includes('GK')) score += 50;
+      if (target.startsWith('D') && (pos.includes('D') || pos.includes('WB'))) score += 40;
+      if (target.startsWith('M') && (pos.includes('M') || pos.includes('DM') || pos.includes('AM'))) score += 40;
+      if ((target === 'ST' || target.startsWith('A')) && (pos.includes('ST') || pos.includes('AM'))) score += 40;
+      score += p.ca || 0;
+      if (score > bestScore) {
+        bestScore = score;
+        bestIdx = idx;
+      }
+    });
+    if (bestIdx === -1) return '';
+    const chosen = pool.splice(bestIdx, 1)[0];
+    return chosen?.id || '';
+  };
+  return formation.positions.map(pos => ({
+    positionId: pos.id,
+    playerId: selectBest(pos.id)
+  })).filter(l => l.playerId);
+};
+
 interface TacticsViewProps {
   team: Team;
   onSave?: (tactics: any) => void;
@@ -28,16 +60,21 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
   const [benchFilter, setBenchFilter] = useState<'ALL' | 'GK' | 'DEF' | 'MID' | 'FWD'>('ALL');
   const [benchProfile, setBenchProfile] = useState<any | null>(null);
 
+  const displayLineup = useMemo(() => {
+    if (lineup && lineup.length > 0) return lineup;
+    return pickAutoLineup(team, currentFormation.id);
+  }, [lineup, team, currentFormation.id]);
+
   const handlePlayerDrop = (playerId: string, targetPositionId: string) => {
     updatePlayerPosition(playerId, targetPositionId);
   };
 
   const benchPlayers = useMemo(() => {
-    const lineupIds = lineup.map(l => l.playerId);
+    const lineupIds = displayLineup.map(l => l.playerId);
     return team.players
       .filter(p => !lineupIds.includes(p.id))
       .sort((a, b) => (b.ca || 0) - (a.ca || 0));
-  }, [team.players, lineup]);
+  }, [team.players, displayLineup]);
 
   const filteredBench = useMemo(() => {
     if (benchFilter === 'ALL') return benchPlayers;
@@ -239,7 +276,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                       <div className="flex-1"></div>
                     </div>
                     {currentFormation.positions.map((pos) => {
-                      const assigned = lineup.find(l => l.positionId === pos.id);
+                      const assigned = displayLineup.find(l => l.positionId === pos.id);
                       const player = team.players.find(p => String(p.id) === String(assigned?.playerId));
                       return (
                         <div
@@ -264,10 +301,11 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                             playerId={player?.id || pos.id}
                             alt={player?.name || pos.name}
                             size="md"
-                            className="border-2 border-emerald-400 shadow"
+                            className="border-2 border-emerald-400 shadow bg-slate-900"
                           />
-                          <div className="px-2 py-1 bg-slate-900/80 rounded text-[10px] text-emerald-300 border border-emerald-700">
-                            {pos.name} {player ? `· ${player.name}` : ''}
+                          <div className="px-2 py-1 bg-slate-900/80 rounded text-[10px] text-emerald-300 border border-emerald-700 text-center max-w-[120px]">
+                            <div className="font-bold">{pos.name}</div>
+                            {player && <div className="text-slate-200 truncate">{player.name}</div>}
                           </div>
                         </div>
                       );
