@@ -3,6 +3,7 @@ import { LayoutDashboard, Users, Trophy, Calendar, Shirt, Settings, Search, Save
 import { useI18n } from '../hooks/useI18n';
 import { SaveGameModal } from './SaveGameModal';
 import { PlayerSearchView } from './PlayerSearchView';
+import { BgmToggle } from './BgmToggle';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -38,6 +39,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeV
           {teamName}
         </div>
         <div className="flex items-center gap-2">
+          <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Blur_Song_2_FIFA_98_com.mp3" />
           {onSaveGame && (
             <button
               onClick={() => setShowSaveModal(true)}

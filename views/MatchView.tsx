@@ -4,6 +4,7 @@ import { matchSimulator } from '../services/matchSimulator';
 import { MatchEngine } from '../engine/matchEngine'; // Direct import of new engine
 import { TeamState, MatchEvent } from '../engine/types'; // Import new types
 import { Play, Pause, FastForward, CheckCircle2, SkipForward } from 'lucide-react';
+import { BgmToggle } from '../components/BgmToggle';
 import { generatePostMatchComment, getAssistantReport } from '../services/geminiService';
 
 interface MatchViewProps {
@@ -642,11 +643,14 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
               matchState === MatchState.FULL_TIME ? 'FULL TIME' :
                 `${minute}'`}
           </div>
-          <div className="flex space-x-2 flex-wrap justify-end">
-            <button onClick={() => setSpeedPreset('1x')} className={`p-1 rounded ${speed === 1000 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>1x</button>
-            <button onClick={() => setSpeedPreset('2x')} className={`p-1 rounded ${speed === 500 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>2x</button>
-            <button onClick={() => setSpeedPreset('4x')} className={`p-1 rounded ${speed === 250 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>4x</button>
-            <button onClick={handlePauseToggle} className={`p-1 rounded ${paused ? 'bg-yellow-700 text-white' : 'text-slate-500'}`}>{paused ? 'Resume' : 'Pause'}</button>
+          <div className="flex items-center gap-3 flex-wrap justify-end">
+            <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Chumbawamb_Tubthumping_com.mp3" />
+            <div className="flex space-x-2 flex-wrap justify-end">
+              <button onClick={() => setSpeedPreset('1x')} className={`p-1 rounded ${speed === 1000 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>1x</button>
+              <button onClick={() => setSpeedPreset('2x')} className={`p-1 rounded ${speed === 500 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>2x</button>
+              <button onClick={() => setSpeedPreset('4x')} className={`p-1 rounded ${speed === 250 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>4x</button>
+              <button onClick={handlePauseToggle} className={`p-1 rounded ${paused ? 'bg-yellow-700 text-white' : 'text-slate-500'}`}>{paused ? 'Resume' : 'Pause'}</button>
+            </div>
           </div>
         </div>
         <div className="flex justify-between items-center">

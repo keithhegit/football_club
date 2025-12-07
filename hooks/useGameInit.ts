@@ -7,6 +7,19 @@ import { getFromStore, getAllFromStore, getTeamPlayers } from '../utils/localDB'
 import { convertPlayersToState, getStartingXI } from '../utils/playerConverter';
 import { TeamState, PlayerState } from '../engine/types';
 
+const MATCH_BGM_URL = 'https://bgmr2.keithhe.com/bgm/fm/Chumbawamb_Tubthumping_com.mp3';
+
+const preloadAudio = (url: string) => {
+    try {
+        const audio = new Audio();
+        audio.src = url;
+        audio.preload = 'auto';
+        audio.load();
+    } catch (err) {
+        console.warn('[BGM] preload failed', err);
+    }
+};
+
 // League IDs from D1 database
 const LEAGUE_IDS = {
     PREMIER_LEAGUE: 1, // English Premier Division
@@ -194,6 +207,9 @@ export function useGameInit(clubId?: number) {
         const initGame = async () => {
             try {
                 setState(prev => ({ ...prev, loading: true, error: null }));
+
+                // 0. Preload match BGM early
+                preloadAudio(MATCH_BGM_URL);
 
                 // 1. Get Club Name from API (Legacy selection flow)
                 // We still use this to know WHICH club the user wanted
