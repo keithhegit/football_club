@@ -462,7 +462,13 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-950">
+    <div
+      className="flex flex-col h-full bg-slate-950"
+      style={{
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 8px)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)'
+      }}
+    >
 
       {/* Tactics Drawer */}
       {showTactics && (

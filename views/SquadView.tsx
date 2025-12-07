@@ -70,37 +70,34 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
                         No players in this position.
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         {sortedPlayers.map(player => (
                             <div
                                 key={player.id}
                                 onClick={() => setSelectedPlayer(player)}
-                                className="bg-slate-800 p-3 rounded border border-slate-700 hover:bg-slate-700 cursor-pointer transition-colors flex items-center gap-3"
+                                className="bg-slate-800/80 p-3 rounded border border-slate-700 hover:border-emerald-600 cursor-pointer transition shadow-sm flex flex-col items-center gap-2"
                             >
-                                <PlayerAvatar playerId={player.id} alt={player.name} size="md" />
-                                <div className="flex-1 min-w-0">
-                                    <div className="font-bold text-slate-200 truncate">{player.name}</div>
-                                    <div className="text-xs text-slate-400 flex gap-2">
+                                <PlayerAvatar playerId={player.id} alt={player.name} size="md" className="border-emerald-500" />
+                                <div className="text-center">
+                                    <div className="font-bold text-slate-200 truncate max-w-[140px]">{player.name}</div>
+                                    <div className="text-[11px] text-slate-400 flex items-center justify-center gap-2">
                                         <span className={`${player.position === 'GK' ? 'text-yellow-400' :
                                             player.position === 'DEF' ? 'text-blue-400' :
                                                 player.position === 'MID' ? 'text-emerald-400' :
                                                     'text-red-400'
-                                            }`}>{player.position}</span>
-                                        <span>Age {player.age}</span>
+                                            } font-bold`}>{player.position}</span>
+                                        <span className="text-slate-500">CA {player.ca}</span>
                                     </div>
                                 </div>
-                                <div className="text-xs font-mono text-slate-500 flex flex-col items-end gap-0.5">
-                                    <div>CA: {player.ca}</div>
-                                    {player.pa > 0 && (
-                                        <div className="text-emerald-400">
-                                            潜力：{player.pa >= 170 ? '🌟 世界级' :
-                                                player.pa >= 150 ? '⭐ 顶级' :
-                                                    player.pa >= 130 ? '💎 关键' :
-                                                        player.pa >= 110 ? '🔹 主力' :
-                                                            player.pa >= 90 ? '📦 轮换' : '💤 替补'}
-                                        </div>
-                                    )}
-                                </div>
+                                {player.pa > 0 && (
+                                    <div className="text-[11px] text-emerald-400 text-center">
+                                        {player.pa >= 170 ? '🌟 世界级' :
+                                            player.pa >= 150 ? '⭐ 顶级' :
+                                                player.pa >= 130 ? '💎 关键' :
+                                                    player.pa >= 110 ? '🔹 主力' :
+                                                        player.pa >= 90 ? '📦 轮换' : '💤 替补'}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
