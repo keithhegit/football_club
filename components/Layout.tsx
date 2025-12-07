@@ -55,7 +55,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeV
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto pb-20 relative">
-        <div className={`${isWide ? 'max-w-6xl' : 'max-w-md'} mx-auto min-h-full w-full px-2`}>
+        <div className={`${isWide ? 'max-w-4xl' : 'max-w-md'} mx-auto min-h-full w-full px-2`}>
           {currentView === 'SEARCH' ? (
             <PlayerSearchView onTransferComplete={onTransferComplete} userTeam={userTeam} />
           ) : (
