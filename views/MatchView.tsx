@@ -539,7 +539,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                       </div>
                     );
                   })}
-                  <div className="text-[10px] text-slate-500 pt-2">替补 {bench.length} 人</div>
+            <div className="text-[10px] text-slate-500 pt-2">替补 {bench.length} 人</div>
                   {bench.map((p: any) => {
                 const snapEntry = (isHome ? snapshotMaps.home : snapshotMaps.away).get(p.id);
                 const staminaVal = Math.min(100, snapEntry?.stamina ?? p.stamina ?? p.condition ?? 100);

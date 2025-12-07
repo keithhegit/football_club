@@ -69,7 +69,7 @@ export function computeActionSuccess(
         probability *= 1.25; // stronger boost to lift pass success into 70-90%
     }
     if (action === 'TACKLE') {
-        probability *= 0.8; // lower tackle success to curb totals
+        probability *= 0.7; // lower tackle success to curb totals
     }
 
     // 7. Apply weather/pitch conditions

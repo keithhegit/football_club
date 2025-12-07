@@ -474,9 +474,9 @@ export class MatchEngine {
                 return weightedRandom<ActionType>(
                     ['PASS_SHORT', 'SHOOT', 'CROSS', 'DRIBBLE'],
                     [
-                        0.74 - directBias * 0.05 - tempoBias * 0.02 + (mods.workBallIntoBox ? 0.05 : 0),
-                        0.07 + tempoBias * 0.01 + (mods.shootOnSight ? 0.04 : 0),
-                        0.15 + widthBias * 0.04 + (mods.hitEarlyCrosses ? 0.05 : 0),
+                        0.78 - directBias * 0.05 - tempoBias * 0.02 + (mods.workBallIntoBox ? 0.05 : 0),
+                        0.06 + tempoBias * 0.01 + (mods.shootOnSight ? 0.03 : 0),
+                        0.12 + widthBias * 0.04 + (mods.hitEarlyCrosses ? 0.05 : 0),
                         0.04 + tempoBias * 0.01
                     ]
                 );
@@ -484,9 +484,9 @@ export class MatchEngine {
                 return weightedRandom<ActionType>(
                     ['PASS_SHORT', 'PASS_LONG', 'DRIBBLE'],
                     [
-                        0.82 - directBias * 0.05 + (mods.workBallIntoBox ? 0.05 : 0),
-                        0.10 + directBias * 0.07 + (mods.counter ? 0.05 : 0),
-                        0.08 + tempoBias * 0.015
+                        0.85 - directBias * 0.05 + (mods.workBallIntoBox ? 0.05 : 0),
+                        0.08 + directBias * 0.07 + (mods.counter ? 0.05 : 0),
+                        0.07 + tempoBias * 0.015
                     ]
                 );
             }
@@ -494,17 +494,17 @@ export class MatchEngine {
             return weightedRandom<ActionType>(
                 ['TACKLE', 'INTERCEPT', 'CLEARANCE'],
                 [
-                    0.03 + (mods.pressingIntensity || 0) * 0.015 + (mods.tackleHarder ? 0.008 : 0),
-                    0.34 + (mods.engagementLine || 0) * 0.02,
-                    0.63 + (mods.defensiveLine || 0) * -0.01
+                    0.02 + (mods.pressingIntensity || 0) * 0.012 + (mods.tackleHarder ? 0.006 : 0),
+                    0.36 + (mods.engagementLine || 0) * 0.02,
+                    0.62 + (mods.defensiveLine || 0) * -0.01
                 ]
             );
         } else {
             return weightedRandom<ActionType>(
                 ['PASS_LONG', 'PASS_SHORT', 'DRIBBLE'],
                 [
-                    0.14 + directBias * 0.05 + counter * 0.02,
-                    0.78 - directBias * 0.05 + (mods.workBallIntoBox ? 0.03 : 0),
+                    0.12 + directBias * 0.05 + counter * 0.02,
+                    0.80 - directBias * 0.05 + (mods.workBallIntoBox ? 0.03 : 0),
                     0.08 + tempoBias * 0.01 + counterPress * 0.01
                 ]
             );
