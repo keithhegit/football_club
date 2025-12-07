@@ -103,12 +103,6 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
 
-    <div className="h-full flex flex-col relative bg-slate-950">
-      {/* Header */}
-      {/* ... header code above remains ... */}
-
-      <div className="flex-1 flex overflow-hidden">
-
         {/* Left Panel: Pitch + Instructions */}
         <div className="flex-1 relative bg-emerald-900/10 p-4 flex flex-col gap-4 overflow-y-auto">
           {/* Pitch */}
