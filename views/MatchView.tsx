@@ -73,6 +73,13 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
   const [filter, setFilter] = useState<string>('IMPORTANT'); // Default filter to interesting events
   const [showTactics, setShowTactics] = useState<boolean>(false);
   const [snapshots, setSnapshots] = useState<any[]>([]);
+  const [homeLineup, setHomeLineup] = useState<any[]>(homeTeam.players?.slice(0, 11) || []);
+  const [awayLineup, setAwayLineup] = useState<any[]>(awayTeam.players?.slice(0, 11) || []);
+  const [homeBench, setHomeBench] = useState<any[]>(homeTeam.players?.slice(11) || []);
+  const [awayBench, setAwayBench] = useState<any[]>(awayTeam.players?.slice(11) || []);
+  const [subOutId, setSubOutId] = useState<string | number | undefined>(undefined);
+  const [subInId, setSubInId] = useState<string | number | undefined>(undefined);
+  const [subsUsed, setSubsUsed] = useState<number>(0);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -183,6 +190,17 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
       runSimulation();
     }
   }, [matchState, fullMatchResult, fixtureId, homeTeam, awayTeam]);
+
+  // Sync initial lineups/bench on teams change
+  useEffect(() => {
+    setHomeLineup(homeTeam.players?.slice(0, 11) || []);
+    setAwayLineup(awayTeam.players?.slice(0, 11) || []);
+    setHomeBench(homeTeam.players?.slice(11) || []);
+    setAwayBench(awayTeam.players?.slice(11) || []);
+    setSubsUsed(0);
+    setSubOutId(undefined);
+    setSubInId(undefined);
+  }, [homeTeam, awayTeam]);
 
   // 2. Replay Loop & Dynamic Stats Calculation
   useEffect(() => {
@@ -360,6 +378,44 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
 
   const snapshotMaps = getSnapshotMaps(minute);
 
+  // Substitution helper (UI only; stats不变但便于查看/计划)
+  const applySubstitution = () => {
+    if (subsUsed >= 3) return;
+    if (!subOutId || !subInId) return;
+    const isHome = userTeamId === homeTeam.id;
+    const lineup = isHome ? [...homeLineup] : [...awayLineup];
+    const bench = isHome ? [...homeBench] : [...awayBench];
+    const outIdx = lineup.findIndex(p => p.id == subOutId);
+    const inIdx = bench.findIndex(p => p.id == subInId);
+    if (outIdx === -1 || inIdx === -1) return;
+    const outPlayer = lineup[outIdx];
+    const inPlayer = bench[inIdx];
+    lineup[outIdx] = inPlayer;
+    bench.splice(inIdx, 1);
+    bench.push(outPlayer); // moved to bench
+    if (isHome) {
+      setHomeLineup(lineup);
+      setHomeBench(bench);
+    } else {
+      setAwayLineup(lineup);
+      setAwayBench(bench);
+    }
+    setSubsUsed(subsUsed + 1);
+    setSubOutId(undefined);
+    setSubInId(undefined);
+    // Record a visual event for log
+    setEvents(prev => [...prev, {
+      time: minute,
+      type: 'FOUL', // reuse type field to fit union; description clarifies
+      actor: outPlayer,
+      opponent: inPlayer,
+      outcome: 'SUCCESS',
+      position: { x: 50, y: 50 },
+      description: `Substitution: ${outPlayer.name} ⬇  ${inPlayer.name} ⬆`,
+      teamId: isHome ? homeTeam.id : awayTeam.id
+    } as any]);
+  };
+
   return (
     <div className="flex flex-col h-full bg-slate-950">
 
@@ -434,8 +490,9 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
             <div className="text-xs text-slate-400 font-bold uppercase">球员状态 (Your Team)</div>
             {(() => {
               const isHome = userTeamId === homeTeam.id;
-              const squad = isHome ? homeTeam.players : awayTeam.players;
-              return squad?.slice(0, 23).map((p: any) => {
+              const lineup = isHome ? homeLineup : awayLineup;
+              const bench = isHome ? homeBench : awayBench;
+              return [...lineup, ...bench].map((p: any) => {
                 const snapEntry = (isHome ? snapshotMaps.home : snapshotMaps.away).get(p.id);
                 const staminaVal = Math.min(100, snapEntry?.stamina ?? p.stamina ?? p.condition ?? 100);
                 const moraleVal = Math.min(100, snapEntry?.morale ?? p.morale ?? 75);
@@ -443,7 +500,7 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                   <div key={p.id} className="flex flex-col gap-1 text-xs text-slate-200 border-b border-slate-800 py-2">
                     <div className="flex justify-between items-center">
                       <span className="truncate w-32">{p.name}</span>
-                      <span className="text-slate-500">Pos {p.position}</span>
+                      <span className="text-slate-500">Pos {p.position}{lineup.includes(p) ? ' · XI' : ' · Bench'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] text-slate-500 w-10">体能</span>
@@ -463,6 +520,41 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                 );
               });
             })()}
+
+            {/* Substitutions UI (3 max) */}
+            <div className="space-y-2 border border-slate-800 rounded p-3 bg-slate-800/30">
+              <div className="text-[10px] text-slate-400">换人（最多 3 次）已用 {subsUsed}/3</div>
+              <div className="flex flex-col gap-2">
+                <select
+                  value={subOutId ?? ''}
+                  onChange={(e) => setSubOutId(e.target.value || undefined)}
+                  className="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-200"
+                >
+                  <option value="">下场球员</option>
+                  {(userTeamId === homeTeam.id ? homeLineup : awayLineup).map(p => (
+                    <option key={p.id} value={p.id}>{p.name} ({p.position})</option>
+                  ))}
+                </select>
+                <select
+                  value={subInId ?? ''}
+                  onChange={(e) => setSubInId(e.target.value || undefined)}
+                  className="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-200"
+                >
+                  <option value="">上场球员</option>
+                  {(userTeamId === homeTeam.id ? homeBench : awayBench).map(p => (
+                    <option key={p.id} value={p.id}>{p.name} ({p.position})</option>
+                  ))}
+                </select>
+                <button
+                  disabled={subsUsed >= 3 || !subOutId || !subInId}
+                  onClick={applySubstitution}
+                  className={`w-full text-xs font-bold py-2 rounded ${subsUsed >= 3 ? 'bg-slate-700 text-slate-500' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}
+                >
+                  确认换人
+                </button>
+                <div className="text-[10px] text-slate-500">注：当前换人仅用于战术观察，比赛结果与统计暂不变更。</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
