@@ -517,7 +517,11 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                     const staminaVal = Math.min(100, snapEntry?.stamina ?? p.stamina ?? p.condition ?? 100);
                     const moraleVal = Math.min(100, snapEntry?.morale ?? p.morale ?? 75);
                     return (
-                      <div key={p.id} className="flex flex-col gap-1 text-xs text-slate-200 border-b border-slate-800 py-2">
+                      <div
+                        key={p.id}
+                        onClick={() => setSubOutId(p.id)}
+                        className={`flex flex-col gap-1 text-xs text-slate-200 border-b border-slate-800 py-2 cursor-pointer ${subOutId == p.id ? 'bg-slate-800/60' : ''}`}
+                      >
                         <div className="flex justify-between items-center">
                           <span className="truncate w-32">{p.name}</span>
                           <span className="text-slate-500">Pos {p.position} · XI</span>
@@ -545,7 +549,11 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                 const staminaVal = Math.min(100, snapEntry?.stamina ?? p.stamina ?? p.condition ?? 100);
                 const moraleVal = Math.min(100, snapEntry?.morale ?? p.morale ?? 75);
                 return (
-                  <div key={p.id} className="flex flex-col gap-1 text-xs text-slate-200 border-b border-slate-800 py-2">
+                  <div
+                    key={p.id}
+                    onClick={() => setSubInId(p.id)}
+                    className={`flex flex-col gap-1 text-xs text-slate-200 border-b border-slate-800 py-2 cursor-pointer ${subInId == p.id ? 'bg-slate-800/60' : ''}`}
+                  >
                     <div className="flex justify-between items-center">
                           <span className="truncate w-32">{p.name}</span>
                           <span className="text-slate-500">Pos {p.position} · Bench</span>
@@ -574,31 +582,14 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
             {/* Substitutions UI (3 max) */}
             <div className="space-y-2 border border-slate-800 rounded p-3 bg-slate-800/30">
               <div className="text-[10px] text-slate-400">换人（最多 3 次）已用 {subsUsed}/3</div>
+              <div className="text-[11px] text-slate-300">步骤：点击首发选择“下场”，点击替补选择“上场”，再确认。</div>
               <div className="flex flex-col gap-2">
-                <select
-                  value={subOutId ?? ''}
-                  onChange={(e) => setSubOutId(e.target.value || undefined)}
-                  className="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-200"
-                >
-                  <option value="">下场球员</option>
-                  {(userTeamId === homeTeam.id ? homeLineup : awayLineup).map(p => (
-                    <option key={p.id} value={p.id}>{p.name} ({p.position})</option>
-                  ))}
-                </select>
-                <select
-                  value={subInId ?? ''}
-                  onChange={(e) => setSubInId(e.target.value || undefined)}
-                  className="bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-200"
-                >
-                  <option value="">上场球员</option>
-                  {(userTeamId === homeTeam.id ? homeBench : awayBench).map(p => (
-                    <option key={p.id} value={p.id}>{p.name} ({p.position})</option>
-                  ))}
-                </select>
+                <div className="text-[11px] text-emerald-400">下场：{subOutId ? `${(userTeamId === homeTeam.id ? homeLineup : awayLineup).find(p => p.id == subOutId)?.name || ''}` : '未选'}</div>
+                <div className="text-[11px] text-blue-400">上场：{subInId ? `${(userTeamId === homeTeam.id ? homeBench : awayBench).find(p => p.id == subInId)?.name || ''}` : '未选'}</div>
                 <button
                   disabled={subsUsed >= 3 || !subOutId || !subInId}
                   onClick={applySubstitution}
-                  className={`w-full text-xs font-bold py-2 rounded ${subsUsed >= 3 ? 'bg-slate-700 text-slate-500' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}
+                  className={`w-full text-xs font-bold py-2 rounded ${subsUsed >= 3 || !subOutId || !subInId ? 'bg-slate-700 text-slate-500' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}
                 >
                   确认换人
                 </button>

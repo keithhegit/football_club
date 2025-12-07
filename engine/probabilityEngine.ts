@@ -66,10 +66,10 @@ export function computeActionSuccess(
 
     // 6.5 Action-specific tweaks
     if (action === 'PASS_SHORT' || action === 'PASS_LONG') {
-        probability *= 1.25; // stronger boost to lift pass success into 70-90%
+        probability *= 1.35; // stronger boost to lift pass success into 70-90%
     }
     if (action === 'TACKLE') {
-        probability *= 0.7; // lower tackle success to curb totals
+        probability *= 0.6; // lower tackle success to curb totals
     }
 
     // 7. Apply weather/pitch conditions

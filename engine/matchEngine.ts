@@ -211,7 +211,7 @@ export class MatchEngine {
         this.state.eventLog.push(matchEvent);
 
         // Update possession time
-        // Tick tuned for ~150-220 events，进一步压低抢断洪流
+        // Tick tuned for ~150-220 events，传球占比更高
         const tickDuration = randomBetween(7, 9) / 60; // 7-9 秒/事件
         this.statsTracker.updatePossession(this.state.possession, tickDuration);
 
@@ -474,19 +474,19 @@ export class MatchEngine {
                 return weightedRandom<ActionType>(
                     ['PASS_SHORT', 'SHOOT', 'CROSS', 'DRIBBLE'],
                     [
-                        0.78 - directBias * 0.05 - tempoBias * 0.02 + (mods.workBallIntoBox ? 0.05 : 0),
+                        0.82 - directBias * 0.05 - tempoBias * 0.02 + (mods.workBallIntoBox ? 0.05 : 0),
                         0.06 + tempoBias * 0.01 + (mods.shootOnSight ? 0.03 : 0),
-                        0.12 + widthBias * 0.04 + (mods.hitEarlyCrosses ? 0.05 : 0),
-                        0.04 + tempoBias * 0.01
+                        0.10 + widthBias * 0.04 + (mods.hitEarlyCrosses ? 0.05 : 0),
+                        0.02 + tempoBias * 0.01
                     ]
                 );
             } else {
                 return weightedRandom<ActionType>(
                     ['PASS_SHORT', 'PASS_LONG', 'DRIBBLE'],
                     [
-                        0.85 - directBias * 0.05 + (mods.workBallIntoBox ? 0.05 : 0),
-                        0.08 + directBias * 0.07 + (mods.counter ? 0.05 : 0),
-                        0.07 + tempoBias * 0.015
+                        0.88 - directBias * 0.05 + (mods.workBallIntoBox ? 0.05 : 0),
+                        0.06 + directBias * 0.07 + (mods.counter ? 0.05 : 0),
+                        0.06 + tempoBias * 0.015
                     ]
                 );
             }
@@ -494,17 +494,17 @@ export class MatchEngine {
             return weightedRandom<ActionType>(
                 ['TACKLE', 'INTERCEPT', 'CLEARANCE'],
                 [
-                    0.02 + (mods.pressingIntensity || 0) * 0.012 + (mods.tackleHarder ? 0.006 : 0),
-                    0.36 + (mods.engagementLine || 0) * 0.02,
-                    0.62 + (mods.defensiveLine || 0) * -0.01
+                    0.015 + (mods.pressingIntensity || 0) * 0.01 + (mods.tackleHarder ? 0.005 : 0),
+                    0.37 + (mods.engagementLine || 0) * 0.02,
+                    0.615 + (mods.defensiveLine || 0) * -0.01
                 ]
             );
         } else {
             return weightedRandom<ActionType>(
                 ['PASS_LONG', 'PASS_SHORT', 'DRIBBLE'],
                 [
-                    0.12 + directBias * 0.05 + counter * 0.02,
-                    0.80 - directBias * 0.05 + (mods.workBallIntoBox ? 0.03 : 0),
+                    0.10 + directBias * 0.05 + counter * 0.02,
+                    0.82 - directBias * 0.05 + (mods.workBallIntoBox ? 0.03 : 0),
                     0.08 + tempoBias * 0.01 + counterPress * 0.01
                 ]
             );
