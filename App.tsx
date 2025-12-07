@@ -484,9 +484,40 @@ const App: React.FC = () => {
   // Render Logic
   const NonMatchBgm = () => (
     <div className="fixed top-3 right-3 z-50">
-      <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Blur_Song_2_FIFA_98_com.mp3" />
+      <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Blur_Song_2_FIFA_98_com.mp3" unlockKey={bgmUnlockKey} />
     </div>
   );
+
+  // Global BGM unlock gate (appears before任何页面)
+  if (!bgmUnlocked) {
+    return (
+      <div className="relative h-screen w-screen bg-slate-950 flex items-center justify-center px-6">
+        <div className="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl p-6 space-y-4 text-center">
+          <img
+            src="https://pub-c98d5902eedf42f6a9765dfad981fd88.r2.dev/fmui/fm26wcup.png"
+            alt="FM World Cup"
+            className="w-full rounded-xl border border-slate-800 shadow-lg"
+          />
+          <div className="text-lg font-bold text-slate-100">开启音乐体验</div>
+          <div className="text-sm text-slate-400 leading-relaxed">
+            点击下方“足球滚动”以解锁并自动播放 BGM（浏览器需要一次用户操作）
+          </div>
+          <button
+            onClick={() => {
+              setBgmUnlocked(true);
+              setBgmUnlockKey(k => k + 1);
+            }}
+            className="w-full py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base shadow-lg transition transform hover:-translate-y-0.5 active:scale-98"
+          >
+            <span className="inline-flex items-center justify-center gap-2">
+              <span className="animate-bounce">⚽</span>
+              <span>足球滚动</span>
+            </span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!gameState) return <div className="h-screen bg-slate-950 flex items-center justify-center text-white">Loading...</div>;
 
@@ -494,29 +525,11 @@ const App: React.FC = () => {
   if (gameState.currentView === 'LOGIN') {
     return (
       <div className="relative">
-        {bgmUnlocked && <NonMatchBgm />}
+        <NonMatchBgm />
         <LoginView
           onLoginSuccess={handleLoginSuccess}
           onSwitchToRegister={() => setGameState({ ...gameState, currentView: 'REGISTER' })}
         />
-        {!bgmUnlocked && (
-          <div className="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center px-6 text-center">
-            <div className="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
-              <img src="https://pub-c98d5902eedf42f6a9765dfad981fd88.r2.dev/fmui/cup_98FM.png" alt="FM Cup" className="w-32 h-32 mx-auto mb-2" />
-              <div className="text-lg font-bold text-slate-100">开启音乐体验</div>
-              <div className="text-sm text-slate-400">点击下方“足球滚动”以解锁并自动播放 BGM（浏览器需要一次用户操作）</div>
-              <button
-                onClick={() => {
-                  setBgmUnlocked(true);
-                  setBgmUnlockKey(k => k + 1);
-                }}
-                className="w-full py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base"
-              >
-                足球滚动
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     );
   }
@@ -524,29 +537,11 @@ const App: React.FC = () => {
   if (gameState.currentView === 'REGISTER') {
     return (
       <div className="relative">
-        {bgmUnlocked && <NonMatchBgm />}
+        <NonMatchBgm />
         <RegisterView
           onRegisterSuccess={handleLoginSuccess}
           onSwitchToLogin={() => setGameState({ ...gameState, currentView: 'LOGIN' })}
         />
-        {!bgmUnlocked && (
-          <div className="fixed inset-0 bg-slate-950/90 z-50 flex flex-col items-center justify-center px-6 text-center">
-            <div className="max-w-sm w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-4">
-              <img src="https://pub-c98d5902eedf42f6a9765dfad981fd88.r2.dev/fmui/cup_98FM.png" alt="FM Cup" className="w-32 h-32 mx-auto mb-2" />
-              <div className="text-lg font-bold text-slate-100">开启音乐体验</div>
-              <div className="text-sm text-slate-400">点击下方“足球滚动”以解锁并自动播放 BGM（浏览器需要一次用户操作）</div>
-              <button
-                onClick={() => {
-                  setBgmUnlocked(true);
-                  setBgmUnlockKey(k => k + 1);
-                }}
-                className="w-full py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-base"
-              >
-                足球滚动
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     );
   }
