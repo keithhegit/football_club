@@ -404,15 +404,15 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
             </button>
           </div>
 
-          {/* Lineups & Quick Subs (user team only) */}
+          {/* Lineups & Quick Subs (user team only, limit 11, placeholder values) */}
           <div className="space-y-3">
             <div className="text-xs text-slate-400 font-bold uppercase">球员状态 (Your Team)</div>
             {(() => {
               const isHome = userTeamId === homeTeam.id;
               const squad = isHome ? homeTeam.players : awayTeam.players;
-              return squad?.slice(0, 23).map((p: any) => {
-                const staminaVal = Math.min(100, p.stamina ?? p.condition ?? 100);
-                const moraleVal = Math.min(100, p.morale ?? 75);
+              return squad?.slice(0, 11).map((p: any) => {
+                const staminaVal = typeof p.stamina === 'number' ? Math.min(100, p.stamina) : (typeof p.condition === 'number' ? Math.min(100, p.condition) : undefined);
+                const moraleVal = typeof p.morale === 'number' ? Math.min(100, p.morale) : undefined;
                 return (
                   <div key={p.id} className="flex flex-col gap-1 text-xs text-slate-200 border-b border-slate-800 py-2">
                     <div className="flex justify-between items-center">
@@ -422,21 +422,30 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] text-slate-500 w-10">体能</span>
                       <div className="w-full h-2 bg-slate-800 rounded">
-                        <div className="h-2 rounded bg-emerald-500" style={{ width: `${staminaVal}%` }} />
+                        {staminaVal !== undefined ? (
+                          <div className="h-2 rounded bg-emerald-500" style={{ width: `${staminaVal}%` }} />
+                        ) : (
+                          <div className="h-2 rounded bg-slate-700 w-1/4" />
+                        )}
                       </div>
-                      <span className="text-[10px] text-slate-500 w-8 text-right">{staminaVal}%</span>
+                      <span className="text-[10px] text-slate-500 w-8 text-right">{staminaVal !== undefined ? `${staminaVal}%` : '--'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] text-slate-500 w-10">士气</span>
                       <div className="w-full h-2 bg-slate-800 rounded">
-                        <div className="h-2 rounded bg-blue-500" style={{ width: `${moraleVal}%` }} />
+                        {moraleVal !== undefined ? (
+                          <div className="h-2 rounded bg-blue-500" style={{ width: `${moraleVal}%` }} />
+                        ) : (
+                          <div className="h-2 rounded bg-slate-700 w-1/4" />
+                        )}
                       </div>
-                      <span className="text-[10px] text-slate-500 w-8 text-right">{moraleVal}%</span>
+                      <span className="text-[10px] text-slate-500 w-8 text-right">{moraleVal !== undefined ? `${moraleVal}%` : '--'}</span>
                     </div>
                   </div>
                 );
               });
             })()}
+            <div className="text-[10px] text-slate-500">换人操作尚未接入，后续版本将提供正式换人流程。</div>
           </div>
         </div>
       </div>
@@ -578,12 +587,6 @@ export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatc
                 开赛前/中场请调整阵型、指令与体能（点右上 Tactics）。可预先安排换人计划。
               </p>
               <div className="flex gap-2">
-                <button
-                  onClick={() => setShowTactics(true)}
-                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold py-3 rounded border border-slate-600"
-                >
-                  打开战术
-                </button>
                 <button
                   onClick={handleStart}
                   className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded shadow-lg transition-all text-lg"

@@ -64,11 +64,16 @@ export function computeActionSuccess(
         probability *= (1 - defenseScore);
     }
 
-    // 7. Apply weather/pitch conditions
+    // 7. Pass boost to avoid abnormally low pass success
+    if (action === 'PASS_SHORT' || action === 'PASS_LONG') {
+        probability *= 1.25;
+    }
+
+    // 8. Apply weather/pitch conditions
     const environmentMod = getEnvironmentModifier(action, conditions);
     probability *= environmentMod;
 
-    // 8. Apply team/context/luck modifiers
+    // 9. Apply team/context/luck modifiers
     const teamStrengthMod = context?.teamStrengthMod ?? 1.0;
     const contextMod = context?.contextMod ?? 1.0;
     const luckMod = context?.luckMod ?? 1.0;
