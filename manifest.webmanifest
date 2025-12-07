@@ -1,10 +1,17 @@
 {
-  "name": "Pro Manager 2025",
-  "short_name": "ProManager",
+  "name": "WorldCUPFM26",
+  "short_name": "WCFM26",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#020617",
   "theme_color": "#0f172a",
-  "icons": []
+  "icons": [
+    {
+      "src": "https://pub-c98d5902eedf42f6a9765dfad981fd88.r2.dev/fmui/fm26wcup.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
 
