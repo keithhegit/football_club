@@ -5,7 +5,6 @@ import { Info, ChevronDown } from 'lucide-react';
 import { ClubLogo } from '../components/ClubLogo';
 import { PositionChip } from '../components/Tactics/PositionChip';
 import { GUIDED_FORMATIONS } from '../utils/tacticsPresets';
-import { ClubAvatar } from '../components/ClubAvatar';
 import { getPlayerAvatar } from '../utils/avatar';
 
 interface TacticsViewProps {
@@ -60,7 +59,6 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
       {/* Header */}
       <div className="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center z-20">
         <div className="flex items-center gap-3">
-          <ClubAvatar clubName={team.name} size={32} />
           <div className="relative">
             <button
               onClick={() => setShowFormationSelect(!showFormationSelect)}
