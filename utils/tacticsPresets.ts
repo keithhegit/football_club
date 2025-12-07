@@ -133,6 +133,8 @@ export const TEAM_TACTIC_PRESETS: Record<string, { formation: string; mentality:
   'elche': { formation: '4-4-2', mentality: 'Cautious', style: '反击' },
 };
 
+type SeasonTag = '22_23' | '23_24';
+
 // Map simple style to instruction defaults
 export const STYLE_TO_INSTRUCTIONS = (style: '控球' | '高压反抢' | '反击' | '平衡') => {
   switch (style) {
@@ -214,6 +216,36 @@ export const applyTeamPreset = (team: Team): Team => {
       mentality: preset.mentality,
       instructions: instr,
       lineup
+    }
+  };
+};
+
+// Season presets: hardcoded formations & XI (names). Fallback to CA if not found.
+const SEASON_PRESETS: Record<SeasonTag, Record<string, { formation: string; starters: string[] }>> = {
+  '22_23': {},
+  '23_24': {}
+};
+
+export const applySeasonPreset = (team: Team, season: SeasonTag): Team => {
+  const preset = SEASON_PRESETS[season][String(team.name || '').toLowerCase()];
+  if (!preset) return team;
+  const formation = GUIDED_FORMATIONS[preset.formation] ? preset.formation : '4-2-3-1';
+  const starters: { positionId: string; playerId: string }[] = [];
+  if (team.players?.length) {
+    preset.starters.forEach((name, idx) => {
+      const p = team.players.find(pl => pl.name.toLowerCase() === name.toLowerCase());
+      if (p && formation && formation.positions[idx]) {
+        starters.push({ positionId: formation.positions[idx].id, playerId: p.id });
+      }
+    });
+  }
+  const finalLineup = starters.length >= 8 ? starters : pickLineupForFormation(team, formation);
+  return {
+    ...team,
+    tactics: {
+      ...team.tactics,
+      formation,
+      lineup: finalLineup
     }
   };
 };

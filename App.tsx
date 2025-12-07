@@ -27,7 +27,8 @@ import { MatchEngineTest } from './views/MatchEngineTest';
 import { LiveMatchPlayer } from './views/LiveMatchPlayer';
 import { UnifiedMatchTest } from './views/UnifiedMatchTest';
 import { LeagueView } from './views/LeagueView';
-import { applyTeamPreset } from './utils/tacticsPresets';
+import { applyTeamPreset, applySeasonPreset } from './utils/tacticsPresets';
+import { updateSeasonPlayerStats } from './services/matchStatsWriter';
 
 // Helper to generate a season fixture list (Double Round Robin) using circle method with proper week buckets
 const generateSeasonFixtures = (teams: Team[]): Fixture[] => {
@@ -156,10 +157,13 @@ const App: React.FC = () => {
       const fixtures = cached && cached.length > 0 ? cached : generateSeasonFixtures(initialTeams);
       if (!cached || cached.length === 0) persistFixtures(fixtures);
 
+      const seasonTag: '22_23' = '22_23'; // 固定首赛季 22-23
+      const teamsWithPreset = initialTeams.map(t => applySeasonPreset(t, seasonTag));
+
       const newGameState: GameState = {
         currentWeek: 1,
         userTeamId: initialUserTeam.id,
-        teams: initialTeams.map(t => applyTeamPreset(t)),
+        teams: teamsWithPreset.map(t => applyTeamPreset(t)),
         fixtures,
         currentView: 'DASHBOARD',
         activeMatchId: null,
@@ -275,7 +279,7 @@ const App: React.FC = () => {
     });
 
     // Update Teams (Points, Goals)
-    const updatedTeams = gameState.teams.map(team => {
+    let updatedTeams = gameState.teams.map(team => {
       if (team.id === nextFixture.homeTeamId) {
         return {
           ...team,
@@ -308,6 +312,9 @@ const App: React.FC = () => {
       currentView: 'DASHBOARD',
       activeMatchId: null
     };
+
+    // 更新本场球员季统计
+    updatedTeams = updateSeasonPlayerStats(updatedTeams, nextFixture, homeScore, awayScore);
 
     // Auto-simulate other fixtures in same week
     const currentWeek = nextFixture.week;
@@ -349,6 +356,8 @@ const App: React.FC = () => {
         }
         return t;
       });
+      // update season stats for auto-sim match
+      teamsAfterSim = updateSeasonPlayerStats(teamsAfterSim, fx, homeGoals, awayGoals);
     });
 
     const advancedWeek = Math.max(currentWeek + 1, newState.currentWeek);

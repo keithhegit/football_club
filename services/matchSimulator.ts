@@ -3,6 +3,7 @@ import { MatchResult, TeamState } from '../engine/types';
 import { getFromStore, getTeamPlayers, saveMatchResult } from '../utils/localDB';
 import { convertPlayersToState, convertToPlayerState } from '../utils/playerConverter';
 import { getTacticalModifiers } from '../engine/tacticalMods';
+import { updateSeasonPlayerStats } from './matchStatsWriter';
 
 export const matchSimulator = {
     /**
