@@ -104,9 +104,14 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
                                     <StarRating ca={player.ca} />
                                 </div>
                             </div>
-                            <div className="text-right">
+                            <div className="text-right flex flex-col items-end gap-1">
                                 <div className="text-2xl font-black text-white leading-none">{player.ca}</div>
                                 <div className="text-[10px] text-slate-500 uppercase tracking-widest">CA</div>
+                                {player.pa ? (
+                                    <div className="text-[10px] text-amber-300 font-bold px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/40">
+                                        PA {player.pa}
+                                    </div>
+                                ) : null}
                             </div>
                         </div>
 

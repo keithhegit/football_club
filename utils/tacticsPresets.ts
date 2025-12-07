@@ -167,18 +167,53 @@ export const STYLE_TO_INSTRUCTIONS = (style: '控球' | '高压反抢' | '反击
   }
 };
 
+const pickLineupForFormation = (team: Team, formationId: string) => {
+  const formation = GUIDED_FORMATIONS[formationId];
+  if (!formation) return [];
+  const pool = [...team.players];
+  const selectBest = (posId: string) => {
+    const target = posId.toUpperCase();
+    let bestIdx = -1;
+    let bestScore = -1;
+    pool.forEach((p, idx) => {
+      const pos = (p.position || '').toUpperCase();
+      let score = 0;
+      if (pos.includes(target)) score += 100;
+      if (target === 'GK' && pos.includes('GK')) score += 50;
+      if (target.startsWith('D') && (pos.includes('D') || pos.includes('WB'))) score += 40;
+      if (target.startsWith('M') && (pos.includes('M') || pos.includes('DM') || pos.includes('AM'))) score += 40;
+      if ((target === 'ST' || target.startsWith('A')) && (pos.includes('ST') || pos.includes('AM'))) score += 40;
+      score += p.ca || 0;
+      if (score > bestScore) {
+        bestScore = score;
+        bestIdx = idx;
+      }
+    });
+    if (bestIdx === -1) return '';
+    const chosen = pool.splice(bestIdx, 1)[0];
+    return chosen?.id || '';
+  };
+  return formation.positions.map(pos => ({
+    positionId: pos.id,
+    playerId: selectBest(pos.id)
+  })).filter(l => l.playerId);
+};
+
 export const applyTeamPreset = (team: Team): Team => {
   const key = String(team.name || '').toLowerCase();
   const preset = TEAM_TACTIC_PRESETS[key];
   if (!preset) return team;
   const instr = STYLE_TO_INSTRUCTIONS(preset.style);
+  const lineup = team.tactics?.lineup && team.tactics.lineup.length > 0
+    ? team.tactics.lineup
+    : pickLineupForFormation(team, preset.formation);
   return {
     ...team,
     tactics: {
       formation: preset.formation,
       mentality: preset.mentality,
       instructions: instr,
-      lineup: team.tactics?.lineup || []
+      lineup
     }
   };
 };

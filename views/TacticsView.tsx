@@ -240,7 +240,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                     </div>
                     {currentFormation.positions.map((pos) => {
                       const assigned = lineup.find(l => l.positionId === pos.id);
-                      const player = team.players.find(p => p.id === assigned?.playerId);
+                      const player = team.players.find(p => String(p.id) === String(assigned?.playerId));
                       return (
                         <div
                           key={pos.id}
