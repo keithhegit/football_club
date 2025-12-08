@@ -41,9 +41,10 @@ const pickAutoLineup = (team: Team, formationId: string) => {
 interface TacticsViewProps {
   team: Team;
   onSave?: (tactics: any) => void;
+  currentWeek?: number;
 }
 
-export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
+export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentWeek }) => {
   const { currentFormation, availableFormations, lineup, setFormation, updatePlayerPosition } = useTactics(team);
 
   const defaultInstructions = team.tactics?.instructions || {
@@ -92,37 +93,37 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
       {/* Header */}
       <div className="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center z-20">
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <button
-              onClick={() => setShowFormationSelect(!showFormationSelect)}
-              className="flex items-center gap-2 hover:bg-slate-800 p-2 rounded transition-colors"
-            >
-              <div>
+        <div className="relative">
+          <button
+            onClick={() => setShowFormationSelect(!showFormationSelect)}
+            className="flex items-center gap-2 hover:bg-slate-800 p-2 rounded transition-colors"
+          >
+            <div>
                 <h2 className="text-lg font-bold text-slate-100">战术板</h2>
-                <p className="text-xs text-emerald-400 font-bold flex items-center gap-1">
-                  {currentFormation.name}
-                  <ChevronDown size={12} />
-                </p>
-              </div>
-            </button>
+              <p className="text-xs text-emerald-400 font-bold flex items-center gap-1">
+                {currentFormation.name}
+                <ChevronDown size={12} />
+              </p>
+            </div>
+          </button>
 
-            {/* Formation Dropdown */}
-            {showFormationSelect && (
-              <div className="absolute top-full left-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
-                {availableFormations.map(fmt => (
-                  <button
-                    key={fmt.id}
-                    onClick={() => {
-                      setFormation(fmt.id);
-                      setShowFormationSelect(false);
-                    }}
-                    className={`w-full text-left px-4 py-3 text-sm hover:bg-slate-700 transition-colors ${currentFormation.id === fmt.id ? 'text-emerald-400 font-bold bg-slate-700/50' : 'text-slate-300'}`}
-                  >
-                    {fmt.name}
-                  </button>
-                ))}
-              </div>
-            )}
+          {/* Formation Dropdown */}
+          {showFormationSelect && (
+            <div className="absolute top-full left-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
+              {availableFormations.map(fmt => (
+                <button
+                  key={fmt.id}
+                  onClick={() => {
+                    setFormation(fmt.id);
+                    setShowFormationSelect(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 text-sm hover:bg-slate-700 transition-colors ${currentFormation.id === fmt.id ? 'text-emerald-400 font-bold bg-slate-700/50' : 'text-slate-300'}`}
+                >
+                  {fmt.name}
+                </button>
+              ))}
+            </div>
+          )}
           </div>
         </div>
 
@@ -138,8 +139,8 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
             <button
               onClick={() => setActiveTab('INSTRUCTIONS')}
               className={`flex-1 py-3 px-4 font-bold text-sm transition-colors ${activeTab === 'INSTRUCTIONS'
-                ? 'bg-emerald-900/20 text-emerald-400 border-b-2 border-emerald-500'
-                : 'text-slate-500 hover:text-slate-300'
+                  ? 'bg-emerald-900/20 text-emerald-400 border-b-2 border-emerald-500'
+                  : 'text-slate-500 hover:text-slate-300'
                 }`}
             >
               Instructions
@@ -147,8 +148,8 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
             <button
               onClick={() => setActiveTab('BENCH')}
               className={`flex-1 py-3 px-4 font-bold text-sm transition-colors ${activeTab === 'BENCH'
-                ? 'bg-emerald-900/20 text-emerald-400 border-b-2 border-emerald-500'
-                : 'text-slate-500 hover:text-slate-300'
+                  ? 'bg-emerald-900/20 text-emerald-400 border-b-2 border-emerald-500'
+                  : 'text-slate-500 hover:text-slate-300'
                 }`}
             >
               Substitutes
@@ -160,7 +161,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
             {activeTab === 'INSTRUCTIONS' && (
               <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 space-y-6">
                 <div className="text-sm font-bold text-slate-200">球队指令</div>
-                <div>
+              <div>
                   <label className="text-slate-500 text-xs mb-2 block">心态</label>
                   <select
                     className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-slate-200"
@@ -197,9 +198,9 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                       />
                     </div>
                   ))}
-                </div>
+              </div>
 
-                <div>
+              <div>
                   <div className="text-xs text-slate-400 mb-1">无球时</div>
                   {[
                     { key: 'lineOfEngagement', label: '逼抢线' },
@@ -221,9 +222,9 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                           outOfPossession: { ...prev.outOfPossession, [item.key]: Number(e.target.value) }
                         }))}
                       />
-                    </div>
+                  </div>
                   ))}
-                </div>
+                  </div>
 
                 <div>
                   <div className="text-xs text-slate-400 mb-2">转换</div>
@@ -307,7 +308,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                             <div className="font-bold">{pos.name}</div>
                             {player && <div className="text-slate-200 truncate">{player.name}</div>}
                           </div>
-                        </div>
+                  </div>
                       );
                     })}
                   </div>
@@ -326,12 +327,12 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                           {f}
                         </button>
                       ))}
-                    </div>
-                  </div>
+              </div>
+            </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {filteredBench.map(p => (
-                      <div
+                  <div
                         key={p.id}
                         className="relative bg-slate-800/80 border border-slate-700 rounded-lg p-3 shadow hover:border-emerald-600 transition cursor-pointer"
                         onClick={() => setBenchProfile(p)}
@@ -372,8 +373,8 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
               </div>
             )}
           </div>
-        </div>
-      </div>
+                      </div>
+                    </div>
       {replaceTarget && (
         <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center px-4" onClick={() => setReplaceTarget(null)}>
           <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
@@ -393,7 +394,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                       选择上场
                     </button>
                   </div>
-                  <PlayerProfileCard player={p} hideActions userTeam={team} />
+                  <PlayerProfileCard player={p} hideActions userTeam={team} currentWeek={currentWeek} />
                 </div>
               ))}
               {benchPlayers.length === 0 && (
@@ -407,9 +408,9 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
       {benchProfile && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setBenchProfile(null)}>
           <div className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-            <PlayerProfileCard player={benchProfile} hideActions userTeam={team} />
-          </div>
+            <PlayerProfileCard player={benchProfile} hideActions userTeam={team} currentWeek={currentWeek} />
         </div>
+      </div>
       )}
     </div>
   );

@@ -6,9 +6,10 @@ import { ClubLogo } from '../components/ClubLogo';
 
 interface SquadViewProps {
     team: Team;
+    currentWeek?: number;
 }
 
-export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
+export const SquadView: React.FC<SquadViewProps> = ({ team, currentWeek }) => {
     const [selectedPosition, setSelectedPosition] = useState<Position | 'ALL'>('ALL');
     const [selectedPlayer, setSelectedPlayer] = useState<typeof team.players[0] | null>(null);
     const [page, setPage] = useState(0);
@@ -82,35 +83,50 @@ export const SquadView: React.FC<SquadViewProps> = ({ team }) => {
                 ) : (
                     <>
                         <div className="grid grid-cols-3 gap-4">
-                            {pagePlayers.map(player => (
-                                <div
-                                    key={player.id}
-                                    onClick={() => setSelectedPlayer(player)}
-                                    className="bg-slate-800/80 p-3 rounded border border-slate-700 hover:border-emerald-600 cursor-pointer transition shadow-sm flex flex-col items-center gap-3"
-                                >
-                                    <PlayerAvatar playerId={player.id} alt={player.name} size="lg" className="border-emerald-500" />
-                                    <div className="text-center">
-                                        <div className="font-bold text-slate-200 truncate max-w-[140px]">{player.name}</div>
-                                        <div className="text-[11px] text-slate-400 flex items-center justify-center gap-2">
-                                            <span className={`${player.position === 'GK' ? 'text-yellow-400' :
-                                                player.position === 'DEF' ? 'text-blue-400' :
-                                                    player.position === 'MID' ? 'text-emerald-400' :
-                                                        'text-red-400'
-                                                } font-bold`}>{player.position}</span>
-                                            <span className="text-slate-500">CA {player.ca}</span>
+                            {pagePlayers.map(player => {
+                                const seasonsPassed = currentWeek && currentWeek > 38 ? 1 : 0;
+                                const displayAge = (player.age || 0) + seasonsPassed;
+                                const injured = player.injured || player.condition <= 60;
+                                const displayCA = injured ? Math.max(1, Math.round(player.ca * 0.5)) : player.ca;
+                                return (
+                                    <div
+                                        key={player.id}
+                                        onClick={() => setSelectedPlayer(player)}
+                                        className="bg-slate-800/80 p-3 rounded border border-slate-700 hover:border-emerald-600 cursor-pointer transition shadow-sm flex flex-col items-center gap-3"
+                                    >
+                                        <PlayerAvatar playerId={player.id} alt={player.name} size="lg" className="border-emerald-500" />
+                                        <div className="text-center w-full">
+                                            <div className="font-bold text-slate-200 truncate max-w-[140px] mx-auto flex items-center justify-center gap-2">
+                                                <span className="truncate">{player.name}</span>
+                                                <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-700 text-slate-200 font-semibold">{displayAge}岁</span>
+                                            </div>
+                                            <div className="text-[11px] text-slate-400 flex items-center justify-between gap-2 mt-1">
+                                                <span className={`${player.position === 'GK' ? 'text-yellow-400' :
+                                                    player.position === 'DEF' ? 'text-blue-400' :
+                                                        player.position === 'MID' ? 'text-emerald-400' :
+                                                            'text-red-400'
+                                                    } font-bold`}>{player.position}</span>
+                                                <span className={`font-semibold ${injured ? 'text-red-400' : 'text-slate-500'}`}>
+                                                    CA {displayCA}
+                                                </span>
+                                                <span className="text-amber-300 font-semibold">PA {player.pa}</span>
+                                            </div>
+                                            {injured && (
+                                                <div className="text-[11px] text-red-400 font-bold mt-1">受伤（状态-50%）</div>
+                                            )}
                                         </div>
+                                        {player.pa > 0 && (
+                                            <div className="text-[11px] text-emerald-400 text-center">
+                                                {player.pa >= 170 ? '🌟 世界级' :
+                                                    player.pa >= 150 ? '⭐ 顶级' :
+                                                        player.pa >= 130 ? '💎 关键' :
+                                                            player.pa >= 110 ? '🔹 主力' :
+                                                                player.pa >= 90 ? '📦 轮换' : '💤 替补'}
+                                            </div>
+                                        )}
                                     </div>
-                                    {player.pa > 0 && (
-                                        <div className="text-[11px] text-emerald-400 text-center">
-                                            {player.pa >= 170 ? '🌟 世界级' :
-                                                player.pa >= 150 ? '⭐ 顶级' :
-                                                    player.pa >= 130 ? '💎 关键' :
-                                                        player.pa >= 110 ? '🔹 主力' :
-                                                            player.pa >= 90 ? '📦 轮换' : '💤 替补'}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                         <div className="flex justify-center items-center gap-3 mt-3">
                             <button
