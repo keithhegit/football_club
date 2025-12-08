@@ -117,6 +117,8 @@ export const MatchView: React.FC<MatchViewProps> = ({
   });
 
   // Auto-scroll logs
+  const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -290,10 +292,14 @@ export const MatchView: React.FC<MatchViewProps> = ({
             xG: [0, 0],
             shots: [0, 0],
             shotsOnTarget: [0, 0],
-            passes: [0, 0],
+            passes: [0, 0], // display: total attempts
             passAttempts: [0, 0],
             passSuccess: [0, 0],
-            tackles: [0, 0],
+            passAccuracy: [0, 0], // display-ready %
+            tackles: [0, 0], // display: normalized attempts
+            tackleAttempts: [0, 0],
+            tackleSuccess: [0, 0],
+            tackleAccuracy: [0, 0], // display-ready %
             fouls: [0, 0],
             yellowCards: [0, 0],
             redCards: [0, 0],
@@ -333,14 +339,16 @@ export const MatchView: React.FC<MatchViewProps> = ({
             if (e.type.includes('PASS')) {
               stats.passAttempts[idx]++;
               if (e.outcome === 'SUCCESS') {
-                stats.passes[idx]++;
                 stats.passSuccess[idx]++;
               }
             }
 
-            // Tackles
-            if ((e.type === 'TACKLE' || e.type === 'INTERCEPT') && e.outcome === 'SUCCESS') {
-              stats.tackles[idx]++;
+            // Tackles: track attempts and successes
+            if (e.type === 'TACKLE' || e.type === 'INTERCEPT') {
+              stats.tackleAttempts[idx]++;
+              if (e.outcome === 'SUCCESS') {
+                stats.tackleSuccess[idx]++;
+              }
             }
 
             // Fouls & Cards
@@ -359,6 +367,27 @@ export const MatchView: React.FC<MatchViewProps> = ({
             stats.possession[0] = Math.round((stats.passAttempts[0] / totalPasses) * 100);
             stats.possession[1] = 100 - stats.possession[0];
           }
+
+          // Normalize passing display to realistic 70%-99% accuracy, show total attempts
+          [0, 1].forEach(idx => {
+            const attempts = stats.passAttempts[idx];
+            const success = stats.passSuccess[idx];
+            const rawAcc = attempts > 0 ? success / attempts : 0;
+            const clampedAcc = clamp(rawAcc, 0.7, 0.99);
+            stats.passAccuracy[idx] = Math.round(clampedAcc * 100);
+            stats.passes[idx] = attempts;
+          });
+
+          // Normalize tackles display: scale attempts down and show success rate
+          [0, 1].forEach(idx => {
+            const attempts = stats.tackleAttempts[idx];
+            const success = stats.tackleSuccess[idx];
+            const rawAcc = attempts > 0 ? success / attempts : 0;
+            const clampedAcc = clamp(rawAcc, 0.45, 0.85);
+            const normalizedAttempts = attempts > 0 ? clamp(Math.round(attempts * 0.35), 8, 45) : 0;
+            stats.tackleAccuracy[idx] = Math.round(clampedAcc * 100);
+            stats.tackles[idx] = normalizedAttempts;
+          });
 
           setCurrentStats(stats);
           return currentMinute;
@@ -711,12 +740,12 @@ export const MatchView: React.FC<MatchViewProps> = ({
                   awayValue={`${currentStats?.shots[1] || 0} (${currentStats?.shotsOnTarget[1] || 0})`}
                 />
                 <StatRow label="Passes (Accuracy)"
-                  homeValue={`${currentStats?.passes[0] || 0} (${currentStats?.passAttempts[0] > 0 ? Math.round((currentStats?.passSuccess[0] / currentStats?.passAttempts[0]) * 100) : 0}%)`}
-                  awayValue={`${currentStats?.passes[1] || 0} (${currentStats?.passAttempts[1] > 0 ? Math.round((currentStats?.passSuccess[1] / currentStats?.passAttempts[1]) * 100) : 0}%)`}
+                  homeValue={`${currentStats?.passes[0] || 0} (${currentStats?.passAccuracy[0] || 0}%)`}
+                  awayValue={`${currentStats?.passes[1] || 0} (${currentStats?.passAccuracy[1] || 0}%)`}
                 />
                 <StatRow label="Tackles"
-                  homeValue={`${currentStats?.tackles[0] || 0}`}
-                  awayValue={`${currentStats?.tackles[1] || 0}`}
+                  homeValue={`${currentStats?.tackles[0] || 0} (${currentStats?.tackleAccuracy[0] || 0}%)`}
+                  awayValue={`${currentStats?.tackles[1] || 0} (${currentStats?.tackleAccuracy[1] || 0}%)`}
                 />
                 <StatRow label="Fouls (Y/R)"
                   homeValue={`${currentStats?.fouls[0] || 0} (${currentStats?.yellowCards[0] || 0}/${currentStats?.redCards[0] || 0})`}
