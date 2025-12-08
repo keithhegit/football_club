@@ -154,5 +154,8 @@ export function getClubLogoId(clubName: string): string | null {
     if (CLUB_LOGO_IDS[clubName]) return CLUB_LOGO_IDS[clubName];
     // normalized match (lowercase, alnum only)
     const key = clubName.toLowerCase().replace(/[^a-z0-9]/g, '');
-    return CLUB_LOGO_IDS[key] || null;
+    if (CLUB_LOGO_IDS[key]) return CLUB_LOGO_IDS[key];
+    // fallback: iterate to find normalized match of any key
+    const hit = Object.entries(CLUB_LOGO_IDS).find(([k]) => k.toLowerCase().replace(/[^a-z0-9]/g, '') === key);
+    return hit ? hit[1] : null;
 }
