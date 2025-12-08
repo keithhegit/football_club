@@ -285,10 +285,13 @@ export function useGameInit(clubId?: number) {
                         const rawCa = caMap.get(p.id.toString())?.ca;
                         const rawPa = caMap.get(p.id.toString())?.pa;
 
+                        const ageRaw = (dbPlayer as any)?.Age ?? (dbPlayer as any)?.age ?? (p as any).Age ?? (p as any).age;
+                        const ageVal = Number(ageRaw);
+
                         return {
                             id: p.id.toString(),
                             name: p.name,
-                            age: (dbPlayer as any)?.Age || (dbPlayer as any)?.age || (p as any).Age || (p as any).age || 25, // prefer DB age
+                            age: Number.isFinite(ageVal) ? ageVal : 25, // prefer DB age, fallback 25
                             position: mapPosition(p.position),
                             nationality: 'Unknown',
                             ca: rawCa ?? 100,

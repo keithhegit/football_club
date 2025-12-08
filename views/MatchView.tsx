@@ -499,6 +499,13 @@ export const MatchView: React.FC<MatchViewProps> = ({
     } as any]);
   };
 
+  const timerDisplay =
+    matchState === MatchState.PRE_MATCH
+      ? 'PRE-MATCH'
+      : matchState === MatchState.FULL_TIME
+        ? 'FULL TIME'
+        : `${minute}'`;
+
   return (
     <div
       className="flex flex-col h-full bg-slate-950"
@@ -673,47 +680,44 @@ export const MatchView: React.FC<MatchViewProps> = ({
       </div>
 
       {/* Scoreboard */}
-      <div className="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-10 shadow-lg">
-        <div className="flex justify-between items-center mb-2">
-          <div className="text-xs text-slate-500 font-mono">
-            {matchState === MatchState.PRE_MATCH ? 'PRE-MATCH' :
-              matchState === MatchState.FULL_TIME ? 'FULL TIME' :
-                `${minute}'`}
-          </div>
-          <div className="flex items-center gap-3 flex-wrap justify-end">
-            <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Chumbawamb_Tubthumping_com.mp3" unlockKey={bgmUnlockKey} />
-            <div className="flex space-x-2 flex-wrap justify-end">
-              <button onClick={() => setSpeedPreset('1x')} className={`p-1 rounded ${speed === 1000 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>1x</button>
-              <button onClick={() => setSpeedPreset('2x')} className={`p-1 rounded ${speed === 500 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>2x</button>
-              <button onClick={() => setSpeedPreset('4x')} className={`p-1 rounded ${speed === 250 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>4x</button>
-              <button onClick={handlePauseToggle} className={`p-1 rounded ${paused ? 'bg-yellow-700 text-white' : 'text-slate-500'}`}>{paused ? 'Resume' : 'Pause'}</button>
-            </div>
-          </div>
-        </div>
+      <div className="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-10 shadow-lg space-y-3">
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-3 w-1/3">
             <div className="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center text-xs font-bold border border-blue-700">{homeTeam.shortName}</div>
             <span className="font-bold text-lg truncate">{homeTeam.name}</span>
           </div>
-        <div className="flex items-center space-x-3 bg-slate-950 px-4 py-1 rounded border border-slate-800">
-          <span className="text-3xl font-black text-white">{scores.home}</span>
-          <span className="text-slate-600 text-xl">:</span>
-          <span className="text-3xl font-black text-white">{scores.away}</span>
+          <div className="flex items-center space-x-3 bg-slate-950 px-4 py-1 rounded border border-slate-800">
+            <span className="text-3xl font-black text-white">{scores.home}</span>
+            <span className="text-slate-600 text-xl">:</span>
+            <span className="text-3xl font-black text-white">{scores.away}</span>
+          </div>
+          <div className="flex items-center space-x-3 w-1/3 justify-end">
+            <span className="font-bold text-lg truncate text-right">{awayTeam.name}</span>
+            <div className="w-8 h-8 rounded-full bg-red-900 flex items-center justify-center text-xs font-bold border border-red-700">{awayTeam.shortName}</div>
+          </div>
         </div>
-        <div className="flex items-center space-x-3 w-1/3 justify-end">
-          <span className="font-bold text-lg truncate text-right">{awayTeam.name}</span>
-          <div className="w-8 h-8 rounded-full bg-red-900 flex items-center justify-center text-xs font-bold border border-red-700">{awayTeam.shortName}</div>
+
+        {/* Controls row: timer + tactics + speed/BGM */}
+        <div className="flex items-center justify-between">
+          <div className="px-3 py-1.5 rounded-full bg-slate-800 text-emerald-300 font-mono text-base shadow border border-slate-700">
+            {timerDisplay}
+          </div>
+          <button
+            onClick={() => setShowTactics(true)}
+            className="px-4 py-2 rounded bg-emerald-600 text-white font-bold border border-emerald-500 shadow hover:bg-emerald-500"
+          >
+            战术部署
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 bg-slate-800 px-2.5 py-1.5 rounded-full border border-slate-700">
+              <button onClick={() => setSpeedPreset('1x')} className={`px-2 py-1 rounded text-xs font-bold ${speed === 1000 ? 'bg-slate-700 text-white' : 'text-slate-400'}`}>1x</button>
+              <button onClick={() => setSpeedPreset('2x')} className={`px-2 py-1 rounded text-xs font-bold ${speed === 500 ? 'bg-slate-700 text-white' : 'text-slate-400'}`}>2x</button>
+              <button onClick={() => setSpeedPreset('4x')} className={`px-2 py-1 rounded text-xs font-bold ${speed === 250 ? 'bg-slate-700 text-white' : 'text-slate-400'}`}>4x</button>
+              <button onClick={handlePauseToggle} className={`px-2 py-1 rounded text-xs font-bold ${paused ? 'bg-yellow-700 text-white' : 'text-slate-400'}`}>{paused ? 'Resume' : 'Pause'}</button>
+            </div>
+            <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Chumbawamb_Tubthumping_com.mp3" unlockKey={bgmUnlockKey} />
+          </div>
         </div>
-      </div>
-      {/* Tactics entry under score */}
-      <div className="flex justify-center mt-2">
-        <button
-          onClick={() => setShowTactics(true)}
-          className="px-4 py-2 rounded bg-emerald-600 text-white font-bold border border-emerald-500"
-        >
-          战术部署
-        </button>
-      </div>
       </div>
 
       {/* Match Content (Grid Layout) */}
