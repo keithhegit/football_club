@@ -41,9 +41,10 @@ const pickAutoLineup = (team: Team, formationId: string) => {
 interface TacticsViewProps {
   team: Team;
   onSave?: (tactics: any) => void;
+  currentWeek?: number;
 }
 
-export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
+export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentWeek }) => {
   const { currentFormation, availableFormations, lineup, setFormation, updatePlayerPosition } = useTactics(team);
 
   const defaultInstructions = team.tactics?.instructions || {
@@ -393,7 +394,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
                       选择上场
                     </button>
                   </div>
-                  <PlayerProfileCard player={p} hideActions userTeam={team} />
+                  <PlayerProfileCard player={p} hideActions userTeam={team} currentWeek={currentWeek} />
                 </div>
               ))}
               {benchPlayers.length === 0 && (
@@ -407,7 +408,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave }) => {
       {benchProfile && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setBenchProfile(null)}>
           <div className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-            <PlayerProfileCard player={benchProfile} hideActions userTeam={team} />
+            <PlayerProfileCard player={benchProfile} hideActions userTeam={team} currentWeek={currentWeek} />
           </div>
         </div>
       )}

@@ -635,7 +635,7 @@ const App: React.FC = () => {
       )}
 
       {gameState.currentView === 'SQUAD' && (
-        <SquadView team={userTeam} />
+        <SquadView team={userTeam} currentWeek={gameState.currentWeek} />
       )}
 
       {gameState.currentView === 'SEARCH' && (
@@ -643,7 +643,7 @@ const App: React.FC = () => {
       )}
 
       {gameState.currentView === 'TACTICS' && userTeam && (
-        <TacticsView team={userTeam} onSave={handleSaveTactics} />
+        <TacticsView team={userTeam} onSave={handleSaveTactics} currentWeek={gameState.currentWeek} />
       )}
 
       {gameState.currentView === 'LEAGUE' && gameState && userTeam && (

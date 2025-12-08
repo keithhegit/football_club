@@ -11,6 +11,7 @@ interface Props {
     onTransferComplete?: (player: Player, fee: number) => void;
     hideActions?: boolean; // Hide Make Offer button when in confirmation flow
     userTeam?: { players: Player[] }; // To check if player is already in squad
+    currentWeek?: number; // for age roll-over 23-24 season
 }
 
 // Helper component for attribute rows
@@ -49,7 +50,7 @@ const StarRating = ({ ca }: { ca: number }) => {
     );
 };
 
-export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete, hideActions = false, userTeam }) => {
+export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete, hideActions = false, userTeam, currentWeek }) => {
     const [flipped, setFlipped] = useState(false);
 
     // ... (Calculations remain unchanged)
@@ -83,6 +84,10 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
     const [showTransferModal, setShowTransferModal] = useState(false);
 
     const potentialText = getPotentialDescriptionChinese(player.pa);
+    const seasonsPassed = currentWeek && currentWeek > 38 ? 1 : 0;
+    const displayAge = (player.age || 0) + seasonsPassed;
+    const injured = (player as any).injured || player.condition <= 60;
+    const displayCA = injured ? Math.max(1, Math.round(player.ca * 0.5)) : player.ca;
 
     return (
         <>
@@ -98,15 +103,21 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
                         <div className="h-20 bg-gradient-to-r from-slate-900 to-slate-800 p-4 flex justify-between items-start gap-3">
                             <PlayerAvatar playerId={player.id} alt={player.name} size="md" className="border-2 border-slate-600" />
                             <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-white text-lg leading-none truncate">{player.name}</h3>
+                                <div className="flex items-center gap-2">
+                                    <h3 className="font-bold text-white text-lg leading-none truncate">{player.name}</h3>
+                                    <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-700 text-slate-200 font-semibold">{displayAge}岁</span>
+                                </div>
                                 <div className="flex items-center gap-2 mt-1">
                                     <span className="text-xs text-emerald-400 font-mono">{player.position}</span>
                                     <StarRating ca={player.ca} />
                                 </div>
                             </div>
                             <div className="text-right flex flex-col items-end gap-1">
-                                <div className="text-2xl font-black text-white leading-none">{player.ca}</div>
-                                <div className="text-[10px] text-slate-500 uppercase tracking-widest">CA</div>
+                                {injured && (
+                                    <span className="text-[10px] text-red-400 font-bold px-2 py-0.5 rounded-full border border-red-500/50">受伤</span>
+                                )}
+                                <div className="text-2xl font-black text-white leading-none">{displayCA}</div>
+                                <div className="text-[10px] text-slate-500 uppercase tracking-widest">{injured ? 'CA（受伤折减）' : 'CA'}</div>
                                 {player.pa ? (
                                     <div className="text-[10px] text-amber-300 font-bold px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/40">
                                         PA {player.pa}
