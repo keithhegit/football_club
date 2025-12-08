@@ -89,6 +89,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
   }, [benchPlayers, benchFilter]);
 
   return (
+    <>
     <div className="h-full flex flex-col relative bg-slate-950">
       {/* Header */}
       <div className="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center z-20">
@@ -403,14 +404,14 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
             <button onClick={() => setReplaceTarget(null)} className="w-full mt-3 bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 rounded">取消</button>
           </div>
         </div>
-      )}
-      {benchProfile && (
+    )}
+    {benchProfile && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setBenchProfile(null)}>
           <div className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
             <PlayerProfileCard player={benchProfile} hideActions userTeam={team} currentWeek={currentWeek} />
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
