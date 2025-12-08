@@ -511,7 +511,7 @@ export const MatchView: React.FC<MatchViewProps> = ({
       className="flex flex-col h-full bg-slate-950"
       style={{
         paddingTop: 'calc(env(safe-area-inset-top, 0px) + 8px)',
-        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)'
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)'
       }}
     >
 
@@ -680,7 +680,10 @@ export const MatchView: React.FC<MatchViewProps> = ({
       </div>
 
       {/* Scoreboard */}
-      <div className="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-10 shadow-lg space-y-3">
+      <div
+        className="bg-slate-900 border-b border-slate-800 p-4 sticky z-10 shadow-lg space-y-3"
+        style={{ top: 'env(safe-area-inset-top, 0px)' }}
+      >
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-3 w-1/3">
             <div className="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center text-xs font-bold border border-blue-700">{homeTeam.shortName}</div>
@@ -720,51 +723,76 @@ export const MatchView: React.FC<MatchViewProps> = ({
         </div>
       </div>
 
-      {/* Match Content (Grid Layout) */}
-      <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
-
-        {/* LEFT COLUMN: Statistics & Ratings */}
-        <div className="lg:col-span-1 space-y-4 overflow-y-auto pr-2">
-
-          {/* Match Statistics */}
-          {(matchState === MatchState.PLAYING || matchState === MatchState.FULL_TIME) && fullMatchResult?.statistics && (
-            <div className="bg-slate-900/80 p-4 rounded-lg border border-slate-800">
-              <h3 className="text-xs font-bold text-slate-300 uppercase mb-3 border-b border-slate-700 pb-2">Match Stats</h3>
-              <div className="space-y-2">
-                <StatRow label="Possession"
-                  homeValue={`${currentStats?.possession[0] || 50}%`}
-                  awayValue={`${currentStats?.possession[1] || 50}%`}
-                />
-                <StatRow label="xG"
-                  homeValue={(currentStats?.xG[0] || 0).toFixed(2)}
-                  awayValue={(currentStats?.xG[1] || 0).toFixed(2)}
-                />
-                <StatRow label="Shots (Target)"
-                  homeValue={`${currentStats?.shots[0] || 0} (${currentStats?.shotsOnTarget[0] || 0})`}
-                  awayValue={`${currentStats?.shots[1] || 0} (${currentStats?.shotsOnTarget[1] || 0})`}
-                />
-                <StatRow label="Passes (Accuracy)"
-                  homeValue={`${currentStats?.passes[0] || 0} (${currentStats?.passAccuracy[0] || 0}%)`}
-                  awayValue={`${currentStats?.passes[1] || 0} (${currentStats?.passAccuracy[1] || 0}%)`}
-                />
-                <StatRow label="Tackles"
-                  homeValue={`${currentStats?.tackles[0] || 0} (${currentStats?.tackleAccuracy[0] || 0}%)`}
-                  awayValue={`${currentStats?.tackles[1] || 0} (${currentStats?.tackleAccuracy[1] || 0}%)`}
-                />
-                <StatRow label="Fouls (Y/R)"
-                  homeValue={`${currentStats?.fouls[0] || 0} (${currentStats?.yellowCards[0] || 0}/${currentStats?.redCards[0] || 0})`}
-                  awayValue={`${currentStats?.fouls[1] || 0} (${currentStats?.yellowCards[1] || 0}/${currentStats?.redCards[1] || 0})`}
-                />
-                <StatRow label="Corners / FK"
-                  homeValue={`${currentStats?.corners[0] || 0} / ${currentStats?.freeKicks[0] || 0}`}
-                  awayValue={`${currentStats?.corners[1] || 0} / ${currentStats?.freeKicks[1] || 0}`}
-                />
-              </div>
+      {matchState === MatchState.PRE_MATCH ? (
+        <div className="p-4">
+          <div className="bg-slate-900 p-6 rounded-lg border border-slate-800 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h3 className="text-emerald-400 text-sm font-bold uppercase mb-4 flex items-center gap-2">
+              <CheckCircle2 size={16} /> 战术与换人准备
+            </h3>
+            <p className="text-sm text-slate-300 leading-relaxed mb-4">
+              开赛前/中场请调整阵型、指令与体能（点右上 Tactics）。可预先安排换人计划。
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => setShowTactics(true)}
+                className="w-full bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold py-3 rounded border border-slate-600"
+              >
+                打开战术
+              </button>
+              <button
+                onClick={handleStart}
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded shadow-lg transition-all text-lg"
+              >
+                Kick Off
+              </button>
             </div>
-          )}
+          </div>
+        </div>
+      ) : (
+        /* Match Content (Grid Layout) */
+        <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
 
-          {/* Top Performers (MVP & Goalscorers) */}
-          {(matchState === MatchState.PLAYING || matchState === MatchState.FULL_TIME) && (
+          {/* LEFT COLUMN: Statistics & Ratings */}
+          <div className="lg:col-span-1 space-y-4 overflow-y-auto pr-2">
+
+            {/* Match Statistics */}
+            {fullMatchResult?.statistics && (
+              <div className="bg-slate-900/80 p-4 rounded-lg border border-slate-800">
+                <h3 className="text-xs font-bold text-slate-300 uppercase mb-3 border-b border-slate-700 pb-2">Match Stats</h3>
+                <div className="space-y-2">
+                  <StatRow label="Possession"
+                    homeValue={`${currentStats?.possession[0] || 50}%`}
+                    awayValue={`${currentStats?.possession[1] || 50}%`}
+                  />
+                  <StatRow label="xG"
+                    homeValue={(currentStats?.xG[0] || 0).toFixed(2)}
+                    awayValue={(currentStats?.xG[1] || 0).toFixed(2)}
+                  />
+                  <StatRow label="Shots (Target)"
+                    homeValue={`${currentStats?.shots[0] || 0} (${currentStats?.shotsOnTarget[0] || 0})`}
+                    awayValue={`${currentStats?.shots[1] || 0} (${currentStats?.shotsOnTarget[1] || 0})`}
+                  />
+                  <StatRow label="Passes (Accuracy)"
+                    homeValue={`${currentStats?.passes[0] || 0} (${currentStats?.passAccuracy[0] || 0}%)`}
+                    awayValue={`${currentStats?.passes[1] || 0} (${currentStats?.passAccuracy[1] || 0}%)`}
+                  />
+                  <StatRow label="Tackles"
+                    homeValue={`${currentStats?.tackles[0] || 0} (${currentStats?.tackleAccuracy[0] || 0}%)`}
+                    awayValue={`${currentStats?.tackles[1] || 0} (${currentStats?.tackleAccuracy[1] || 0}%)`}
+                  />
+                  <StatRow label="Fouls (Y/R)"
+                    homeValue={`${currentStats?.fouls[0] || 0} (${currentStats?.yellowCards[0] || 0}/${currentStats?.redCards[0] || 0})`}
+                    awayValue={`${currentStats?.fouls[1] || 0} (${currentStats?.yellowCards[1] || 0}/${currentStats?.redCards[1] || 0})`}
+                  />
+                  <StatRow label="Corners / FK"
+                    homeValue={`${currentStats?.corners[0] || 0} / ${currentStats?.freeKicks[0] || 0}`}
+                    awayValue={`${currentStats?.corners[1] || 0} / ${currentStats?.freeKicks[1] || 0}`}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Top Performers (MVP & Goalscorers) */}
             <div className="bg-slate-900/80 p-4 rounded-lg border border-slate-800">
               <h3 className="text-xs font-bold text-slate-300 uppercase mb-3 border-b border-slate-700 pb-2">Match Highlights</h3>
 
@@ -799,41 +827,13 @@ export const MatchView: React.FC<MatchViewProps> = ({
                 )}
               </div>
             </div>
-          )}
-        </div>
+          </div>
 
 
-        {/* RIGHT COLUMN: Log & Assistant */}
-        <div className="lg:col-span-2 flex flex-col h-full overflow-hidden space-y-4">
+          {/* RIGHT COLUMN: Log & Assistant */}
+          <div className="lg:col-span-2 flex flex-col h-full overflow-hidden space-y-4">
 
-          {/* Pre-Match: Tactics / Subs prompt */}
-          {matchState === MatchState.PRE_MATCH && (
-            <div className="bg-slate-900 p-6 rounded-lg border border-slate-800 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <h3 className="text-emerald-400 text-sm font-bold uppercase mb-4 flex items-center gap-2">
-                <CheckCircle2 size={16} /> 战术与换人准备
-              </h3>
-              <p className="text-sm text-slate-300 leading-relaxed mb-4">
-                开赛前/中场请调整阵型、指令与体能（点右上 Tactics）。可预先安排换人计划。
-              </p>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setShowTactics(true)}
-                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold py-3 rounded border border-slate-600"
-                >
-                  打开战术
-                </button>
-                <button
-                  onClick={handleStart}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded shadow-lg transition-all text-lg"
-                >
-                  Kick Off
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Live Commentary Log (Filtered) */}
-          {(matchState === MatchState.PLAYING || matchState === MatchState.FULL_TIME) && (
+            {/* Live Commentary Log (Filtered) */}
             <div
               className="flex-1 bg-slate-900/50 rounded-lg border border-slate-800 flex flex-col overflow-hidden"
             >
@@ -889,9 +889,9 @@ export const MatchView: React.FC<MatchViewProps> = ({
                   ))}
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       {matchState === MatchState.FULL_TIME && (
         <div className="p-4 border-t border-slate-800 bg-slate-900 flex justify-center">
