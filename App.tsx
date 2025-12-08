@@ -151,6 +151,31 @@ const App: React.FC = () => {
   const [bgmUnlocked, setBgmUnlocked] = useState<boolean>(false);
   const [bgmUnlockKey, setBgmUnlockKey] = useState<number>(0);
 
+  const seedInjuries = (teams: Team[], currentWeek: number) => {
+    return teams.map(team => {
+      const isManUtd = team.name.toLowerCase().includes('man') && team.name.toLowerCase().includes('u');
+      const players = team.players.map(p => {
+        if (isManUtd && p.name.toLowerCase().includes('ronaldo')) {
+          return { ...p, injured: true, injuryUntilWeek: currentWeek + 4 };
+        }
+        return p;
+      });
+      return { ...team, players };
+    });
+  };
+
+  const recoverPlayers = (teams: Team[], currentWeek: number) => {
+    return teams.map(team => ({
+      ...team,
+      players: team.players.map(p => {
+        if (p.injured && p.injuryUntilWeek && currentWeek >= p.injuryUntilWeek) {
+          return { ...p, injured: false, condition: Math.max(p.condition, 85) };
+        }
+        return p;
+      })
+    }));
+  };
+
   // Initialize game state once data is loaded after club selection
   // Initialize game state once data is loaded after club selection
   useEffect(() => {
@@ -162,11 +187,12 @@ const App: React.FC = () => {
 
       const seasonTag: '22_23' = '22_23'; // 固定首赛季 22-23
       const teamsWithPreset = initialTeams.map(t => applySeasonPreset(t, seasonTag));
+      const teamsWithInjuries = seedInjuries(teamsWithPreset.map(t => applyTeamPreset(t)), 1);
 
       const newGameState: GameState = {
         currentWeek: 1,
         userTeamId: initialUserTeam.id,
-        teams: teamsWithPreset.map(t => applyTeamPreset(t)),
+        teams: teamsWithInjuries,
         fixtures,
         currentView: 'DASHBOARD',
         activeMatchId: null,
@@ -364,10 +390,11 @@ const App: React.FC = () => {
     });
 
     const advancedWeek = Math.max(currentWeek + 1, newState.currentWeek);
+    const recoveredTeams = recoverPlayers(teamsAfterSim, advancedWeek);
     const finalState = {
       ...newState,
       fixtures: fixturesAfterSim,
-      teams: teamsAfterSim,
+      teams: recoveredTeams,
       currentWeek: advancedWeek
     };
 

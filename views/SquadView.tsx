@@ -86,7 +86,7 @@ export const SquadView: React.FC<SquadViewProps> = ({ team, currentWeek }) => {
                             {pagePlayers.map(player => {
                                 const seasonsPassed = currentWeek && currentWeek > 38 ? 1 : 0;
                                 const displayAge = (player.age || 0) + seasonsPassed;
-                                const injured = (player as any).injured || player.condition <= 60;
+                                const injured = player.injured || player.condition <= 60;
                                 const displayCA = injured ? Math.max(1, Math.round(player.ca * 0.5)) : player.ca;
                                 return (
                                     <div
@@ -98,9 +98,7 @@ export const SquadView: React.FC<SquadViewProps> = ({ team, currentWeek }) => {
                                         <div className="text-center w-full">
                                             <div className="font-bold text-slate-200 truncate max-w-[140px] mx-auto flex items-center justify-center gap-2">
                                                 <span className="truncate">{player.name}</span>
-                                                <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-700 text-slate-200 font-semibold">
-                                                    {displayAge}岁
-                                                </span>
+                                                <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-700 text-slate-200 font-semibold">{displayAge}岁</span>
                                             </div>
                                             <div className="text-[11px] text-slate-400 flex items-center justify-between gap-2 mt-1">
                                                 <span className={`${player.position === 'GK' ? 'text-yellow-400' :

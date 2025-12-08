@@ -86,7 +86,7 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
     const potentialText = getPotentialDescriptionChinese(player.pa);
     const seasonsPassed = currentWeek && currentWeek > 38 ? 1 : 0;
     const displayAge = (player.age || 0) + seasonsPassed;
-    const injured = (player as any).injured || player.condition <= 60;
+    const injured = player.injured || player.condition <= 60;
     const displayCA = injured ? Math.max(1, Math.round(player.ca * 0.5)) : player.ca;
 
     return (

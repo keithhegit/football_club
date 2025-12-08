@@ -78,6 +78,8 @@ export interface Player {
   // Dynamic Game State
   condition: number; // 0-100%
   morale: number; // 0-100%
+  injured?: boolean;
+  injuryUntilWeek?: number;
 
   // Season Statistics (for growth calculation)
   seasonStats?: {
