@@ -149,5 +149,10 @@ export function getClubLogoIdByClubId(clubId: number): string | null {
 
 // Get logo ID by club name (LEGACY - Fallback method)
 export function getClubLogoId(clubName: string): string | null {
-    return CLUB_LOGO_IDS[clubName] || null;
+    if (!clubName) return null;
+    // direct match
+    if (CLUB_LOGO_IDS[clubName]) return CLUB_LOGO_IDS[clubName];
+    // normalized match (lowercase, alnum only)
+    const key = clubName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    return CLUB_LOGO_IDS[key] || null;
 }

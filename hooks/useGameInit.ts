@@ -287,7 +287,7 @@ export function useGameInit(clubId?: number) {
                         return {
                             id: p.id.toString(),
                             name: p.name,
-                            age: 20, // Default if missing
+                            age: (p as any).Age || (p as any).age || 25, // use DB age if present, fallback 25
                             position: mapPosition(p.position),
                             nationality: 'Unknown',
                             ca: rawCa ?? 100,
