@@ -373,8 +373,6 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
               </div>
             )}
           </div>
-                      </div>
-                    </div>
       {replaceTarget && (
         <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center px-4" onClick={() => setReplaceTarget(null)}>
           <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
@@ -411,7 +409,6 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
             <PlayerProfileCard player={benchProfile} hideActions userTeam={team} currentWeek={currentWeek} />
           </div>
         </div>
-      </div>
       )}
     </div>
   );
