@@ -92,8 +92,13 @@ export const SquadView: React.FC<SquadViewProps> = ({ team, currentWeek }) => {
                                     <div
                                         key={player.id}
                                         onClick={() => setSelectedPlayer(player)}
-                                        className="bg-slate-800/80 p-3 rounded border border-slate-700 hover:border-emerald-600 cursor-pointer transition shadow-sm flex flex-col items-center gap-3"
+                                        className="relative bg-slate-800/80 p-3 rounded border border-slate-700 hover:border-emerald-600 cursor-pointer transition shadow-sm flex flex-col items-center gap-3"
                                     >
+                                        {injured && (
+                                            <span className="absolute top-2 right-2 text-[11px] px-2 py-0.5 rounded-full bg-red-600/80 text-white font-bold">
+                                                受伤
+                                            </span>
+                                        )}
                                         <PlayerAvatar playerId={player.id} alt={player.name} size="lg" className="border-emerald-500" />
                                         <div className="text-center w-full">
                                             <div className="font-bold text-slate-200 truncate max-w-[140px] mx-auto flex items-center justify-center gap-2">
@@ -111,9 +116,6 @@ export const SquadView: React.FC<SquadViewProps> = ({ team, currentWeek }) => {
                                                 </span>
                                                 <span className="text-amber-300 font-semibold">PA {player.pa}</span>
                                             </div>
-                                            {injured && (
-                                                <div className="text-[11px] text-red-400 font-bold mt-1">受伤（状态-50%）</div>
-                                            )}
                                         </div>
                                         {player.pa > 0 && (
                                             <div className="text-[11px] text-emerald-400 text-center">
@@ -153,7 +155,7 @@ export const SquadView: React.FC<SquadViewProps> = ({ team, currentWeek }) => {
             {selectedPlayer && (
                 <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={() => setSelectedPlayer(null)}>
                     <div className="w-full max-w-sm relative" onClick={e => e.stopPropagation()}>
-                        <PlayerProfileCard player={selectedPlayer} userTeam={team} />
+                        <PlayerProfileCard player={selectedPlayer} userTeam={team} currentWeek={currentWeek} />
                     </div>
                 </div>
             )}
