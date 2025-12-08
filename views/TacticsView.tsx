@@ -309,71 +309,72 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
                             {player && <div className="text-slate-200 truncate">{player.name}</div>}
                           </div>
                   </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                );
+              })}
+            </div>
+          </div>
 
-                <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-bold text-slate-200">替补球员（非首发）</div>
-                    <div className="flex gap-2 text-xs">
-                      {['ALL', 'GK', 'DEF', 'MID', 'FWD'].map(f => (
-                        <button
-                          key={f}
-                          onClick={() => setBenchFilter(f as any)}
-                          className={`px-2 py-1 rounded-full border ${benchFilter === f ? 'bg-emerald-700 text-white border-emerald-600' : 'bg-slate-800 text-slate-300 border-slate-700'}`}
-                        >
-                          {f}
-                        </button>
-                      ))}
+          <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-bold text-slate-200">替补球员（非首发）</div>
+              <div className="flex gap-2 text-xs">
+                {['ALL', 'GK', 'DEF', 'MID', 'FWD'].map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setBenchFilter(f as any)}
+                    className={`px-2 py-1 rounded-full border ${benchFilter === f ? 'bg-emerald-700 text-white border-emerald-600' : 'bg-slate-800 text-slate-300 border-slate-700'}`}
+                  >
+                    {f}
+                  </button>
+                ))}
               </div>
             </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {filteredBench.map(p => (
-                  <div
-                        key={p.id}
-                        className="relative bg-slate-800/80 border border-slate-700 rounded-lg p-3 shadow hover:border-emerald-600 transition cursor-pointer"
-                        onClick={() => setBenchProfile(p)}
-                      >
-                        <div className="flex items-center gap-3">
-                          <PlayerAvatar playerId={p.id} alt={p.name} size="md" className="border-emerald-500" />
-                          <div className="min-w-0">
-                            <div className="text-sm font-bold text-slate-100 truncate">{p.name}</div>
-                            <div className="text-[11px] text-slate-400 flex gap-2">
-                              <span className={`${p.position.includes('GK') ? 'text-yellow-400' : p.position.includes('D') ? 'text-blue-400' : p.position.includes('M') ? 'text-emerald-400' : 'text-red-400'} font-bold`}>
-                                {p.position}
-                              </span>
-                              <span className="text-slate-500">CA {p.ca}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (replaceTarget) {
-                              handlePlayerDrop(String(p.id), replaceTarget.positionId);
-                              setReplaceTarget(null);
-                            } else {
-                              setReplaceTarget({ positionId: currentFormation.positions[0].id, playerName: undefined });
-                            }
-                          }}
-                          className={`mt-2 w-full text-xs font-bold py-1 rounded ${replaceTarget ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}
-                        >
-                          {replaceTarget ? '选择替换' : '先点场上位置再替换'}
-                        </button>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {filteredBench.map(p => (
+                <div
+                  key={p.id}
+                  className="relative bg-slate-800/80 border border-slate-700 rounded-lg p-3 shadow hover:border-emerald-600 transition cursor-pointer"
+                  onClick={() => setBenchProfile(p)}
+                >
+                  <div className="flex items-center gap-3">
+                    <PlayerAvatar playerId={p.id} alt={p.name} size="md" className="border-emerald-500" />
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-slate-100 truncate">{p.name}</div>
+                      <div className="text-[11px] text-slate-400 flex gap-2">
+                        <span className={`${p.position.includes('GK') ? 'text-yellow-400' : p.position.includes('D') ? 'text-blue-400' : p.position.includes('M') ? 'text-emerald-400' : 'text-red-400'} font-bold`}>
+                          {p.position}
+                        </span>
+                        <span className="text-slate-500">CA {p.ca}</span>
                       </div>
-                    ))}
-                    {filteredBench.length === 0 && (
-                      <div className="col-span-full text-center text-slate-500 text-xs py-4">无可用替补</div>
-                    )}
+                    </div>
                   </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (replaceTarget) {
+                        handlePlayerDrop(String(p.id), replaceTarget.positionId);
+                        setReplaceTarget(null);
+                      } else {
+                        setReplaceTarget({ positionId: currentFormation.positions[0].id, playerName: undefined });
+                      }
+                    }}
+                    className={`mt-2 w-full text-xs font-bold py-1 rounded ${replaceTarget ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}
+                  >
+                    {replaceTarget ? '选择替换' : '先点场上位置再替换'}
+                  </button>
                 </div>
-              </div>
-            )}
+              ))}
+              {filteredBench.length === 0 && (
+                <div className="col-span-full text-center text-slate-500 text-xs py-4">无可用替补</div>
+              )}
+            </div>
           </div>
-      {replaceTarget && (
+        </div>
+      )}
+    </div>
+
+    {replaceTarget && (
         <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center px-4" onClick={() => setReplaceTarget(null)}>
           <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
             <div className="text-sm font-bold text-slate-200 mb-2">选择替换球员</div>
