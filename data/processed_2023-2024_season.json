@@ -1,0 +1,2809 @@
+{
+  "season": "2023-2024",
+  "data": {
+    "PremierLeague": [
+      {
+        "rank": 1,
+        "team": "Man City",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "55057659",
+              "name": "Ederson",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "28009441",
+              "name": "Kyle Walker",
+              "position": "D/WB (R)"
+            },
+            {
+              "uid": "55070299",
+              "name": "Rúben Dias",
+              "position": "D (C)"
+            },
+            {
+              "uid": "98031331",
+              "name": "Manuel Akanji",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Gvardiol",
+              "position": "Unknown"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "67217524",
+              "name": "Rodri",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "24016925",
+              "name": "Mateo Kovačić",
+              "position": "DM, M/AM (C)"
+            },
+            {
+              "uid": "55041632",
+              "name": "Bernardo Silva",
+              "position": "M/AM (RC)"
+            },
+            {
+              "uid": "28108494",
+              "name": "Phil Foden",
+              "position": "AM (RLC)"
+            },
+            {
+              "uid": "52101506",
+              "name": "Val Adedokun",
+              "position": "D/WB/M/AM (L)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "29179241",
+              "name": "Erling Haaland",
+              "position": "ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 2,
+        "team": "Arsenal",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": [
+            {
+              "uid": "29111433",
+              "name": "David Raya",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "29141472",
+              "name": "Benjamin White",
+              "position": "D (RC)"
+            },
+            {
+              "uid": "49039004",
+              "name": "William Saliba",
+              "position": "D (C)"
+            },
+            {
+              "uid": "19220266",
+              "name": "Gabriel Jesus",
+              "position": "AM (RL), ST (C)"
+            },
+            {
+              "uid": "45095490",
+              "name": "Takehiro Tomiyasu",
+              "position": "D (RC), WB (R)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "53095137",
+              "name": "Martin Ødegaard",
+              "position": "M/AM (C)"
+            },
+            {
+              "uid": "28106491",
+              "name": "Declan Rice",
+              "position": "D (C), DM, M (C)"
+            },
+            {
+              "uid": "91151081",
+              "name": "Kai Havertz",
+              "position": "AM (C), ST (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "28122642",
+              "name": "Bukayo Saka",
+              "position": "AM (RL)"
+            },
+            {
+              "uid": "19220266",
+              "name": "Gabriel Jesus",
+              "position": "AM (RL), ST (C)"
+            },
+            {
+              "uid": "18054004",
+              "name": "Leandro Trossard",
+              "position": "WB/M (L), AM (LC), ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 3,
+        "team": "Liverpool",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": [
+            {
+              "uid": "19058734",
+              "name": "Alisson",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "28104124",
+              "name": "Trent Alexander-Arnold",
+              "position": "D/WB (R), M (C)"
+            },
+            {
+              "uid": "48037822",
+              "name": "Ibrahima Konaté",
+              "position": "D (C)"
+            },
+            {
+              "uid": "37024025",
+              "name": "Virgil van Dijk",
+              "position": "D (C)"
+            },
+            {
+              "uid": "61043456",
+              "name": "Andrew Robertson",
+              "position": "D/WB (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Szoboszlai",
+              "position": "Unknown"
+            },
+            {
+              "uid": "2000049217",
+              "name": "Melkamu Frauendorf",
+              "position": "WB (R), AM (RLC)"
+            },
+            {
+              "uid": "14157184",
+              "name": "Alexis Mac Allister",
+              "position": "DM, M/AM (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "98028755",
+              "name": "Mohamed Salah",
+              "position": "AM (RL), ST (C)"
+            },
+            {
+              "uid": "78090138",
+              "name": "Darwin Núñez",
+              "position": "ST (C)"
+            },
+            {
+              "uid": "76049803",
+              "name": "Luis Díaz",
+              "position": "AM (L)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 4,
+        "team": "Aston Villa",
+        "formation": "4-4-1-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "14167329",
+              "name": "Lisandro Martínez",
+              "position": "D (LC), DM"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "29141827",
+              "name": "Ezri Konsa",
+              "position": "D (C)"
+            },
+            {
+              "uid": "19188567",
+              "name": "Diego Carlos",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Pau",
+              "position": "Unknown"
+            },
+            {
+              "uid": "85033423",
+              "name": "Lucas Digne",
+              "position": "D/WB (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "18083491",
+              "name": "Leon Bailey",
+              "position": "M/AM (RL)"
+            },
+            {
+              "uid": "19302456",
+              "name": "Douglas Luiz",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "18077264",
+              "name": "Youri Tielemans",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "61043070",
+              "name": "John McGinn",
+              "position": "DM, M/AM (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Diaby",
+              "position": "Unknown"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "29110623",
+              "name": "Ollie Watkins",
+              "position": "AM (RL), ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 5,
+        "team": "Tottenham",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Vicario",
+              "position": "Unknown"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Porro",
+              "position": "Unknown"
+            },
+            {
+              "uid": "14130029",
+              "name": "Cristian Romero",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Van de Ven",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Udogie",
+              "position": "Unknown"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "13174979",
+              "name": "Yves Bissouma",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "12080051",
+              "name": "Pape Matar Sarr",
+              "position": "M (C)"
+            },
+            {
+              "uid": "29189400",
+              "name": "Brennan Johnson",
+              "position": "AM (RC), ST (C)"
+            },
+            {
+              "uid": "28093567",
+              "name": "James Maddison",
+              "position": "M (LC), AM (RLC)"
+            },
+            {
+              "uid": "92020288",
+              "name": "Heung-Min Son",
+              "position": "M/AM (L), ST (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "19265858",
+              "name": "Richarlison",
+              "position": "AM (RL), ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 6,
+        "team": "Chelsea",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Petrovic",
+              "position": "Unknown"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "14023373",
+              "name": "Augusto Solari",
+              "position": "WB/M/AM (R)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Disasi",
+              "position": "Unknown"
+            },
+            {
+              "uid": "8833628",
+              "name": "Thiago Silva",
+              "position": "D (C)"
+            },
+            {
+              "uid": "67215284",
+              "name": "Marc Cucurella",
+              "position": "D (LC), WB/M (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "86078360",
+              "name": "Moisés Caicedo",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "28108036",
+              "name": "Conor Gallagher",
+              "position": "M/AM (C)"
+            },
+            {
+              "uid": "28120042",
+              "name": "Cole Palmer",
+              "position": "M (C), AM (RLC)"
+            },
+            {
+              "uid": "75015199",
+              "name": "Enzo Roco",
+              "position": "D (C)"
+            },
+            {
+              "uid": "28054109",
+              "name": "Raheem Sterling",
+              "position": "M/AM (RL)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "12087972",
+              "name": "Nicolas Jackson",
+              "position": "AM (RLC), ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 7,
+        "team": "Newcastle",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": [
+            {
+              "uid": "63002306",
+              "name": "Martin Dúbravka",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "28018613",
+              "name": "Kieran Trippier",
+              "position": "D/WB (R)"
+            },
+            {
+              "uid": "98007212",
+              "name": "Fabian Schär",
+              "position": "D (C)"
+            },
+            {
+              "uid": "29061164",
+              "name": "Dan Burn",
+              "position": "D (LC)"
+            },
+            {
+              "uid": "28106342",
+              "name": "Kiernan Dewsbury-Hall",
+              "position": "DM, M/AM (C)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "28100360",
+              "name": "Sean Longstaff",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "19297055",
+              "name": "Bruno Guimarães",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "28127254",
+              "name": "Elliot Anderson",
+              "position": "M (C), AM (RLC)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "28116386",
+              "name": "Anthony Gordon",
+              "position": "AM (RLC), ST (C)"
+            },
+            {
+              "uid": "93070286",
+              "name": "Alexander Isak",
+              "position": "ST (C)"
+            },
+            {
+              "uid": "28100207",
+              "name": "Harvey Barnes",
+              "position": "M (L), AM (RLC)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 8,
+        "team": "Man UFC",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "91207274",
+              "name": "Amadou Onana",
+              "position": "D (C), DM, M (C)"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "83105845",
+              "name": "Diogo Dalot",
+              "position": "D (RL), WB/M (R)"
+            },
+            {
+              "uid": "85075627",
+              "name": "Raphaël Varane",
+              "position": "D (C)"
+            },
+            {
+              "uid": "28049740",
+              "name": "Harry Maguire",
+              "position": "D (C)"
+            },
+            {
+              "uid": "28100123",
+              "name": "Aaron Wan-Bissaka",
+              "position": "D (R)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "19061518",
+              "name": "Casemiro",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "2000123586",
+              "name": "Kobbie Mainoo",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "2000035036",
+              "name": "Alejandro Garnacho",
+              "position": "AM (RL), ST (C)"
+            },
+            {
+              "uid": "43124203",
+              "name": "Bruno Fernandes",
+              "position": "M/AM (C)"
+            },
+            {
+              "uid": "28100266",
+              "name": "Marcus Rashford",
+              "position": "AM (L), ST (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Hojlund",
+              "position": "Unknown"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 9,
+        "team": "West Ham",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "85027976",
+              "name": "Alphonse Areola",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "25038517",
+              "name": "Vladimír Coufal",
+              "position": "D/WB (R)"
+            },
+            {
+              "uid": "85075595",
+              "name": "Kurt Zouma",
+              "position": "D (RC)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Mavropanos",
+              "position": "Unknown"
+            },
+            {
+              "uid": "19158043",
+              "name": "Emerson",
+              "position": "D (RL), WB (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "14183207",
+              "name": "Julián Álvarez",
+              "position": "AM (RLC), ST (C)"
+            },
+            {
+              "uid": "25041687",
+              "name": "Tomáš Souček",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Kudus",
+              "position": "Unknown"
+            },
+            {
+              "uid": "29076100",
+              "name": "James Ward-Prowse",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "19226741",
+              "name": "Lucas Paquetá",
+              "position": "M (C), AM (RC)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "29125842",
+              "name": "Jarrod Bowen",
+              "position": "M (RL), AM (RLC)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 10,
+        "team": "Crystal Palace",
+        "formation": "3-4-2-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "28005568",
+              "name": "Jordan Henderson",
+              "position": "DM, M (C)"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "72051563",
+              "name": "Chris Richards",
+              "position": "D (RC)"
+            },
+            {
+              "uid": "27069975",
+              "name": "Joachim Andersen",
+              "position": "D (C)"
+            },
+            {
+              "uid": "76038475",
+              "name": "Jefferson Lerma",
+              "position": "DM, M (C)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "67246383",
+              "name": "Aihen Muñoz",
+              "position": "D/WB (L)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Wharton",
+              "position": "Unknown"
+            },
+            {
+              "uid": "29086005",
+              "name": "Will Hughes",
+              "position": "DM, M (RC)"
+            },
+            {
+              "uid": "28111507",
+              "name": "Tyrick Mitchell",
+              "position": "D/WB (L)"
+            },
+            {
+              "uid": "29221846",
+              "name": "Michael Olise",
+              "position": "AM (RC)"
+            },
+            {
+              "uid": "29156522",
+              "name": "Ebere Eze",
+              "position": "M (C), AM (LC)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "49034219",
+              "name": "Jean-Philippe Mateta",
+              "position": "ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 11,
+        "team": "Brighton",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Verbruggen",
+              "position": "Unknown"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "37024733",
+              "name": "Joël Veltman",
+              "position": "D (RC)"
+            },
+            {
+              "uid": "37076335",
+              "name": "Jan Paul van Hecke",
+              "position": "D (C)"
+            },
+            {
+              "uid": "29036189",
+              "name": "Lewis Dunk",
+              "position": "D (C)"
+            },
+            {
+              "uid": "86045976",
+              "name": "Pervis Estupiñán",
+              "position": "D/WB/M (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "92017376",
+              "name": "Pascal Groß",
+              "position": "M (C), AM (RLC)"
+            },
+            {
+              "uid": "61078265",
+              "name": "Billy Gilmour",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Adingra",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67122014",
+              "name": "Pedro Bigas",
+              "position": "D (LC), DM"
+            },
+            {
+              "uid": "45111891",
+              "name": "Kaoru Mitoma",
+              "position": "M/AM (L)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "28010491",
+              "name": "Danny Welbeck",
+              "position": "AM (RL), ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 12,
+        "team": "Bournemouth",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "19030933",
+              "name": "Neto",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "28011401",
+              "name": "Adam Smith",
+              "position": "D/WB (RL)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Zabarnyi",
+              "position": "Unknown"
+            },
+            {
+              "uid": "14080605",
+              "name": "Marcos Senesi",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Kerkez",
+              "position": "Unknown"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "61042900",
+              "name": "Ryan Christie",
+              "position": "M/AM (RLC)"
+            },
+            {
+              "uid": "29127852",
+              "name": "Lewis Cook",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Semenyo",
+              "position": "Unknown"
+            },
+            {
+              "uid": "37055841",
+              "name": "Justin Kluivert",
+              "position": "M/AM (RL)"
+            },
+            {
+              "uid": "29162667",
+              "name": "Marcus Tavernier",
+              "position": "M (C), AM (RLC)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "29125191",
+              "name": "Dominic Solanke",
+              "position": "ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 13,
+        "team": "Fulham",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "92012109",
+              "name": "Bernd Leno",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "18074558",
+              "name": "Timothy Castagne",
+              "position": "D/WB/M (RL)"
+            },
+            {
+              "uid": "28100239",
+              "name": "Tosin Adarabioyo",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Bassey",
+              "position": "Unknown"
+            },
+            {
+              "uid": "29125265",
+              "name": "Antonee Robinson",
+              "position": "D/WB (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "55070285",
+              "name": "João Palhinha",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Lukic",
+              "position": "Unknown"
+            },
+            {
+              "uid": "28084930",
+              "name": "Alex Iwobi",
+              "position": "M/AM (C)"
+            },
+            {
+              "uid": "28085588",
+              "name": "Andreas Pereira",
+              "position": "M (C), AM (RLC)"
+            },
+            {
+              "uid": "8832889",
+              "name": "Willian",
+              "position": "M (RL), AM (RLC)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Muniz",
+              "position": "Unknown"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 14,
+        "team": "Wolves",
+        "formation": "3-4-2-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "55038655",
+              "name": "José Sá",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "29142052",
+              "name": "Max Kilman",
+              "position": "D (C)"
+            },
+            {
+              "uid": "90000708",
+              "name": "Craig Dawson",
+              "position": "D (C)"
+            },
+            {
+              "uid": "83228401",
+              "name": "Toti",
+              "position": "D (LC)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "55061470",
+              "name": "Nélson Semedo",
+              "position": "D/WB (R)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Gomes",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Lemina",
+              "position": "Unknown"
+            },
+            {
+              "uid": "49047581",
+              "name": "Rayan Aït-Nouri",
+              "position": "D/WB (L)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Sarabia",
+              "position": "Unknown"
+            },
+            {
+              "uid": "19334410",
+              "name": "Matheus Cunha",
+              "position": "AM (RLC), ST (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "66014588",
+              "name": "Hwang Hee-Chan",
+              "position": "M/AM (RL), ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 15,
+        "team": "Everton",
+        "formation": "4-4-1-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "28054565",
+              "name": "Jordan Pickford",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "29142372",
+              "name": "Ben Godfrey",
+              "position": "D (RC), DM"
+            },
+            {
+              "uid": "29055569",
+              "name": "James Tarkowski",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Branthwaite",
+              "position": "Unknown"
+            },
+            {
+              "uid": "71104595",
+              "name": "Vitaliy Mykolenko",
+              "position": "D/WB (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "72045910",
+              "name": "Jack Harrison",
+              "position": "M/AM (RL)"
+            },
+            {
+              "uid": "85032335",
+              "name": "Idrissa Gueye",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "28115831",
+              "name": "James Garner",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "28110488",
+              "name": "Dwight McNeil",
+              "position": "M/AM (RL), ST (C)"
+            },
+            {
+              "uid": "85027988",
+              "name": "Abdoulaye Doucouré",
+              "position": "DM, M/AM (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "29123128",
+              "name": "Dominic Calvert-Lewin",
+              "position": "ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 16,
+        "team": "Brentford",
+        "formation": "3-5-2",
+        "starters": {
+          "GK": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Flekken",
+              "position": "Unknown"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "28117372",
+              "name": "Nathan Collins",
+              "position": "D (C)"
+            },
+            {
+              "uid": "53110135",
+              "name": "Kristoffer Ajer",
+              "position": "D (C), DM, M (C)"
+            },
+            {
+              "uid": "89040516",
+              "name": "Ethan Pinnock",
+              "position": "D (C)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "27122563",
+              "name": "Mads Roerslev",
+              "position": "D/WB (R)"
+            },
+            {
+              "uid": "27088231",
+              "name": "Mathias Jensen",
+              "position": "M (C)"
+            },
+            {
+              "uid": "27039017",
+              "name": "Christian Nørgaard",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "91143519",
+              "name": "Vitaly Janelt",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "67211900",
+              "name": "Sergio Reguilón",
+              "position": "D/WB (L)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "29116247",
+              "name": "Ivan Toney",
+              "position": "ST (C)"
+            },
+            {
+              "uid": "85140175",
+              "name": "Yoane Wissa",
+              "position": "M/AM (L), ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 17,
+        "team": "Nottm Forest",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Sels",
+              "position": "Unknown"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "28115792",
+              "name": "Neco Williams",
+              "position": "D/WB/AM (R)"
+            },
+            {
+              "uid": "85009974",
+              "name": "Willy Boly",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Murillo",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Aina",
+              "position": "Unknown"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "29136230",
+              "name": "Ryan Yates",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Danilo",
+              "position": "Unknown"
+            },
+            {
+              "uid": "28121568",
+              "name": "Anthony Elanga",
+              "position": "M/AM (RL)"
+            },
+            {
+              "uid": "29175220",
+              "name": "Morgan Gibbs-White",
+              "position": "M (C), AM (RC)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Hudson-Odoi",
+              "position": "Unknown"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "5108293",
+              "name": "Chris Wood",
+              "position": "ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 18,
+        "team": "Luton",
+        "formation": "3-4-2-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Kaminski",
+              "position": "Unknown"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Burke",
+              "position": "Unknown"
+            },
+            {
+              "uid": "28121567",
+              "name": "Teden Mengi",
+              "position": "D (C)"
+            },
+            {
+              "uid": "28066082",
+              "name": "Héctor Bellerín",
+              "position": "D/WB (R)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Kabore",
+              "position": "Unknown"
+            },
+            {
+              "uid": "18097160",
+              "name": "Albert Sambi Lokonga",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Barkley",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Doughty",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Chong",
+              "position": "Unknown"
+            },
+            {
+              "uid": "2000048057",
+              "name": "Jack Wells-Morrison",
+              "position": "DM, M (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Adebayo",
+              "position": "Unknown"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 19,
+        "team": "Burnley",
+        "formation": "4-4-2",
+        "starters": {
+          "GK": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Trafford",
+              "position": "Unknown"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Assignon",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "O'Shea",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Esteve",
+              "position": "Unknown"
+            },
+            {
+              "uid": "5101569",
+              "name": "Lyle Taylor",
+              "position": "AM (R), ST (C)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Odobert",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Berge",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Brownhill",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Bruun Larsen",
+              "position": "Unknown"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "49037900",
+              "name": "Wesley Fofana",
+              "position": "D (C)"
+            },
+            {
+              "uid": "28116486",
+              "name": "Brooklyn Lyons-Foster",
+              "position": "D (RLC), WB (L)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 20,
+        "team": "Sheff Utd",
+        "formation": "3-5-2",
+        "starters": {
+          "GK": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Foderingham",
+              "position": "Unknown"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Ahmedhodzic",
+              "position": "Unknown"
+            },
+            {
+              "uid": "29125265",
+              "name": "Antonee Robinson",
+              "position": "D/WB (L)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Trusty",
+              "position": "Unknown"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "2000225028",
+              "name": "Ma'kel Bogle-Campbell",
+              "position": "M/AM (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Hamer",
+              "position": "Unknown"
+            },
+            {
+              "uid": "19354886",
+              "name": "Vinicius Souza",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Arblaster",
+              "position": "Unknown"
+            },
+            {
+              "uid": "2000108361",
+              "name": "Niall Osborne",
+              "position": "D/WB (R)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "McBurnie",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Brereton Diaz",
+              "position": "Unknown"
+            }
+          ]
+        }
+      }
+    ],
+    "LaLiga": [
+      {
+        "rank": 1,
+        "team": "R. Madrid",
+        "formation": "4-3-1-2",
+        "starters": {
+          "GK": [
+            {
+              "uid": "71099053",
+              "name": "Andriy Lunin",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "67139735",
+              "name": "Dani Carvajal",
+              "position": "D/WB (R)"
+            },
+            {
+              "uid": "92023410",
+              "name": "Antonio Rüdiger",
+              "position": "D (C)"
+            },
+            {
+              "uid": "67030696",
+              "name": "Nacho",
+              "position": "D (RLC)"
+            },
+            {
+              "uid": "85133751",
+              "name": "Ferland Mendy",
+              "position": "D/WB (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "78074594",
+              "name": "Federico Valverde",
+              "position": "M (RC), AM (R)"
+            },
+            {
+              "uid": "48042326",
+              "name": "Aurélien Tchouameni",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "156772",
+              "name": "Toni Kroos",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Bellingham",
+              "position": "Unknown"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "19306929",
+              "name": "Rodrygo",
+              "position": "AM (RL), ST (C)"
+            },
+            {
+              "uid": "19302146",
+              "name": "Vinícius Júnior",
+              "position": "AM (RL)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 2,
+        "team": "Barcelona",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": [
+            {
+              "uid": "35017428",
+              "name": "Marc-André ter Stegen",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "48036304",
+              "name": "Jules Koundé",
+              "position": "D (RC), WB (R)"
+            },
+            {
+              "uid": "78085068",
+              "name": "Ronald Araujo",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Cubarsi",
+              "position": "Unknown"
+            },
+            {
+              "uid": "55041623",
+              "name": "João Cancelo",
+              "position": "D/WB (RL), M (R)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "91003875",
+              "name": "İlkay Gündogan",
+              "position": "DM, M/AM (C)"
+            },
+            {
+              "uid": "27066387",
+              "name": "Andreas Christensen",
+              "position": "D (C), DM, M (C)"
+            },
+            {
+              "uid": "37047745",
+              "name": "Frenkie de Jong",
+              "position": "D (C), DM, M (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Yamal",
+              "position": "Unknown"
+            },
+            {
+              "uid": "719601",
+              "name": "Robert Lewandowski",
+              "position": "ST (C)"
+            },
+            {
+              "uid": "19242277",
+              "name": "Raphinha",
+              "position": "M (R), AM (RL)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 3,
+        "team": "Girona",
+        "formation": "4-2-3-1/3-4-3",
+        "starters": {
+          "GK": [
+            {
+              "uid": "67136579",
+              "name": "Paulo Gazzaniga",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "19383257",
+              "name": "Yan Couto",
+              "position": "D/WB (R)"
+            },
+            {
+              "uid": "28116427",
+              "name": "Eric García",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Blind",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67276071",
+              "name": "Miguel Gutiérrez",
+              "position": "D/WB (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "86047272",
+              "name": "Yangel Herrera",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "67190888",
+              "name": "Aleix García",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Tsygankov",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67258832",
+              "name": "Iván Martín",
+              "position": "M (C), AM (RLC)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Savio",
+              "position": "Unknown"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Dovbyk",
+              "position": "Unknown"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 4,
+        "team": "A. Madrid",
+        "formation": "5-3-2",
+        "starters": {
+          "GK": [
+            {
+              "uid": "64016316",
+              "name": "Jan Oblak",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "14129337",
+              "name": "Nahuel Molina",
+              "position": "D/WB/M (R)"
+            },
+            {
+              "uid": "8169215",
+              "name": "Axel Witsel",
+              "position": "D (C), DM, M (C)"
+            },
+            {
+              "uid": "78060464",
+              "name": "José Giménez",
+              "position": "D (C)"
+            },
+            {
+              "uid": "67196188",
+              "name": "Mario Hermoso",
+              "position": "D (LC)"
+            },
+            {
+              "uid": "19320258",
+              "name": "Samuel Lino",
+              "position": "AM (RL), ST (C)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "14048343",
+              "name": "Rodrigo De Paul",
+              "position": "M (C), AM (RLC)"
+            },
+            {
+              "uid": "67047092",
+              "name": "Koke",
+              "position": "DM, M (RLC)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Barrios",
+              "position": "Unknown"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "67086656",
+              "name": "Antoine Griezmann",
+              "position": "AM (RLC), ST (C)"
+            },
+            {
+              "uid": "67117360",
+              "name": "Álvaro Morata",
+              "position": "ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 5,
+        "team": "A. Bilbao",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "67200923",
+              "name": "Unai Simón",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "67065930",
+              "name": "Óscar De Marcos",
+              "position": "D/WB/M/AM (R)"
+            },
+            {
+              "uid": "67256618",
+              "name": "Dani Vivian",
+              "position": "D (C), DM"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Paredes",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67035000",
+              "name": "Yuri",
+              "position": "D/WB (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Prados",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67088157",
+              "name": "Íñigo Ruiz de Galarreta",
+              "position": "M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "I.Williams",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67260204",
+              "name": "Oihan Sancet",
+              "position": "M/AM (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "N.Williams",
+              "position": "Unknown"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "67200930",
+              "name": "Gorka Guruzeta",
+              "position": "AM (RL), ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 6,
+        "team": "Real San Sebastián",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": [
+            {
+              "uid": "67183918",
+              "name": "Álex Remiro",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "67174729",
+              "name": "Adama Traoré",
+              "position": "M/AM (RL)"
+            },
+            {
+              "uid": "67215898",
+              "name": "Igor Zubeldia",
+              "position": "D (C), DM"
+            },
+            {
+              "uid": "48037162",
+              "name": "Robin Le Normand",
+              "position": "D (C)"
+            },
+            {
+              "uid": "67243881",
+              "name": "Javi Galán",
+              "position": "D/WB (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "67199158",
+              "name": "Brais Méndez",
+              "position": "M (C), AM (RC)"
+            },
+            {
+              "uid": "67246385",
+              "name": "Martín Zubimendi",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "67211760",
+              "name": "Mikel Merino",
+              "position": "M (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "45104608",
+              "name": "Takefusa Kubo",
+              "position": "M (R), AM (RC), ST (C)"
+            },
+            {
+              "uid": "67220143",
+              "name": "Mikel Oyarzábal",
+              "position": "AM (RLC), ST (C)"
+            },
+            {
+              "uid": "67276482",
+              "name": "Ander Barrenetxea",
+              "position": "M/AM (RL)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 7,
+        "team": "Real Hispalis",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "55067163",
+              "name": "Rui Silva",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "67220941",
+              "name": "Aitor Ruibal",
+              "position": "D/M (R), AM (RL), ST (C)"
+            },
+            {
+              "uid": "14023371",
+              "name": "Germán Pezzella",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Chadi Riad",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67258411",
+              "name": "Juan Miranda",
+              "position": "D/WB/M (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "14043255",
+              "name": "Guido Rodríguez",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "67211094",
+              "name": "Marc Roca",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "67214613",
+              "name": "Pablo Fornals",
+              "position": "M (C), AM (LC)"
+            },
+            {
+              "uid": "67103537",
+              "name": "Isco",
+              "position": "M/AM (RLC)"
+            },
+            {
+              "uid": "67172040",
+              "name": "Ayoze Pérez",
+              "position": "M (R), AM (RC), ST (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "19081798",
+              "name": "Willian José",
+              "position": "AM (C), ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 8,
+        "team": "Villarreal",
+        "formation": "4-4-2",
+        "starters": {
+          "GK": [
+            {
+              "uid": "27000592",
+              "name": "Mathias Jørgensen",
+              "position": "D (C)"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "67063051",
+              "name": "Kiko Femenía",
+              "position": "D/WB/M (R)"
+            },
+            {
+              "uid": "7452450",
+              "name": "Raúl Albiol",
+              "position": "D (C)"
+            },
+            {
+              "uid": "76065062",
+              "name": "Yerson Mosquera",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "A.Moreno",
+              "position": "Unknown"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "67174729",
+              "name": "Adama Traoré",
+              "position": "M/AM (RL)"
+            },
+            {
+              "uid": "67224142",
+              "name": "Santi Comesaña",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "67030707",
+              "name": "Dani Parejo",
+              "position": "DM, M/AM (C)"
+            },
+            {
+              "uid": "67287665",
+              "name": "Álex Baena",
+              "position": "AM (RLC)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "67115823",
+              "name": "Gerard Moreno",
+              "position": "AM (R), ST (C)"
+            },
+            {
+              "uid": "53063430",
+              "name": "Alexander Sørloth",
+              "position": "ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 9,
+        "team": "Valencia",
+        "formation": "4-4-2",
+        "starters": {
+          "GK": [
+            {
+              "uid": "59138294",
+              "name": "Giorgi Mamardashvili",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "85045661",
+              "name": "Dimitri Foulquier",
+              "position": "D (RL), WB (R)"
+            },
+            {
+              "uid": "2000030816",
+              "name": "Christian Mosquera",
+              "position": "D (RC)"
+            },
+            {
+              "uid": "70118933",
+              "name": "Cenk Özkacar",
+              "position": "D (C)"
+            },
+            {
+              "uid": "67178177",
+              "name": "José Gayà",
+              "position": "D/WB/M/AM (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "813076",
+              "name": "Lucas Pérez",
+              "position": "AM (RLC), ST (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Pepelu",
+              "position": "Unknown"
+            },
+            {
+              "uid": "2000034344",
+              "name": "Javi Guerra",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "6701938",
+              "name": "Diego López",
+              "position": "GK"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "67274349",
+              "name": "Hugo Duro",
+              "position": "AM (LC), ST (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Yaremchuk",
+              "position": "Unknown"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 10,
+        "team": "Alaves",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Sivera",
+              "position": "Unknown"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "67202652",
+              "name": "Andoni Gorosabel",
+              "position": "D/WB (R)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Abqar",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Rafa Marin",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Javi Lopez",
+              "position": "Unknown"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "67256515",
+              "name": "Antonio Blanco",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "67246381",
+              "name": "Ander Guevara",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "1510602",
+              "name": "Vicente Guaita",
+              "position": "GK"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Guridi",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Rioja",
+              "position": "Unknown"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Omorodion",
+              "position": "Unknown"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 11,
+        "team": "Atlético Pamplona",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": [
+            {
+              "uid": "67181753",
+              "name": "Sergio Herrera",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Areso",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67210735",
+              "name": "Alejandro Catena",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Herrando",
+              "position": "Unknown"
+            },
+            {
+              "uid": "43077014",
+              "name": "Juan Cruz",
+              "position": "D (LC), WB/M (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "67267210",
+              "name": "Jon Moncayola",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "67246383",
+              "name": "Aihen Muñoz",
+              "position": "D/WB (L)"
+            },
+            {
+              "uid": "67142544",
+              "name": "Moi Gómez",
+              "position": "M (C), AM (LC)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "67155012",
+              "name": "Rubén García",
+              "position": "M/AM (RLC)"
+            },
+            {
+              "uid": "24003746",
+              "name": "Ante Budimir",
+              "position": "ST (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Arnaiz",
+              "position": "Unknown"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 12,
+        "team": "Getafe",
+        "formation": "4-4-2",
+        "starters": {
+          "GK": [
+            {
+              "uid": "67011248",
+              "name": "David Soria",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "67235978",
+              "name": "Juan Iglesias",
+              "position": "D/WB (R)"
+            },
+            {
+              "uid": "211232",
+              "name": "Djéné Dakonam",
+              "position": "D (RC), WB (R), DM"
+            },
+            {
+              "uid": "79027217",
+              "name": "Omar Alderete",
+              "position": "D (C)"
+            },
+            {
+              "uid": "14011214",
+              "name": "Federico Fernández",
+              "position": "D (C)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "28128016",
+              "name": "Ben Greenwood",
+              "position": "D/WB (L)"
+            },
+            {
+              "uid": "62097340",
+              "name": "Nemanja Maksimović",
+              "position": "DM, M (RC)"
+            },
+            {
+              "uid": "67191561",
+              "name": "Luis Milla",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "67121201",
+              "name": "Jaime Mata",
+              "position": "ST (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "67211912",
+              "name": "Borja Mayoral",
+              "position": "ST (C)"
+            },
+            {
+              "uid": "67293621",
+              "name": "Juan Miguel Latasa",
+              "position": "ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 13,
+        "team": "Vigo",
+        "formation": "3-4-3",
+        "starters": {
+          "GK": [
+            {
+              "uid": "1510602",
+              "name": "Vicente Guaita",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "67245413",
+              "name": "Óscar Mingueza",
+              "position": "D (RC)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Starfelt",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67279603",
+              "name": "Carlos Domínguez",
+              "position": "D (C)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "67141802",
+              "name": "Javi Manquillo",
+              "position": "D (RL), WB (R)"
+            },
+            {
+              "uid": "67232115",
+              "name": "Fran Beltrán",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "2000052526",
+              "name": "Hugo Sotelo",
+              "position": "M (RC), AM (R)"
+            },
+            {
+              "uid": "2000052525",
+              "name": "Hugo Álvarez",
+              "position": "M/AM (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "67010455",
+              "name": "Iago Aspas",
+              "position": "AM (RC), ST (C)"
+            },
+            {
+              "uid": "53143395",
+              "name": "Jørgen Strand Larsen",
+              "position": "ST (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Bamba",
+              "position": "Unknown"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 14,
+        "team": "Sevilla",
+        "formation": "5-3-2",
+        "starters": {
+          "GK": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Nyland",
+              "position": "Unknown"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "7456721",
+              "name": "Jesús Navas",
+              "position": "D/WB/M/AM (R)"
+            },
+            {
+              "uid": "49039789",
+              "name": "Loïc Badé",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Ramos",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Salas",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Ocampos",
+              "position": "Unknown"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "48044576",
+              "name": "Boubakary Soumaré",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Agoume",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67085965",
+              "name": "Suso",
+              "position": "M (R), AM (RC)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "14130029",
+              "name": "Cristian Romero",
+              "position": "D (C)"
+            },
+            {
+              "uid": "67229630",
+              "name": "Youssef En-Nesyri",
+              "position": "AM (L), ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 15,
+        "team": "Mallorca",
+        "formation": "5-4-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "62076152",
+              "name": "Predrag Rajković",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "78071163",
+              "name": "Giovanni González",
+              "position": "D (RL), WB/M (R)"
+            },
+            {
+              "uid": "43143925",
+              "name": "Martin Valjent",
+              "position": "D (RC)"
+            },
+            {
+              "uid": "67148381",
+              "name": "Antonio Raíllo",
+              "position": "D (C), DM"
+            },
+            {
+              "uid": "62055271",
+              "name": "Matija Nastasić",
+              "position": "D (C)"
+            },
+            {
+              "uid": "67203459",
+              "name": "Toni Lato",
+              "position": "D/WB (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "D.Rodriguez",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Samu Costa",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67153634",
+              "name": "Omar Mascarell",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "67118372",
+              "name": "Sergi Darder",
+              "position": "DM, M (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "11022221",
+              "name": "Vedat Muriqi",
+              "position": "ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 16,
+        "team": "Las Palmas",
+        "formation": "4-5-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "2000138107",
+              "name": "Armand Vallés",
+              "position": "AM (RL), ST (C)"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "78085068",
+              "name": "Ronald Araujo",
+              "position": "D (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Coco",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Marmol",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Cardona",
+              "position": "Unknown"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "67174735",
+              "name": "Munir",
+              "position": "AM (RLC), ST (C)"
+            },
+            {
+              "uid": "67246383",
+              "name": "Aihen Muñoz",
+              "position": "D/WB (L)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Perrone",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Kirian Rodriguez",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Moleiro",
+              "position": "Unknown"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "14167329",
+              "name": "Lisandro Martínez",
+              "position": "D (LC), DM"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 17,
+        "team": "Vallecano",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "47022611",
+              "name": "Stole Dimitrievski",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "67053461",
+              "name": "Iván Balliu",
+              "position": "D/WB (R)"
+            },
+            {
+              "uid": "85063747",
+              "name": "Florian Lejeune",
+              "position": "D (C)"
+            },
+            {
+              "uid": "27128916",
+              "name": "Abdul Mumin",
+              "position": "D (C)"
+            },
+            {
+              "uid": "78066692",
+              "name": "Alfonso Espino",
+              "position": "D (L)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "67213714",
+              "name": "Óscar Valentín",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "67145056",
+              "name": "Unai López",
+              "position": "M/AM (C)"
+            },
+            {
+              "uid": "67173045",
+              "name": "Isi Palazón",
+              "position": "M/AM (RL)"
+            },
+            {
+              "uid": "958318",
+              "name": "Oscar Trejo",
+              "position": "M/AM (C)"
+            },
+            {
+              "uid": "67184140",
+              "name": "Álvaro García",
+              "position": "M (L), AM (RLC), ST (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "67272502",
+              "name": "Sergio Camello",
+              "position": "ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 18,
+        "team": "Cádiz",
+        "formation": "4-4-2",
+        "starters": {
+          "GK": [
+            {
+              "uid": "14063109",
+              "name": "Jeremías Ledesma",
+              "position": "GK"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "67175525",
+              "name": "Iza",
+              "position": "D/WB/AM (R)"
+            },
+            {
+              "uid": "67258572",
+              "name": "Víctor Chust",
+              "position": "D (C)"
+            },
+            {
+              "uid": "67155014",
+              "name": "Fali",
+              "position": "D (C), DM"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "J.Hernandez",
+              "position": "Unknown"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "67176059",
+              "name": "Iván Alejo",
+              "position": "AM (RL)"
+            },
+            {
+              "uid": "67178038",
+              "name": "Rubén Alcaraz",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Escalante",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67085789",
+              "name": "Rubén Sobrino",
+              "position": "AM (RL), ST (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Ramos",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67106568",
+              "name": "Juanmi",
+              "position": "AM (L), ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 19,
+        "team": "Almería",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Maximiano",
+              "position": "Unknown"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Pubill",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Montes",
+              "position": "Unknown"
+            },
+            {
+              "uid": "67080544",
+              "name": "Edgar Badía",
+              "position": "GK"
+            },
+            {
+              "uid": "28121568",
+              "name": "Anthony Elanga",
+              "position": "M/AM (RL)"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Lopy",
+              "position": "Unknown"
+            },
+            {
+              "uid": "14112088",
+              "name": "Lucas Robertone",
+              "position": "M/AM (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Arribas",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Viera",
+              "position": "Unknown"
+            },
+            {
+              "uid": "28116558",
+              "name": "Largie Ramazani",
+              "position": "AM (RL), ST (C)"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "67153647",
+              "name": "Léo Baptistão",
+              "position": "M (RL), AM (RLC), ST (C)"
+            }
+          ]
+        }
+      },
+      {
+        "rank": 20,
+        "team": "Granada",
+        "formation": "4-4-2",
+        "starters": {
+          "GK": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Batalla",
+              "position": "Unknown"
+            }
+          ],
+          "DEF": [
+            {
+              "uid": "55062009",
+              "name": "Ricardo Pereira",
+              "position": "D/WB/AM (R)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Rubio",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Miquel",
+              "position": "Unknown"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Neva",
+              "position": "Unknown"
+            }
+          ],
+          "MID": [
+            {
+              "uid": "78095389",
+              "name": "Facundo Pellistri",
+              "position": "AM (R), ST (C)"
+            },
+            {
+              "uid": "67046591",
+              "name": "Víctor Ruiz",
+              "position": "D (C)"
+            },
+            {
+              "uid": "67207185",
+              "name": "Gerard Gumbau",
+              "position": "DM, M (C)"
+            },
+            {
+              "uid": "NOT_FOUND",
+              "name": "Jozwiak",
+              "position": "Unknown"
+            }
+          ],
+          "FWD": [
+            {
+              "uid": "NOT_FOUND",
+              "name": "Uzuni",
+              "position": "Unknown"
+            },
+            {
+              "uid": "14110829",
+              "name": "Lucas Boyé",
+              "position": "AM (RLC), ST (C)"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
