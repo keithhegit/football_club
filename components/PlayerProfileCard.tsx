@@ -104,7 +104,7 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
                             <PlayerAvatar playerId={player.id} alt={player.name} size="md" className="border-2 border-slate-600" />
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
-                                    <h3 className="font-bold text-white text-lg leading-none truncate">{player.name}</h3>
+                                <h3 className="font-bold text-white text-lg leading-none truncate">{player.name}</h3>
                                     <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-700 text-slate-200 font-semibold">{displayAge}岁</span>
                                 </div>
                                 <div className="flex items-center gap-2 mt-1">
@@ -225,8 +225,18 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
                             const alreadyInSquad = userTeam?.players.some(p => String(p.id) === String(player.id));
                             if (alreadyInSquad) return null;
 
+                            const windowNote = '转会窗口开放期：7/1–8/31';
+                            const transferBudgetText = `转会预算：£${((userTeam as any)?.transferBudget ?? (userTeam as any)?.budget ?? 0 / 1_000_000).toFixed(1)}M`;
+                            const wageRoom = ((userTeam as any)?.wageBudget ?? 0) - ((userTeam as any)?.wageSpending ?? 0);
+                            const wageBudgetText = `工资空间：£${(wageRoom / 1_000_000).toFixed(2)}M / 周`;
+
                             return (
                                 <div className="p-3 border-t border-slate-800 mt-auto">
+                                    <div className="text-[10px] text-slate-500 mb-2 space-y-0.5">
+                                        <div>{windowNote}</div>
+                                        <div>{transferBudgetText}</div>
+                                        <div>{wageBudgetText}</div>
+                                    </div>
                                     <button
                                         onClick={(e) => {
                                             e.stopPropagation();
