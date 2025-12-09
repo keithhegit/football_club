@@ -23,6 +23,11 @@ const readEnvFlag = (key: string): boolean => {
 
 const USE_LOCAL_PLAYERS_SEED = readEnvFlag('VITE_USE_LOCAL_PLAYERS_SEED') || readEnvFlag('USE_LOCAL_PLAYERS_SEED');
 const LOCAL_PLAYERS_SEED_PATH = '/data/players_fixed.json';
+// Transfer window config (prem / la liga)
+const WINDOW_CONFIG: Record<string, { open: string; close: string }> = {
+  'Premier League': { open: '2023-07-01', close: '2023-08-31' },
+  'La Liga': { open: '2023-07-01', close: '2023-08-31' },
+};
 
 const normalizeKey = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
 

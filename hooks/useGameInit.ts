@@ -107,6 +107,16 @@ function mapClubToTeam(club: Club, apiPlayers: ApiPlayer[]): Team {
         shortName: club.name.substring(0, 3).toUpperCase(),
         primaryColor: '#10b981',
         secondaryColor: '#ffffff',
+        balance: 100000000,
+        transferBudget: 50000000,
+        wageBudget: 2000000,
+        wageSpending: 1800000,
+        // finance init (simple heuristic)
+        balance: 100000000,
+        transferBudget: 50000000,
+        wageBudget: 2000000,
+        wageSpending: 1800000,
+
         players: players,
         wins: 0,
         draws: 0,

@@ -70,7 +70,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ team, nextFixture, opponen
             <DollarSign size={16} />
             <span className="text-xs font-bold uppercase">{t('dashboard.budget')}</span>
           </div>
-          <div className="text-lg font-bold text-emerald-400">£{((team.budget || 50000000) / 1000000).toFixed(1)}M</div>
+          <div className="text-lg font-bold text-emerald-400">£{((team.transferBudget ?? team.budget ?? 50000000) / 1000000).toFixed(1)}M</div>
         </div>
 
         <button
