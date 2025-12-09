@@ -61,7 +61,7 @@ const StatRow: React.FC<{ label: string; homeValue: string; awayValue: string }>
 // MatchView Component
 // -----------------------------------------------------------------------------
 
-export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatchComplete, userTeamId, fixtureId }) => {
+export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatchComplete, userTeamId, fixtureId, bgmUnlockKey }) => {
   const [minute, setMinute] = useState(0);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [events, setEvents] = useState<MatchEvent[]>([]);
