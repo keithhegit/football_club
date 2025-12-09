@@ -156,6 +156,7 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
               Substitutes
             </button>
           </div>
+          {/* end tabs row */}
 
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {/* Instructions Tab */}
@@ -373,6 +374,10 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
           </div>
         </div>
       )}
+          </div>
+        </div>
+      </div>
+
     </div>
 
     {replaceTarget && (
