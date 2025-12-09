@@ -73,6 +73,15 @@ export const Dashboard: React.FC<DashboardProps> = ({ team, nextFixture, opponen
           <div className="text-lg font-bold text-emerald-400">£{((team.transferBudget ?? team.budget ?? 50000000) / 1000000).toFixed(1)}M</div>
         </div>
 
+      <div className="bg-slate-900 p-4 rounded-lg border border-slate-800">
+        <div className="flex items-center space-x-2 text-slate-400 mb-2">
+          <DollarSign size={16} />
+          <span className="text-xs font-bold uppercase">Balance</span>
+        </div>
+        <div className="text-lg font-bold text-emerald-400">£{((team.balance ?? team.transferBudget ?? 50000000) / 1000000).toFixed(1)}M</div>
+        <div className="text-[11px] text-slate-500">Transfer £{((team.transferBudget ?? team.budget ?? 50000000) / 1000000).toFixed(1)}M · Wage £{((team.wageSpending ?? 0) / 1000000).toFixed(2)}M / £{((team.wageBudget ?? 0) / 1000000).toFixed(2)}M</div>
+      </div>
+
         <button
           onClick={() => onContinue && (onContinue as any)('TRAINING')} // Hacky cast for now, ideally DashboardProps should accept onNavigate
           className="bg-slate-900 p-4 rounded-lg border border-slate-800 hover:bg-slate-800 transition-colors text-left group"

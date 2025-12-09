@@ -107,6 +107,20 @@ function mapClubToTeam(club: Club, apiPlayers: ApiPlayer[]): Team {
         shortName: club.name.substring(0, 3).toUpperCase(),
         primaryColor: '#10b981',
         secondaryColor: '#ffffff',
+        // finance init by tier
+        ...( (() => {
+          const name = club.name;
+          const tier = (() => {
+            const top = ['Man City','Man UFC','Liverpool','Chelsea','Arsenal','Real Madrid','Barcelona','Atletico Madrid'];
+            const mid = ['Tottenham','Newcastle','Aston Villa','Brighton','Sevilla','Real Sociedad','Villarreal','Betis'];
+            if (top.some(t => name.startsWith(t))) return 'top';
+            if (mid.some(t => name.startsWith(t))) return 'mid';
+            return 'low';
+          })();
+          if (tier === 'top') return { balance: 180000000, transferBudget: 120000000, wageBudget: 4000000, wageSpending: 3200000 };
+          if (tier === 'mid') return { balance: 90000000, transferBudget: 60000000, wageBudget: 2200000, wageSpending: 1800000 };
+          return { balance: 40000000, transferBudget: 20000000, wageBudget: 1200000, wageSpending: 1000000 };
+        })() ),
         balance: 100000000,
         transferBudget: 50000000,
         wageBudget: 2000000,
