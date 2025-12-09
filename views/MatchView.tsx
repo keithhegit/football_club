@@ -61,14 +61,7 @@ const StatRow: React.FC<{ label: string; homeValue: string; awayValue: string }>
 // MatchView Component
 // -----------------------------------------------------------------------------
 
-export const MatchView: React.FC<MatchViewProps> = ({
-  homeTeam,
-  awayTeam,
-  onMatchComplete,
-  userTeamId,
-  fixtureId,
-  bgmUnlockKey
-}) => {
+export const MatchView: React.FC<MatchViewProps> = ({ homeTeam, awayTeam, onMatchComplete, userTeamId, fixtureId, bgmUnlockKey }) => {
   const [minute, setMinute] = useState(0);
   const [scores, setScores] = useState({ home: 0, away: 0 });
   const [events, setEvents] = useState<MatchEvent[]>([]);
@@ -117,8 +110,6 @@ export const MatchView: React.FC<MatchViewProps> = ({
   });
 
   // Auto-scroll logs
-  const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val));
-
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -292,14 +283,10 @@ export const MatchView: React.FC<MatchViewProps> = ({
             xG: [0, 0],
             shots: [0, 0],
             shotsOnTarget: [0, 0],
-            passes: [0, 0], // display: total attempts
+            passes: [0, 0],
             passAttempts: [0, 0],
             passSuccess: [0, 0],
-            passAccuracy: [0, 0], // display-ready %
-            tackles: [0, 0], // display: normalized attempts
-            tackleAttempts: [0, 0],
-            tackleSuccess: [0, 0],
-            tackleAccuracy: [0, 0], // display-ready %
+            tackles: [0, 0],
             fouls: [0, 0],
             yellowCards: [0, 0],
             redCards: [0, 0],
@@ -339,16 +326,14 @@ export const MatchView: React.FC<MatchViewProps> = ({
             if (e.type.includes('PASS')) {
               stats.passAttempts[idx]++;
               if (e.outcome === 'SUCCESS') {
+                stats.passes[idx]++;
                 stats.passSuccess[idx]++;
               }
             }
 
-            // Tackles: track attempts and successes
-            if (e.type === 'TACKLE' || e.type === 'INTERCEPT') {
-              stats.tackleAttempts[idx]++;
-              if (e.outcome === 'SUCCESS') {
-                stats.tackleSuccess[idx]++;
-              }
+            // Tackles
+            if ((e.type === 'TACKLE' || e.type === 'INTERCEPT') && e.outcome === 'SUCCESS') {
+              stats.tackles[idx]++;
             }
 
             // Fouls & Cards
@@ -367,27 +352,6 @@ export const MatchView: React.FC<MatchViewProps> = ({
             stats.possession[0] = Math.round((stats.passAttempts[0] / totalPasses) * 100);
             stats.possession[1] = 100 - stats.possession[0];
           }
-
-          // Normalize passing display to realistic 70%-99% accuracy, show total attempts
-          [0, 1].forEach(idx => {
-            const attempts = stats.passAttempts[idx];
-            const success = stats.passSuccess[idx];
-            const rawAcc = attempts > 0 ? success / attempts : 0;
-            const clampedAcc = clamp(rawAcc, 0.7, 0.99);
-            stats.passAccuracy[idx] = Math.round(clampedAcc * 100);
-            stats.passes[idx] = attempts;
-          });
-
-          // Normalize tackles display: scale attempts down and show success rate
-          [0, 1].forEach(idx => {
-            const attempts = stats.tackleAttempts[idx];
-            const success = stats.tackleSuccess[idx];
-            const rawAcc = attempts > 0 ? success / attempts : 0;
-            const clampedAcc = clamp(rawAcc, 0.45, 0.85);
-            const normalizedAttempts = attempts > 0 ? clamp(Math.round(attempts * 0.35), 8, 45) : 0;
-            stats.tackleAccuracy[idx] = Math.round(clampedAcc * 100);
-            stats.tackles[idx] = normalizedAttempts;
-          });
 
           setCurrentStats(stats);
           return currentMinute;
@@ -499,19 +463,12 @@ export const MatchView: React.FC<MatchViewProps> = ({
     } as any]);
   };
 
-  const timerDisplay =
-    matchState === MatchState.PRE_MATCH
-      ? 'PRE-MATCH'
-      : matchState === MatchState.FULL_TIME
-        ? 'FULL TIME'
-        : `${minute}'`;
-
   return (
     <div
       className="flex flex-col h-full bg-slate-950"
       style={{
         paddingTop: 'calc(env(safe-area-inset-top, 0px) + 8px)',
-        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 12px)'
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)'
       }}
     >
 
@@ -680,119 +637,94 @@ export const MatchView: React.FC<MatchViewProps> = ({
       </div>
 
       {/* Scoreboard */}
-      <div
-        className="bg-slate-900 border-b border-slate-800 p-4 sticky z-10 shadow-lg space-y-3"
-        style={{ top: 'env(safe-area-inset-top, 0px)' }}
-      >
+      <div className="bg-slate-900 border-b border-slate-800 p-4 sticky top-0 z-10 shadow-lg">
+        <div className="flex justify-between items-center mb-2">
+          <div className="text-xs text-slate-500 font-mono">
+            {matchState === MatchState.PRE_MATCH ? 'PRE-MATCH' :
+              matchState === MatchState.FULL_TIME ? 'FULL TIME' :
+                `${minute}'`}
+          </div>
+          <div className="flex items-center gap-3 flex-wrap justify-end">
+            <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Chumbawamb_Tubthumping_com.mp3" unlockKey={bgmUnlockKey} />
+            <div className="flex space-x-2 flex-wrap justify-end">
+              <button onClick={() => setSpeedPreset('1x')} className={`p-1 rounded ${speed === 1000 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>1x</button>
+              <button onClick={() => setSpeedPreset('2x')} className={`p-1 rounded ${speed === 500 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>2x</button>
+              <button onClick={() => setSpeedPreset('4x')} className={`p-1 rounded ${speed === 250 ? 'bg-slate-700 text-white' : 'text-slate-500'}`}>4x</button>
+              <button onClick={handlePauseToggle} className={`p-1 rounded ${paused ? 'bg-yellow-700 text-white' : 'text-slate-500'}`}>{paused ? 'Resume' : 'Pause'}</button>
+            </div>
+          </div>
+        </div>
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-3 w-1/3">
             <div className="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center text-xs font-bold border border-blue-700">{homeTeam.shortName}</div>
             <span className="font-bold text-lg truncate">{homeTeam.name}</span>
           </div>
-          <div className="flex items-center space-x-3 bg-slate-950 px-4 py-1 rounded border border-slate-800">
-            <span className="text-3xl font-black text-white">{scores.home}</span>
-            <span className="text-slate-600 text-xl">:</span>
-            <span className="text-3xl font-black text-white">{scores.away}</span>
-          </div>
-          <div className="flex items-center space-x-3 w-1/3 justify-end">
-            <span className="font-bold text-lg truncate text-right">{awayTeam.name}</span>
-            <div className="w-8 h-8 rounded-full bg-red-900 flex items-center justify-center text-xs font-bold border border-red-700">{awayTeam.shortName}</div>
-          </div>
+        <div className="flex items-center space-x-3 bg-slate-950 px-4 py-1 rounded border border-slate-800">
+          <span className="text-3xl font-black text-white">{scores.home}</span>
+          <span className="text-slate-600 text-xl">:</span>
+          <span className="text-3xl font-black text-white">{scores.away}</span>
         </div>
-
-        {/* Controls row: timer + tactics + speed/BGM */}
-        <div className="flex items-center justify-between">
-          <div className="px-3 py-1.5 rounded-full bg-slate-800 text-emerald-300 font-mono text-base shadow border border-slate-700">
-            {timerDisplay}
-          </div>
-          <button
-            onClick={() => setShowTactics(true)}
-            className="px-4 py-2 rounded bg-emerald-600 text-white font-bold border border-emerald-500 shadow hover:bg-emerald-500"
-          >
-            战术部署
-          </button>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 bg-slate-800 px-2.5 py-1.5 rounded-full border border-slate-700">
-              <button onClick={() => setSpeedPreset('1x')} className={`px-2 py-1 rounded text-xs font-bold ${speed === 1000 ? 'bg-slate-700 text-white' : 'text-slate-400'}`}>1x</button>
-              <button onClick={() => setSpeedPreset('2x')} className={`px-2 py-1 rounded text-xs font-bold ${speed === 500 ? 'bg-slate-700 text-white' : 'text-slate-400'}`}>2x</button>
-              <button onClick={() => setSpeedPreset('4x')} className={`px-2 py-1 rounded text-xs font-bold ${speed === 250 ? 'bg-slate-700 text-white' : 'text-slate-400'}`}>4x</button>
-              <button onClick={handlePauseToggle} className={`px-2 py-1 rounded text-xs font-bold ${paused ? 'bg-yellow-700 text-white' : 'text-slate-400'}`}>{paused ? 'Resume' : 'Pause'}</button>
-            </div>
-            <BgmToggle src="https://bgmr2.keithhe.com/bgm/fm/Chumbawamb_Tubthumping_com.mp3" unlockKey={bgmUnlockKey} />
-          </div>
+        <div className="flex items-center space-x-3 w-1/3 justify-end">
+          <span className="font-bold text-lg truncate text-right">{awayTeam.name}</span>
+          <div className="w-8 h-8 rounded-full bg-red-900 flex items-center justify-center text-xs font-bold border border-red-700">{awayTeam.shortName}</div>
         </div>
       </div>
+      {/* Tactics entry under score */}
+      <div className="flex justify-center mt-2">
+        <button
+          onClick={() => setShowTactics(true)}
+          className="px-4 py-2 rounded bg-emerald-600 text-white font-bold border border-emerald-500"
+        >
+          战术部署
+        </button>
+      </div>
+      </div>
 
-      {matchState === MatchState.PRE_MATCH ? (
-        <div className="p-4">
-          <div className="bg-slate-900 p-6 rounded-lg border border-slate-800 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <h3 className="text-emerald-400 text-sm font-bold uppercase mb-4 flex items-center gap-2">
-              <CheckCircle2 size={16} /> 战术与换人准备
-            </h3>
-            <p className="text-sm text-slate-300 leading-relaxed mb-4">
-              开赛前/中场请调整阵型、指令与体能（点右上 Tactics）。可预先安排换人计划。
-            </p>
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={() => setShowTactics(true)}
-                className="w-full bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold py-3 rounded border border-slate-600"
-              >
-                打开战术
-              </button>
-              <button
-                onClick={handleStart}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded shadow-lg transition-all text-lg"
-              >
-                Kick Off
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : (
-        /* Match Content (Grid Layout) */
-        <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
+      {/* Match Content (Grid Layout) */}
+      <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-3 gap-4 p-4">
 
-          {/* LEFT COLUMN: Statistics & Ratings */}
-          <div className="lg:col-span-1 space-y-4 overflow-y-auto pr-2">
+        {/* LEFT COLUMN: Statistics & Ratings */}
+        <div className="lg:col-span-1 space-y-4 overflow-y-auto pr-2">
 
-            {/* Match Statistics */}
-            {fullMatchResult?.statistics && (
-              <div className="bg-slate-900/80 p-4 rounded-lg border border-slate-800">
-                <h3 className="text-xs font-bold text-slate-300 uppercase mb-3 border-b border-slate-700 pb-2">Match Stats</h3>
-                <div className="space-y-2">
-                  <StatRow label="Possession"
-                    homeValue={`${currentStats?.possession[0] || 50}%`}
-                    awayValue={`${currentStats?.possession[1] || 50}%`}
-                  />
-                  <StatRow label="xG"
-                    homeValue={(currentStats?.xG[0] || 0).toFixed(2)}
-                    awayValue={(currentStats?.xG[1] || 0).toFixed(2)}
-                  />
-                  <StatRow label="Shots (Target)"
-                    homeValue={`${currentStats?.shots[0] || 0} (${currentStats?.shotsOnTarget[0] || 0})`}
-                    awayValue={`${currentStats?.shots[1] || 0} (${currentStats?.shotsOnTarget[1] || 0})`}
-                  />
-                  <StatRow label="Passes (Accuracy)"
-                    homeValue={`${currentStats?.passes[0] || 0} (${currentStats?.passAccuracy[0] || 0}%)`}
-                    awayValue={`${currentStats?.passes[1] || 0} (${currentStats?.passAccuracy[1] || 0}%)`}
-                  />
-                  <StatRow label="Tackles"
-                    homeValue={`${currentStats?.tackles[0] || 0} (${currentStats?.tackleAccuracy[0] || 0}%)`}
-                    awayValue={`${currentStats?.tackles[1] || 0} (${currentStats?.tackleAccuracy[1] || 0}%)`}
-                  />
-                  <StatRow label="Fouls (Y/R)"
-                    homeValue={`${currentStats?.fouls[0] || 0} (${currentStats?.yellowCards[0] || 0}/${currentStats?.redCards[0] || 0})`}
-                    awayValue={`${currentStats?.fouls[1] || 0} (${currentStats?.yellowCards[1] || 0}/${currentStats?.redCards[1] || 0})`}
-                  />
-                  <StatRow label="Corners / FK"
-                    homeValue={`${currentStats?.corners[0] || 0} / ${currentStats?.freeKicks[0] || 0}`}
-                    awayValue={`${currentStats?.corners[1] || 0} / ${currentStats?.freeKicks[1] || 0}`}
-                  />
-                </div>
+          {/* Match Statistics */}
+          {(matchState === MatchState.PLAYING || matchState === MatchState.FULL_TIME) && fullMatchResult?.statistics && (
+            <div className="bg-slate-900/80 p-4 rounded-lg border border-slate-800">
+              <h3 className="text-xs font-bold text-slate-300 uppercase mb-3 border-b border-slate-700 pb-2">Match Stats</h3>
+              <div className="space-y-2">
+                <StatRow label="Possession"
+                  homeValue={`${currentStats?.possession[0] || 50}%`}
+                  awayValue={`${currentStats?.possession[1] || 50}%`}
+                />
+                <StatRow label="xG"
+                  homeValue={(currentStats?.xG[0] || 0).toFixed(2)}
+                  awayValue={(currentStats?.xG[1] || 0).toFixed(2)}
+                />
+                <StatRow label="Shots (Target)"
+                  homeValue={`${currentStats?.shots[0] || 0} (${currentStats?.shotsOnTarget[0] || 0})`}
+                  awayValue={`${currentStats?.shots[1] || 0} (${currentStats?.shotsOnTarget[1] || 0})`}
+                />
+                <StatRow label="Passes (Accuracy)"
+                  homeValue={`${currentStats?.passes[0] || 0} (${currentStats?.passAttempts[0] > 0 ? Math.round((currentStats?.passSuccess[0] / currentStats?.passAttempts[0]) * 100) : 0}%)`}
+                  awayValue={`${currentStats?.passes[1] || 0} (${currentStats?.passAttempts[1] > 0 ? Math.round((currentStats?.passSuccess[1] / currentStats?.passAttempts[1]) * 100) : 0}%)`}
+                />
+                <StatRow label="Tackles"
+                  homeValue={`${currentStats?.tackles[0] || 0}`}
+                  awayValue={`${currentStats?.tackles[1] || 0}`}
+                />
+                <StatRow label="Fouls (Y/R)"
+                  homeValue={`${currentStats?.fouls[0] || 0} (${currentStats?.yellowCards[0] || 0}/${currentStats?.redCards[0] || 0})`}
+                  awayValue={`${currentStats?.fouls[1] || 0} (${currentStats?.yellowCards[1] || 0}/${currentStats?.redCards[1] || 0})`}
+                />
+                <StatRow label="Corners / FK"
+                  homeValue={`${currentStats?.corners[0] || 0} / ${currentStats?.freeKicks[0] || 0}`}
+                  awayValue={`${currentStats?.corners[1] || 0} / ${currentStats?.freeKicks[1] || 0}`}
+                />
               </div>
-            )}
+            </div>
+          )}
 
-            {/* Top Performers (MVP & Goalscorers) */}
+          {/* Top Performers (MVP & Goalscorers) */}
+          {(matchState === MatchState.PLAYING || matchState === MatchState.FULL_TIME) && (
             <div className="bg-slate-900/80 p-4 rounded-lg border border-slate-800">
               <h3 className="text-xs font-bold text-slate-300 uppercase mb-3 border-b border-slate-700 pb-2">Match Highlights</h3>
 
@@ -827,13 +759,41 @@ export const MatchView: React.FC<MatchViewProps> = ({
                 )}
               </div>
             </div>
-          </div>
+          )}
+        </div>
 
 
-          {/* RIGHT COLUMN: Log & Assistant */}
-          <div className="lg:col-span-2 flex flex-col h-full overflow-hidden space-y-4">
+        {/* RIGHT COLUMN: Log & Assistant */}
+        <div className="lg:col-span-2 flex flex-col h-full overflow-hidden space-y-4">
 
-            {/* Live Commentary Log (Filtered) */}
+          {/* Pre-Match: Tactics / Subs prompt */}
+          {matchState === MatchState.PRE_MATCH && (
+            <div className="bg-slate-900 p-6 rounded-lg border border-slate-800 mb-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <h3 className="text-emerald-400 text-sm font-bold uppercase mb-4 flex items-center gap-2">
+                <CheckCircle2 size={16} /> 战术与换人准备
+              </h3>
+              <p className="text-sm text-slate-300 leading-relaxed mb-4">
+                开赛前/中场请调整阵型、指令与体能（点右上 Tactics）。可预先安排换人计划。
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowTactics(true)}
+                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold py-3 rounded border border-slate-600"
+                >
+                  打开战术
+                </button>
+                <button
+                  onClick={handleStart}
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded shadow-lg transition-all text-lg"
+                >
+                  Kick Off
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Live Commentary Log (Filtered) */}
+          {(matchState === MatchState.PLAYING || matchState === MatchState.FULL_TIME) && (
             <div
               className="flex-1 bg-slate-900/50 rounded-lg border border-slate-800 flex flex-col overflow-hidden"
             >
@@ -889,9 +849,9 @@ export const MatchView: React.FC<MatchViewProps> = ({
                   ))}
               </div>
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {matchState === MatchState.FULL_TIME && (
         <div className="p-4 border-t border-slate-800 bg-slate-900 flex justify-center">

@@ -114,7 +114,7 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
                             </div>
                             <div className="text-right flex flex-col items-end gap-1">
                                 {injured && (
-                                    <span className="text-[10px] text-red-400 font-bold px-2 py-0.5 rounded-full border border-red-500/50 self-start">受伤</span>
+                                    <span className="text-[10px] text-red-400 font-bold px-2 py-0.5 rounded-full border border-red-500/50">受伤</span>
                                 )}
                                 <div className="text-2xl font-black text-white leading-none">{displayCA}</div>
                                 <div className="text-[10px] text-slate-500 uppercase tracking-widest">{injured ? 'CA（受伤折减）' : 'CA'}</div>

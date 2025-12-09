@@ -89,41 +89,42 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
   }, [benchPlayers, benchFilter]);
 
   return (
+    <>
     <div className="h-full flex flex-col relative bg-slate-950">
       {/* Header */}
       <div className="p-4 bg-slate-900 border-b border-slate-800 flex justify-between items-center z-20">
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <button
-              onClick={() => setShowFormationSelect(!showFormationSelect)}
-              className="flex items-center gap-2 hover:bg-slate-800 p-2 rounded transition-colors"
-            >
-              <div>
+        <div className="relative">
+          <button
+            onClick={() => setShowFormationSelect(!showFormationSelect)}
+            className="flex items-center gap-2 hover:bg-slate-800 p-2 rounded transition-colors"
+          >
+            <div>
                 <h2 className="text-lg font-bold text-slate-100">战术板</h2>
-                <p className="text-xs text-emerald-400 font-bold flex items-center gap-1">
-                  {currentFormation.name}
-                  <ChevronDown size={12} />
-                </p>
-              </div>
-            </button>
+              <p className="text-xs text-emerald-400 font-bold flex items-center gap-1">
+                {currentFormation.name}
+                <ChevronDown size={12} />
+              </p>
+            </div>
+          </button>
 
-            {/* Formation Dropdown */}
-            {showFormationSelect && (
-              <div className="absolute top-full left-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
-                {availableFormations.map(fmt => (
-                  <button
-                    key={fmt.id}
-                    onClick={() => {
-                      setFormation(fmt.id);
-                      setShowFormationSelect(false);
-                    }}
-                    className={`w-full text-left px-4 py-3 text-sm hover:bg-slate-700 transition-colors ${currentFormation.id === fmt.id ? 'text-emerald-400 font-bold bg-slate-700/50' : 'text-slate-300'}`}
-                  >
-                    {fmt.name}
-                  </button>
-                ))}
-              </div>
-            )}
+          {/* Formation Dropdown */}
+          {showFormationSelect && (
+            <div className="absolute top-full left-0 mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
+              {availableFormations.map(fmt => (
+                <button
+                  key={fmt.id}
+                  onClick={() => {
+                    setFormation(fmt.id);
+                    setShowFormationSelect(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 text-sm hover:bg-slate-700 transition-colors ${currentFormation.id === fmt.id ? 'text-emerald-400 font-bold bg-slate-700/50' : 'text-slate-300'}`}
+                >
+                  {fmt.name}
+                </button>
+              ))}
+            </div>
+          )}
           </div>
         </div>
 
@@ -139,8 +140,8 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
             <button
               onClick={() => setActiveTab('INSTRUCTIONS')}
               className={`flex-1 py-3 px-4 font-bold text-sm transition-colors ${activeTab === 'INSTRUCTIONS'
-                ? 'bg-emerald-900/20 text-emerald-400 border-b-2 border-emerald-500'
-                : 'text-slate-500 hover:text-slate-300'
+                  ? 'bg-emerald-900/20 text-emerald-400 border-b-2 border-emerald-500'
+                  : 'text-slate-500 hover:text-slate-300'
                 }`}
             >
               Instructions
@@ -148,20 +149,21 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
             <button
               onClick={() => setActiveTab('BENCH')}
               className={`flex-1 py-3 px-4 font-bold text-sm transition-colors ${activeTab === 'BENCH'
-                ? 'bg-emerald-900/20 text-emerald-400 border-b-2 border-emerald-500'
-                : 'text-slate-500 hover:text-slate-300'
+                  ? 'bg-emerald-900/20 text-emerald-400 border-b-2 border-emerald-500'
+                  : 'text-slate-500 hover:text-slate-300'
                 }`}
             >
               Substitutes
             </button>
           </div>
+          {/* end tabs row */}
 
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {/* Instructions Tab */}
             {activeTab === 'INSTRUCTIONS' && (
               <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 space-y-6">
                 <div className="text-sm font-bold text-slate-200">球队指令</div>
-                <div>
+              <div>
                   <label className="text-slate-500 text-xs mb-2 block">心态</label>
                   <select
                     className="w-full bg-slate-800 border border-slate-700 rounded p-2 text-sm text-slate-200"
@@ -198,9 +200,9 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
                       />
                     </div>
                   ))}
-                </div>
+              </div>
 
-                <div>
+              <div>
                   <div className="text-xs text-slate-400 mb-1">无球时</div>
                   {[
                     { key: 'lineOfEngagement', label: '逼抢线' },
@@ -222,9 +224,9 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
                           outOfPossession: { ...prev.outOfPossession, [item.key]: Number(e.target.value) }
                         }))}
                       />
-                    </div>
+                  </div>
                   ))}
-                </div>
+                  </div>
 
                 <div>
                   <div className="text-xs text-slate-400 mb-2">转换</div>
@@ -308,74 +310,77 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
                             <div className="font-bold">{pos.name}</div>
                             {player && <div className="text-slate-200 truncate">{player.name}</div>}
                           </div>
-                        </div>
-                      );
-                    })}
                   </div>
-                </div>
+                );
+              })}
+            </div>
+          </div>
 
-                <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-bold text-slate-200">替补球员（非首发）</div>
-                    <div className="flex gap-2 text-xs">
-                      {['ALL', 'GK', 'DEF', 'MID', 'FWD'].map(f => (
-                        <button
-                          key={f}
-                          onClick={() => setBenchFilter(f as any)}
-                          className={`px-2 py-1 rounded-full border ${benchFilter === f ? 'bg-emerald-700 text-white border-emerald-600' : 'bg-slate-800 text-slate-300 border-slate-700'}`}
-                        >
-                          {f}
-                        </button>
-                      ))}
+          <div className="bg-slate-900 rounded-xl border border-slate-800 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="text-sm font-bold text-slate-200">替补球员（非首发）</div>
+              <div className="flex gap-2 text-xs">
+                {['ALL', 'GK', 'DEF', 'MID', 'FWD'].map(f => (
+                  <button
+                    key={f}
+                    onClick={() => setBenchFilter(f as any)}
+                    className={`px-2 py-1 rounded-full border ${benchFilter === f ? 'bg-emerald-700 text-white border-emerald-600' : 'bg-slate-800 text-slate-300 border-slate-700'}`}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {filteredBench.map(p => (
+                <div
+                  key={p.id}
+                  className="relative bg-slate-800/80 border border-slate-700 rounded-lg p-3 shadow hover:border-emerald-600 transition cursor-pointer"
+                  onClick={() => setBenchProfile(p)}
+                >
+                  <div className="flex items-center gap-3">
+                    <PlayerAvatar playerId={p.id} alt={p.name} size="md" className="border-emerald-500" />
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-slate-100 truncate">{p.name}</div>
+                      <div className="text-[11px] text-slate-400 flex gap-2">
+                        <span className={`${p.position.includes('GK') ? 'text-yellow-400' : p.position.includes('D') ? 'text-blue-400' : p.position.includes('M') ? 'text-emerald-400' : 'text-red-400'} font-bold`}>
+                          {p.position}
+                        </span>
+                        <span className="text-slate-500">CA {p.ca}</span>
+                      </div>
                     </div>
                   </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {filteredBench.map(p => (
-                      <div
-                        key={p.id}
-                        className="relative bg-slate-800/80 border border-slate-700 rounded-lg p-3 shadow hover:border-emerald-600 transition cursor-pointer"
-                        onClick={() => setBenchProfile(p)}
-                      >
-                        <div className="flex items-center gap-3">
-                          <PlayerAvatar playerId={p.id} alt={p.name} size="md" className="border-emerald-500" />
-                          <div className="min-w-0">
-                            <div className="text-sm font-bold text-slate-100 truncate">{p.name}</div>
-                            <div className="text-[11px] text-slate-400 flex gap-2">
-                              <span className={`${p.position.includes('GK') ? 'text-yellow-400' : p.position.includes('D') ? 'text-blue-400' : p.position.includes('M') ? 'text-emerald-400' : 'text-red-400'} font-bold`}>
-                                {p.position}
-                              </span>
-                              <span className="text-slate-500">CA {p.ca}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (replaceTarget) {
-                              handlePlayerDrop(String(p.id), replaceTarget.positionId);
-                              setReplaceTarget(null);
-                            } else {
-                              setReplaceTarget({ positionId: currentFormation.positions[0].id, playerName: undefined });
-                            }
-                          }}
-                          className={`mt-2 w-full text-xs font-bold py-1 rounded ${replaceTarget ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}
-                        >
-                          {replaceTarget ? '选择替换' : '先点场上位置再替换'}
-                        </button>
-                      </div>
-                    ))}
-                    {filteredBench.length === 0 && (
-                      <div className="col-span-full text-center text-slate-500 text-xs py-4">无可用替补</div>
-                    )}
-                  </div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (replaceTarget) {
+                        handlePlayerDrop(String(p.id), replaceTarget.positionId);
+                        setReplaceTarget(null);
+                      } else {
+                        setReplaceTarget({ positionId: currentFormation.positions[0].id, playerName: undefined });
+                      }
+                    }}
+                    className={`mt-2 w-full text-xs font-bold py-1 rounded ${replaceTarget ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}
+                  >
+                    {replaceTarget ? '选择替换' : '先点场上位置再替换'}
+                  </button>
                 </div>
-              </div>
-            )}
+              ))}
+              {filteredBench.length === 0 && (
+                <div className="col-span-full text-center text-slate-500 text-xs py-4">无可用替补</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
           </div>
         </div>
       </div>
-      {replaceTarget && (
+
+    </div>
+
+    {replaceTarget && (
         <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center px-4" onClick={() => setReplaceTarget(null)}>
           <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
             <div className="text-sm font-bold text-slate-200 mb-2">选择替换球员</div>
@@ -404,14 +409,14 @@ export const TacticsView: React.FC<TacticsViewProps> = ({ team, onSave, currentW
             <button onClick={() => setReplaceTarget(null)} className="w-full mt-3 bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 rounded">取消</button>
           </div>
         </div>
-      )}
-      {benchProfile && (
+    )}
+    {benchProfile && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setBenchProfile(null)}>
           <div className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
             <PlayerProfileCard player={benchProfile} hideActions userTeam={team} currentWeek={currentWeek} />
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };

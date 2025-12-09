@@ -32,7 +32,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentView, onChangeV
   return (
     <div className="flex flex-col h-screen bg-slate-950 text-slate-100 overflow-hidden">
       {/* Top Bar */}
-      <header className="flex-none h-14 bg-slate-900 border-b border-slate-800 flex items-center px-4 justify-between z-20">
+      <header
+        className="flex-none bg-slate-900 border-b border-slate-800 flex items-center px-4 justify-between z-20"
+        style={{ paddingTop: 'env(safe-area-inset-top, 0px)', minHeight: '3.5rem' }}
+      >
         <div className="font-bold text-lg bg-gradient-to-r from-emerald-400 to-teal-500 text-transparent bg-clip-text">
           {t('appName')}
         </div>
