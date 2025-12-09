@@ -280,14 +280,18 @@ export function useGameInit(clubId?: number) {
                     // Map Engine PlayerState -> Legacy Player Interface
                     const legacyPlayers: Player[] = enginePlayers.map(p => {
                         const attr = p.attributes; // Flat attributes from engine
+                        const dbPlayer = dbPlayers.find((dp: any) => String(dp.UID || dp.id || dp.playerId || '') === String(p.id));
 
                         const rawCa = caMap.get(p.id.toString())?.ca;
                         const rawPa = caMap.get(p.id.toString())?.pa;
 
+                        const ageRaw = (dbPlayer as any)?.Age ?? (dbPlayer as any)?.age ?? (p as any).Age ?? (p as any).age;
+                        const ageVal = Number(ageRaw);
+
                         return {
                             id: p.id.toString(),
                             name: p.name,
-                            age: 20, // Default if missing
+                            age: Number.isFinite(ageVal) ? ageVal : 25, // prefer DB age, fallback 25
                             position: mapPosition(p.position),
                             nationality: 'Unknown',
                             ca: rawCa ?? 100,
