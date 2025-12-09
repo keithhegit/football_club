@@ -1,0 +1,449 @@
+{
+  "season": "2024-2025",
+  "data": {
+    "PremierLeague": [
+      {
+        "rank": 1,
+        "team": "Man City (曼城)",
+        "formation": "4-2-3-1/3-2-4-1",
+        "starters": {
+          "GK": ["Ederson"],
+          "DEF": ["Walker/Lewis", "Akanji", "Dias", "Gvardiol"],
+          "MID": ["Rodri", "Kovacic/Gundogan", "Savinho", "De Bruyne/Foden", "Doku/Grealish"],
+          "FWD": ["Haaland"]
+        }
+      },
+      {
+        "rank": 2,
+        "team": "Arsenal (阿森纳)",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": ["Raya"],
+          "DEF": ["White/Timber", "Saliba", "Gabriel", "Calafiori"],
+          "MID": ["Odegaard", "Partey/Merino", "Rice"],
+          "FWD": ["Saka", "Havertz", "Martinelli/Trossard"]
+        }
+      },
+      {
+        "rank": 3,
+        "team": "Liverpool (利物浦)",
+        "formation": "4-2-3-1 (Slot式)",
+        "starters": {
+          "GK": ["Alisson"],
+          "DEF": ["Trent AA", "Konate", "Van Dijk", "Robertson"],
+          "MID": ["Gravenberch", "Mac Allister", "Salah", "Szoboszlai", "Diaz"],
+          "FWD": ["Jota/Nunez"]
+        }
+      },
+      {
+        "rank": 4,
+        "team": "Aston Villa (维拉)",
+        "formation": "4-4-1-1",
+        "starters": {
+          "GK": ["Martinez"],
+          "DEF": ["Konsa", "Torres", "Carlos", "Digne/Maatsen"],
+          "MID": ["Bailey", "Onana", "Tielemans", "McGinn", "Rogers"],
+          "FWD": ["Watkins"]
+        }
+      },
+      {
+        "rank": 5,
+        "team": "Tottenham (热刺)",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": ["Vicario"],
+          "DEF": ["Porro", "Romero", "Van de Ven", "Udogie"],
+          "MID": ["Kulusevski", "Bissouma/Bentancur", "Maddison"],
+          "FWD": ["Johnson", "Solanke", "Son"]
+        }
+      },
+      {
+        "rank": 6,
+        "team": "Chelsea (切尔西)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Sanchez"],
+          "DEF": ["Gusto/James", "Fofana", "Colwill", "Cucurella"],
+          "MID": ["Caicedo", "Enzo/Lavia", "Madueke", "Palmer", "Neto/Sancho"],
+          "FWD": ["Jackson"]
+        }
+      },
+      {
+        "rank": 7,
+        "team": "Newcastle (纽卡斯尔)",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": ["Pope"],
+          "DEF": ["Livramento/Trippier", "Schar", "Burn", "Hall/Kelly"],
+          "MID": ["Longstaff/Tonali", "Guimaraes", "Joelinton"],
+          "FWD": ["Gordon", "Isak", "Barnes"]
+        }
+      },
+      {
+        "rank": 8,
+        "team": "Man Utd (曼联)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Onana"],
+          "DEF": ["Mazraoui", "De Ligt", "Martinez", "Dalot"],
+          "MID": ["Ugarte/Casemiro", "Mainoo", "Garnacho", "Bruno", "Rashford"],
+          "FWD": ["Zirkzee/Hojlund"]
+        }
+      },
+      {
+        "rank": 9,
+        "team": "West Ham (西汉姆)",
+        "formation": "4-1-4-1",
+        "starters": {
+          "GK": ["Areola"],
+          "DEF": ["Wan-Bissaka", "Todibo", "Kilman", "Emerson"],
+          "MID": ["Alvarez/Rodriguez", "Bowen", "Soucek", "Paqueta", "Kudus"],
+          "FWD": ["Antonio/Fullkrug"]
+        }
+      },
+      {
+        "rank": 10,
+        "team": "Crystal Palace (水晶宫)",
+        "formation": "3-4-2-1",
+        "starters": {
+          "GK": ["Henderson"],
+          "DEF": ["Richards", "Guehi", "Lacroix"],
+          "MID": ["Munoz", "Wharton", "Kamada/Doucoure", "Mitchell", "Nketiah/Sarr", "Eze"],
+          "FWD": ["Mateta"]
+        }
+      },
+      {
+        "rank": 11,
+        "team": "Brighton (布莱顿)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Verbruggen"],
+          "DEF": ["Veltman", "Dunk", "Van Hecke", "Estupinan/Kadioglu"],
+          "MID": ["Wieffer", "Baleba", "Minteh", "Pedro", "Mitoma"],
+          "FWD": ["Welbeck"]
+        }
+      },
+      {
+        "rank": 12,
+        "team": "Bournemouth (伯恩茅斯)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Kepa"],
+          "DEF": ["Araujo", "Zabarnyi", "Senesi", "Kerkez"],
+          "MID": ["Cook", "Christie", "Semenyo", "Kluivert", "Tavernier"],
+          "FWD": ["Evanilson"]
+        }
+      },
+      {
+        "rank": 13,
+        "team": "Fulham (富勒姆)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Leno"],
+          "DEF": ["Tete", "Andersen", "Bassey", "Robinson"],
+          "MID": ["Lukic", "Pereira/Berge", "Adama", "Smith-Rowe", "Iwobi"],
+          "FWD": ["Muniz/Jimenez"]
+        }
+      },
+      {
+        "rank": 14,
+        "team": "Wolves (狼队)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Johnstone"],
+          "DEF": ["Semedo", "Mosquera/Dawson", "Toti", "Ait-Nouri"],
+          "MID": ["Andre", "Lemina/Gomes", "Bellegarde", "Cunha", "Hwang/R.Gomes"],
+          "FWD": ["Larsen"]
+        }
+      },
+      {
+        "rank": 15,
+        "team": "Everton (埃弗顿)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Pickford"],
+          "DEF": ["Coleman/Young", "Tarkowski", "Branthwaite/Keane", "Mykolenko"],
+          "MID": ["Gueye", "Mangala/Garner", "Harrison", "McNeil", "Ndiaye"],
+          "FWD": ["Calvert-Lewin"]
+        }
+      },
+      {
+        "rank": 16,
+        "team": "Brentford (布伦特福德)",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": ["Flekken"],
+          "DEF": ["Roerslev", "Collins", "Pinnock", "Ajer"],
+          "MID": ["Norgaard", "Janelt", "Jensen"],
+          "FWD": ["Mbeumo", "Wissa/Schade", "Lewis-Potter"]
+        }
+      },
+      {
+        "rank": 17,
+        "team": "Nottm Forest (森林)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Sels"],
+          "DEF": ["Aina", "Milenkovic", "Murillo", "Moreno"],
+          "MID": ["Sangare/Ward-Prowse", "Anderson", "Elanga", "Gibbs-White", "Hudson-Odoi"],
+          "FWD": ["Wood"]
+        }
+      },
+      {
+        "rank": 18,
+        "team": "Leicester (莱斯特城)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Hermansen"],
+          "DEF": ["Justin", "Faes", "Okoli", "Kristiansen"],
+          "MID": ["Winks", "Skipp/Ndidi", "Fatawu", "Buonanotte", "Mavididi"],
+          "FWD": ["Vardy"]
+        }
+      },
+      {
+        "rank": 19,
+        "team": "Ipswich (伊普斯维奇)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Muric"],
+          "DEF": ["Tuanzebe", "Woolfenden", "Greaves", "Davis"],
+          "MID": ["Morsy", "Phillips/Cajuste", "Ogbene/Hutchinson", "Szmodics/Chaplin", "Clarke"],
+          "FWD": ["Delap"]
+        }
+      },
+      {
+        "rank": 20,
+        "team": "Southampton (南安普顿)",
+        "formation": "3-5-2",
+        "starters": {
+          "GK": ["Ramsdale"],
+          "DEF": ["Harwood-Bellis", "Bednarek", "Stephens"],
+          "MID": ["Sugawara", "Downes", "Ugochukwu", "Fernandes", "Walker-Peters"],
+          "FWD": ["Brereton Diaz", "Archer"]
+        }
+      }
+    ],
+    "LaLiga": [
+      {
+        "rank": 1,
+        "team": "Real Madrid (皇马)",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": ["Courtois"],
+          "DEF": ["Carvajal", "Militao", "Rudiger", "Mendy"],
+          "MID": ["Valverde", "Tchouameni", "Bellingham"],
+          "FWD": ["Rodrygo", "Mbappe", "Vinicius"]
+        }
+      },
+      {
+        "rank": 2,
+        "team": "Barcelona (巴萨)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Ter Stegen/Pena"],
+          "DEF": ["Kounde", "Cubarsi", "Martinez", "Balde"],
+          "MID": ["Casado/Bernal", "Pedri", "Yamal", "Olmo/Fermin", "Raphinha"],
+          "FWD": ["Lewandowski"]
+        }
+      },
+      {
+        "rank": 3,
+        "team": "Atletico (马竞)",
+        "formation": "5-3-2/3-4-2-1",
+        "starters": {
+          "GK": ["Oblak"],
+          "DEF": ["Llorente", "Le Normand", "Gimenez", "Azpilicueta/Reinildo", "Lino"],
+          "MID": ["De Paul", "Koke", "Gallagher"],
+          "FWD": ["Griezmann", "Alvarez/Sorloth"]
+        }
+      },
+      {
+        "rank": 4,
+        "team": "Girona (赫罗纳)",
+        "formation": "4-4-2/4-3-3",
+        "starters": {
+          "GK": ["Gazzaniga"],
+          "DEF": ["Francés", "Blind", "David Lopez", "Gutierrez"],
+          "MID": ["Tsygankov", "Romeu/Herrera", "Martin", "Gil/Danjuma"],
+          "FWD": ["Ruiz", "Miovski"]
+        }
+      },
+      {
+        "rank": 5,
+        "team": "Athletic Club (毕包)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Simon/Agirrezabala"],
+          "DEF": ["De Marcos", "Vivian", "Paredes", "Yuri"],
+          "MID": ["Prados/Jauregizar", "Galarreta", "I.Williams", "Sancet", "N.Williams"],
+          "FWD": ["Guruzeta/Djalo"]
+        }
+      },
+      {
+        "rank": 6,
+        "team": "Real Sociedad (皇社)",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": ["Remiro"],
+          "DEF": ["Traore/Aramburu", "Zubeldia", "Aguerd", "J.Lopez"],
+          "MID": ["Sucic/Turrientes", "Zubimendi", "Brais Mendez"],
+          "FWD": ["Kubo", "Oyarzabal", "Becker/Barrenetxea"]
+        }
+      },
+      {
+        "rank": 7,
+        "team": "Real Betis (贝蒂斯)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Silva"],
+          "DEF": ["Sabaly", "Llorente", "Natan", "Perraud/Rodriguez"],
+          "MID": ["Roca", "Cardoso", "Fornals", "Lo Celso", "Abde"],
+          "FWD": ["Vitor Roque"]
+        }
+      },
+      {
+        "rank": 8,
+        "team": "Villarreal (比利亚雷亚尔)",
+        "formation": "4-4-2",
+        "starters": {
+          "GK": ["Conde"],
+          "DEF": ["Femenia", "Albiol/Bailly", "Costa/Kambwala", "Cardona"],
+          "MID": ["Yeremy", "Comesaña", "Parejo", "Baena"],
+          "FWD": ["Ayoze Perez", "Barry/G.Moreno"]
+        }
+      },
+      {
+        "rank": 9,
+        "team": "Valencia (瓦伦西亚)",
+        "formation": "4-4-2",
+        "starters": {
+          "GK": ["Mamardashvili"],
+          "DEF": ["Correia", "Mosquera", "Tarrega", "Vazquez"],
+          "MID": ["D.Lopez", "Pepelu", "Guerra/Barrenechea", "Rioja"],
+          "FWD": ["Almeida/Mir", "Duro"]
+        }
+      },
+      {
+        "rank": 10,
+        "team": "Alaves (阿拉维斯)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Sivera"],
+          "DEF": ["Tenaglia", "Abqar", "Sedlar", "Sanchez"],
+          "MID": ["Blanco", "Guevara", "Vicente", "Guridi", "Stoichkov/Conechny"],
+          "FWD": ["Kike Garcia/T.Martinez"]
+        }
+      },
+      {
+        "rank": 11,
+        "team": "Osasuna (奥萨苏纳)",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": ["Herrera"],
+          "DEF": ["Areso", "Catena", "Herrando", "Bretones"],
+          "MID": ["Moncayola", "Torro", "Oroz"],
+          "FWD": ["Ruben Garcia", "Budimir", "Zaragoza"]
+        }
+      },
+      {
+        "rank": 12,
+        "team": "Getafe (赫塔菲)",
+        "formation": "4-4-2",
+        "starters": {
+          "GK": ["Soria"],
+          "DEF": ["Dakonam", "Berrocal", "Alderete", "Rico"],
+          "MID": ["Perez", "Arambarri", "Milla", "Sola"],
+          "FWD": ["Uche", "Yildirim"]
+        }
+      },
+      {
+        "rank": 13,
+        "team": "Celta Vigo (塞尔塔)",
+        "formation": "3-4-3",
+        "starters": {
+          "GK": ["Guaita"],
+          "DEF": ["J.Rodriguez", "Starfelt", "Jailson/Dominguez"],
+          "MID": ["Mingueza", "Beltran", "Sotelo/Moriba", "Alvarez"],
+          "FWD": ["Aspas", "Iglesias", "Swedberg/Bamba"]
+        }
+      },
+      {
+        "rank": 14,
+        "team": "Sevilla (塞维利亚)",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": ["Nyland"],
+          "DEF": ["Carmona", "Bade", "Marcao/Nianzou", "Barco/Pedrosa"],
+          "MID": ["Sow", "Agoume/Lokonga", "Saul"],
+          "FWD": ["Lukebakio", "Romero", "Ejuke"]
+        }
+      },
+      {
+        "rank": 15,
+        "team": "Mallorca (马洛卡)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Greif/Leo Roman"],
+          "DEF": ["Maffeo", "Valjent", "Raillo", "Mojica"],
+          "MID": ["Samu Costa", "Mascarell/Morlanes", "Asano", "Darder", "D.Rodriguez"],
+          "FWD": ["Muriqi"]
+        }
+      },
+      {
+        "rank": 16,
+        "team": "Las Palmas (拉斯帕尔马斯)",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": ["Cillessen"],
+          "DEF": ["Rozada", "Marmol", "McKenna", "A.Munoz"],
+          "MID": ["J.Munoz", "Kirian", "Moleiro"],
+          "FWD": ["Sandro", "McBurnie", "Silva/Januzaj"]
+        }
+      },
+      {
+        "rank": 17,
+        "team": "Rayo Vallecano (列卡奴)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Batalla/Cardenas"],
+          "DEF": ["Ratiu", "Lejeune", "Mumin", "Chavarria"],
+          "MID": ["Valentin", "Unai Lopez", "De Frutos", "Isi/James Rodriguez", "Alvaro Garcia"],
+          "FWD": ["Camello"]
+        }
+      },
+      {
+        "rank": 18,
+        "team": "Leganes (莱加内斯)",
+        "formation": "4-2-3-1",
+        "starters": {
+          "GK": ["Soriano"],
+          "DEF": ["Rosier", "Saenz", "Gonzalez", "Hernandez"],
+          "MID": ["Neyou", "Brasanac", "Cruz", "Oscar", "Franquesa"],
+          "FWD": ["De la Fuente/Haller"]
+        }
+      },
+      {
+        "rank": 19,
+        "team": "Valladolid (瓦拉多利德)",
+        "formation": "4-3-3",
+        "starters": {
+          "GK": ["Hein"],
+          "DEF": ["Perez", "Comert", "Ozkacar", "Rosa"],
+          "MID": ["Perez", "Juric", "Amallah"],
+          "FWD": ["Ndiaye", "Latasa/Sylla", "Moro"]
+        }
+      },
+      {
+        "rank": 20,
+        "team": "Espanyol (西班牙人)",
+        "formation": "4-4-2",
+        "starters": {
+          "GK": ["Joan Garcia"],
+          "DEF": ["El Hilali", "Kumbulla", "Cabrera", "Romero"],
+          "MID": ["Tejero", "Kral", "Gragera", "Carreras"],
+          "FWD": ["Puado", "Veliz"]
+        }
+      }
+    ]
+  }
+}

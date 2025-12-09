@@ -1,5 +1,75 @@
 import { saveBatch, saveToStore, GameData } from '../utils/localDB';
 
+const readEnvFlag = (key: string): boolean => {
+  try {
+    // Vite style
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[key] !== undefined) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      return String(import.meta.env[key]) === 'true';
+    }
+  } catch (err) {
+    // ignore
+  }
+
+  if (typeof process !== 'undefined' && process.env && process.env[key] !== undefined) {
+    return String(process.env[key]) === 'true';
+  }
+
+  return false;
+};
+
+const USE_LOCAL_PLAYERS_SEED = readEnvFlag('VITE_USE_LOCAL_PLAYERS_SEED') || readEnvFlag('USE_LOCAL_PLAYERS_SEED');
+const LOCAL_PLAYERS_SEED_PATH = '/data/players_fixed.json';
+
+const normalizeKey = (str: string) => str.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+const loadLocalPlayersSeed = async (): Promise<any[]> => {
+  try {
+    const resp = await fetch(LOCAL_PLAYERS_SEED_PATH);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const json = await resp.json();
+    if (!Array.isArray(json)) {
+      console.warn('[GameInit] Local seed is not an array');
+      return [];
+    }
+    return json;
+  } catch (err) {
+    console.warn('[GameInit] Failed to load local players seed', err);
+    return [];
+  }
+};
+
+const patchPlayersWithSeed = (players: any[], seed: any[]): any[] => {
+  if (!Array.isArray(players) || !Array.isArray(seed) || seed.length === 0) return players;
+
+  const byId = new Map<string, string>();
+  const byNorm = new Map<string, string>();
+
+  seed.forEach((p: any) => {
+    const idStr = p?.uid || p?.UID || p?.id;
+    const name = p?.name;
+    if (idStr && name) {
+      byId.set(String(idStr), String(name));
+    }
+    if (p?.nameNorm && name) {
+      byNorm.set(normalizeKey(String(p.nameNorm)), String(name));
+    }
+  });
+
+  return players.map(p => {
+    const idKey = p?.id !== undefined ? String(p.id) : p?.UID !== undefined ? String(p.UID) : '';
+    const normKey = p?.name ? normalizeKey(String(p.name)) : '';
+    const patchedName = byId.get(idKey) || (normKey ? byNorm.get(normKey) : undefined);
+    if (patchedName) {
+      return { ...p, name: patchedName };
+    }
+    return p;
+  });
+};
+
 interface InitResponse {
     success: boolean;
     players: any[];
@@ -32,6 +102,18 @@ export const gameInitializer = {
 
             if (!data.success) {
                 throw new Error('API returned error');
+            }
+
+            let playersFromApi = data.players;
+
+            if (USE_LOCAL_PLAYERS_SEED) {
+                const seed = await loadLocalPlayersSeed();
+                if (seed.length > 0) {
+                    playersFromApi = patchPlayersWithSeed(playersFromApi, seed);
+                    console.log(`[GameInit] Applied local players seed patch (${seed.length} records).`);
+                } else {
+                    console.warn('[GameInit] Local players seed flag is on but seed could not be loaded or is empty.');
+                }
             }
 
             // 2. Prepare Game Data
@@ -67,7 +149,7 @@ export const gameInitializer = {
             // Save Players
             // API returns 'id', IndexedDB expects 'UID'
             // We also need to ensure Club/League fields match the index expectations
-            const mappedPlayers = data.players.map((p: any) => ({
+            const mappedPlayers = playersFromApi.map((p: any) => ({
                 ...p,
                 UID: p.id, // Map D1 id to local UID
                 // Ensure Club/League are present (API alias handles this, checking just in case)
