@@ -225,8 +225,11 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
                             const alreadyInSquad = userTeam?.players.some(p => String(p.id) === String(player.id));
                             if (alreadyInSquad) return null;
 
-                            const windowNote = '转会窗口开放期：7/1–8/31';
-                            const transferBudgetText = `转会预算：£${((userTeam as any)?.transferBudget ?? (userTeam as any)?.budget ?? 0 / 1_000_000).toFixed(1)}M`;
+                            const league = (userTeam as any)?.league || 'Premier League';
+                            const windowNote = league === 'Premier League' || league === 'La Liga'
+                                ? '转会窗口：7/1–8/31'
+                                : '转会窗口：待配置';
+                            const transferBudgetText = `转会预算：£${(((userTeam as any)?.transferBudget ?? (userTeam as any)?.budget ?? 0) / 1_000_000).toFixed(1)}M`;
                             const wageRoom = ((userTeam as any)?.wageBudget ?? 0) - ((userTeam as any)?.wageSpending ?? 0);
                             const wageBudgetText = `工资空间：£${(wageRoom / 1_000_000).toFixed(2)}M / 周`;
 
