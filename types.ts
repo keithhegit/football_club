@@ -185,7 +185,11 @@ export interface Team {
   goalsFor: number;
   goalsAgainst: number;
   points: number;
-  budget: number; // Transfer budget in £
+  budget: number; // Transfer budget in £ (legacy field kept for compatibility)
+  balance?: number;         // club cash balance
+  transferBudget?: number;  // available transfer funds
+  wageBudget?: number;      // total wage cap
+  wageSpending?: number;    // current wage spend
   tactics: {
     formation: string; // Formation ID
     mentality: string; // Legacy, keep for compatibility or remove if fully migrated
