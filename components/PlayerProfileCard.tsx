@@ -252,6 +252,13 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
             {showTransferModal && (
                 <TransferOfferModal
                     player={player}
+                    teamBudget={{
+                        balance: userTeam?.balance,
+                        transferBudget: userTeam?.transferBudget ?? userTeam?.budget,
+                        wageBudget: userTeam?.wageBudget,
+                        wageSpending: userTeam?.wageSpending,
+                    }}
+                    leagueName={(userTeam as any)?.league || 'Premier League'}
                     onClose={() => setShowTransferModal(false)}
                     onTransferComplete={onTransferComplete}
                 />

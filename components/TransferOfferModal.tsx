@@ -7,23 +7,51 @@ import { ContractConfirmation } from './ContractConfirmation';
 
 interface Props {
     player: Player;
+    leagueName?: string;
+    teamBudget?: {
+        balance?: number;
+        transferBudget?: number;
+        wageBudget?: number;
+        wageSpending?: number;
+    };
     onClose: () => void;
     onTransferComplete?: (player: Player, fee: number) => void;
 }
 
-export const TransferOfferModal: React.FC<Props> = ({ player, onClose, onTransferComplete }) => {
+export const TransferOfferModal: React.FC<Props> = ({ player, leagueName, teamBudget, onClose, onTransferComplete }) => {
     const { t } = useTranslation();
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 10);
     const playerValue = player.value || (player.ca * 50000); // Fallback: CA * 50k
     const [offerAmount, setOfferAmount] = useState(playerValue);
     const [wageAmount, setWageAmount] = useState(player.ca * 800); // Default guess
     const [response, setResponse] = useState<TransferResponse | null>(null);
     const [showConfirmation, setShowConfirmation] = useState(false);
 
+    // 临时窗口配置，后续可从 league 配置传入
+    const WINDOW_CONFIG: Record<string, { open: string; close: string }> = {
+        'Premier League': { open: '2023-07-01', close: '2023-08-31' },
+        'La Liga': { open: '2023-07-01', close: '2023-08-31' },
+    };
+    const isWindowOpen = () => {
+        const league = leagueName || (player as any)?.league || 'Premier League';
+        const cfg = WINDOW_CONFIG[league];
+        if (!cfg) return true;
+        return todayStr >= cfg.open && todayStr <= cfg.close;
+    };
+
     const handleOffer = () => {
+        const windowOpen = isWindowOpen();
+        const windowMessage = windowOpen ? undefined : '当前不在转会窗口开放期';
         const result = negotiateTransfer(player, {
             playerId: player.id,
             amount: offerAmount,
-            wage: wageAmount
+            wage: wageAmount,
+            transferBudget: teamBudget?.transferBudget,
+            wageBudget: teamBudget?.wageBudget,
+            wageSpending: teamBudget?.wageSpending,
+            windowOpen,
+            windowMessage,
         });
         setResponse(result);
 
