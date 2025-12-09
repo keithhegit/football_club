@@ -5,6 +5,7 @@ import { RefreshCw, ChevronRight } from 'lucide-react';
 import { PlayerAvatar } from './PlayerAvatar';
 import { TransferOfferModal } from './TransferOfferModal';
 import { getPotentialDescriptionChinese } from '../utils/playerPotential';
+import { getWindowStatus } from '../services/transferWindow';
 
 interface Props {
     player: Player;
@@ -226,14 +227,9 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
                             if (alreadyInSquad) return null;
 
                             const league = (userTeam as any)?.league || 'Premier League';
-                            const windowCfg = league === 'Premier League' || league === 'La Liga'
-                                ? { open: '2023-07-01', close: '2023-08-31' }
-                                : null;
-                            const today = new Date().toISOString().slice(0, 10);
-                            const windowOpen = windowCfg ? (today >= windowCfg.open && today <= windowCfg.close) : true;
-                            const windowNote = windowCfg
-                                ? `转会窗口：${windowCfg.open.slice(5).replace('-', '/')}–${windowCfg.close.slice(5).replace('-', '/')}`
-                                : '转会窗口：待配置';
+                            const windowStatus = getWindowStatus(league);
+                            const windowOpen = windowStatus.isOpen;
+                            const windowNote = windowStatus.countdown || '转会窗口：待配置';
                             const transferBudgetText = `转会预算：£${(((userTeam as any)?.transferBudget ?? (userTeam as any)?.budget ?? 0) / 1_000_000).toFixed(1)}M`;
                             const wageRoom = ((userTeam as any)?.wageBudget ?? 0) - ((userTeam as any)?.wageSpending ?? 0);
                             const wageBudgetText = `工资空间：£${(wageRoom / 1_000_000).toFixed(2)}M / 周`;

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Player } from '../types';
 import { negotiateTransfer, TransferResponse } from '../services/transferService';
+import { getWindowStatus } from '../services/transferWindow';
 import { X, Check, DollarSign, Briefcase } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { ContractConfirmation } from './ContractConfirmation';
@@ -28,20 +29,9 @@ export const TransferOfferModal: React.FC<Props> = ({ player, leagueName, teamBu
     const [response, setResponse] = useState<TransferResponse | null>(null);
     const [showConfirmation, setShowConfirmation] = useState(false);
 
-    // 临时窗口配置，后续可从 league 配置传入
-    const WINDOW_CONFIG: Record<string, { open: string; close: string }> = {
-        'Premier League': { open: '2023-07-01', close: '2023-08-31' },
-        'La Liga': { open: '2023-07-01', close: '2023-08-31' },
-    };
-    const isWindowOpen = () => {
-        const league = leagueName || (player as any)?.league || 'Premier League';
-        const cfg = WINDOW_CONFIG[league];
-        if (!cfg) return true;
-        return todayStr >= cfg.open && todayStr <= cfg.close;
-    };
-
-    const windowOpen = isWindowOpen();
-    const windowMessage = windowOpen ? undefined : '当前不在转会窗口开放期';
+    const windowStatus = getWindowStatus(leagueName || (player as any)?.league, todayStr);
+    const windowOpen = windowStatus.isOpen;
+    const windowMessage = windowStatus.isOpen ? undefined : (windowStatus.message || '当前不在转会窗口开放期');
     const wageEnough = (teamBudget?.wageBudget ?? Number.MAX_SAFE_INTEGER) >= ((teamBudget?.wageSpending ?? 0) + wageAmount);
     const budgetMessage = (() => {
         if ((teamBudget?.transferBudget ?? Number.MAX_SAFE_INTEGER) < offerAmount) return '转会预算不足';
@@ -145,6 +135,11 @@ export const TransferOfferModal: React.FC<Props> = ({ player, leagueName, teamBu
                                         className="w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 pl-10 pr-4 text-white font-mono focus:ring-2 focus:ring-emerald-500 outline-none"
                                     />
                                 </div>
+                            </div>
+
+                            <div className="text-xs text-slate-400 space-y-1">
+                                <div>{windowStatus.countdown || windowMessage || '窗口状态未知'}</div>
+                                <div>联赛：{leagueName || (player as any)?.league || 'Premier League'}</div>
                             </div>
 
                             {response && !response.accepted && (
