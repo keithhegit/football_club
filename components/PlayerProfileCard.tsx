@@ -226,8 +226,13 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
                             if (alreadyInSquad) return null;
 
                             const league = (userTeam as any)?.league || 'Premier League';
-                            const windowNote = league === 'Premier League' || league === 'La Liga'
-                                ? '转会窗口：7/1–8/31'
+                            const windowCfg = league === 'Premier League' || league === 'La Liga'
+                                ? { open: '2023-07-01', close: '2023-08-31' }
+                                : null;
+                            const today = new Date().toISOString().slice(0, 10);
+                            const windowOpen = windowCfg ? (today >= windowCfg.open && today <= windowCfg.close) : true;
+                            const windowNote = windowCfg
+                                ? `转会窗口：${windowCfg.open.slice(5).replace('-', '/')}–${windowCfg.close.slice(5).replace('-', '/')}`
                                 : '转会窗口：待配置';
                             const transferBudgetText = `转会预算：£${(((userTeam as any)?.transferBudget ?? (userTeam as any)?.budget ?? 0) / 1_000_000).toFixed(1)}M`;
                             const wageRoom = ((userTeam as any)?.wageBudget ?? 0) - ((userTeam as any)?.wageSpending ?? 0);
@@ -245,9 +250,10 @@ export const PlayerProfileCard: React.FC<Props> = ({ player, onTransferComplete,
                                             e.stopPropagation();
                                             setShowTransferModal(true);
                                         }}
-                                        className="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 rounded shadow-lg transition-colors"
+                                        disabled={!windowOpen}
+                                        className={`w-full text-xs font-bold py-2 rounded shadow-lg transition-colors ${windowOpen ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-slate-700 text-slate-400 cursor-not-allowed'}`}
                                     >
-                                        Make Transfer Offer
+                                        {windowOpen ? 'Make Transfer Offer' : '窗口未开放'}
                                     </button>
                                 </div>
                             );

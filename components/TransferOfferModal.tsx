@@ -40,9 +40,32 @@ export const TransferOfferModal: React.FC<Props> = ({ player, leagueName, teamBu
         return todayStr >= cfg.open && todayStr <= cfg.close;
     };
 
+    const windowOpen = isWindowOpen();
+    const windowMessage = windowOpen ? undefined : '当前不在转会窗口开放期';
+    const wageEnough = (teamBudget?.wageBudget ?? Number.MAX_SAFE_INTEGER) >= ((teamBudget?.wageSpending ?? 0) + wageAmount);
+    const budgetMessage = (() => {
+        if ((teamBudget?.transferBudget ?? Number.MAX_SAFE_INTEGER) < offerAmount) return '转会预算不足';
+        if (!wageEnough) return '工资预算不足';
+        return undefined;
+    })();
+
     const handleOffer = () => {
-        const windowOpen = isWindowOpen();
-        const windowMessage = windowOpen ? undefined : '当前不在转会窗口开放期';
+        if (!windowOpen) {
+            setResponse({
+                accepted: false,
+                message: windowMessage || '转会窗口未开放，无法提交报价。'
+            });
+            return;
+        }
+
+        if (budgetMessage) {
+            setResponse({
+                accepted: false,
+                message: budgetMessage
+            });
+            return;
+        }
+
         const result = negotiateTransfer(player, {
             playerId: player.id,
             amount: offerAmount,
@@ -52,6 +75,7 @@ export const TransferOfferModal: React.FC<Props> = ({ player, leagueName, teamBu
             wageSpending: teamBudget?.wageSpending,
             windowOpen,
             windowMessage,
+            budgetMessage,
         });
         setResponse(result);
 
@@ -140,9 +164,10 @@ export const TransferOfferModal: React.FC<Props> = ({ player, leagueName, teamBu
 
                             <button
                                 onClick={handleOffer}
-                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-lg shadow-lg transition-all mt-2"
+                                disabled={!windowOpen || !!budgetMessage}
+                                className={`w-full font-bold py-3 rounded-lg shadow-lg transition-all mt-2 ${(!windowOpen || budgetMessage) ? 'bg-slate-700 text-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500 text-white'}`}
                             >
-                                Submit Offer
+                                {(!windowOpen || budgetMessage) ? (budgetMessage || windowMessage || '窗口未开放') : 'Submit Offer'}
                             </button>
                         </div>
                     ) : (

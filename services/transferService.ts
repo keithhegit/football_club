@@ -2,8 +2,15 @@ import { Player } from '../types';
 
 export interface TransferOffer {
     playerId: string;
-    amount: number;
-    wage: number;
+    amount: number;      // transfer fee (one-off)
+    wage: number;        // weekly wage offer
+    clubBalance?: number;
+    transferBudget?: number;
+    wageBudget?: number;
+    wageSpending?: number;
+    windowOpen?: boolean;
+    windowMessage?: string;
+    budgetMessage?: string;
 }
 
 export interface TransferResponse {
@@ -16,6 +23,31 @@ export interface TransferResponse {
 }
 
 export function negotiateTransfer(player: Player, offer: TransferOffer): TransferResponse {
+    // 0. Window / budget checks
+    if (offer.windowOpen === false) {
+        return {
+            accepted: false,
+            message: offer.windowMessage || '转会窗口未开放，无法提交报价。'
+        };
+    }
+
+    if (offer.transferBudget !== undefined && offer.amount > (offer.transferBudget || 0)) {
+        return {
+            accepted: false,
+            message: '转会预算不足，无法满足报价金额。'
+        };
+    }
+
+    if (offer.wageBudget !== undefined && offer.wageSpending !== undefined) {
+        const projected = offer.wageSpending + offer.wage;
+        if (projected > offer.wageBudget) {
+            return {
+                accepted: false,
+                message: '工资预算不足，无法满足薪资要求。'
+            };
+        }
+    }
+
     // 1. Calculate Minimum Acceptable Fee
     // Base value * multiplier based on age and potential
     let minFee = player.value || (player.ca * 50000); // Fallback calculation
