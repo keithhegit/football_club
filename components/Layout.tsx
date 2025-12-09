@@ -11,7 +11,7 @@ interface LayoutProps {
   onChangeView: (view: any) => void;
   teamName: string;
   onSaveGame?: (name: string) => Promise<void>;
-  onTransferComplete?: (player: any, fee: number) => void;
+  onTransferComplete?: (player: any, fee: number, wage: number) => void;
   userTeam?: any;
   bgmUnlockKey?: number;
 }

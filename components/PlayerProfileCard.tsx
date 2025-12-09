@@ -8,7 +8,7 @@ import { getPotentialDescriptionChinese } from '../utils/playerPotential';
 
 interface Props {
     player: Player;
-    onTransferComplete?: (player: Player, fee: number) => void;
+    onTransferComplete?: (player: Player, fee: number, wage: number) => void;
     hideActions?: boolean; // Hide Make Offer button when in confirmation flow
     userTeam?: { players: Player[] }; // To check if player is already in squad
     currentWeek?: number; // for age roll-over 23-24 season

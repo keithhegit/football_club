@@ -15,7 +15,7 @@ interface Props {
         wageSpending?: number;
     };
     onClose: () => void;
-    onTransferComplete?: (player: Player, fee: number) => void;
+    onTransferComplete?: (player: Player, fee: number, wage: number) => void;
 }
 
 export const TransferOfferModal: React.FC<Props> = ({ player, leagueName, teamBudget, onClose, onTransferComplete }) => {
@@ -87,7 +87,7 @@ export const TransferOfferModal: React.FC<Props> = ({ player, leagueName, teamBu
 
     const handleConfirmTransfer = () => {
         if (onTransferComplete) {
-            onTransferComplete(player, offerAmount);
+            onTransferComplete(player, offerAmount, wageAmount);
         }
         onClose();
     };

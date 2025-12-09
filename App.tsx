@@ -404,7 +404,7 @@ const App: React.FC = () => {
     saveService.saveGame(`${gameState.manager?.name || 'Save'} - ${userTeam?.name || ''}`, finalState).catch(() => {});
   };
 
-  const handleTransferComplete = (player: Player, fee: number) => {
+  const handleTransferComplete = (player: Player, fee: number, wage: number) => {
     if (!gameState) {
       console.error('[Transfer] No game state available');
       return;
@@ -435,23 +435,41 @@ const App: React.FC = () => {
         return prev; // Return unchanged state
       }
 
+      const feeDelta = fee || 0;
+      const wageDelta = wage || 0;
+
       console.log('[Transfer] ✓ Validation passed');
       console.log('[Transfer] Current squad size:', userTeam.players.length);
-      console.log('[Transfer] Current budget: £', userTeam.budget?.toLocaleString());
+      console.log('[Transfer] Current budgets => balance:', userTeam.balance, 'transferBudget:', userTeam.transferBudget, 'legacy budget:', userTeam.budget, 'wageSpending:', userTeam.wageSpending);
 
       // Create updated teams array
       const updatedTeams = prev.teams.map(team => {
         if (team.id === prev.userTeamId) {
           const newPlayers = [...team.players, player];
-          const newBudget = (team.budget || 50000000) - fee;
+
+          const nextTransferBudget = team.transferBudget !== undefined
+            ? Math.max(0, (team.transferBudget || 0) - feeDelta)
+            : undefined;
+          const nextBalance = team.balance !== undefined
+            ? Math.max(0, (team.balance || 0) - feeDelta)
+            : undefined;
+          const nextLegacyBudget = team.transferBudget === undefined
+            ? (team.budget || 0) - feeDelta
+            : team.budget;
+          const nextWageSpending = team.wageSpending !== undefined
+            ? (team.wageSpending || 0) + wageDelta
+            : (wageDelta > 0 ? wageDelta : team.wageSpending);
 
           console.log('[Transfer] ➜ New squad size:', newPlayers.length);
-          console.log('[Transfer] ➜ New budget: £', newBudget.toLocaleString());
+          console.log('[Transfer] ➜ Budgets after deal => balance:', nextBalance, 'transferBudget:', nextTransferBudget, 'legacy budget:', nextLegacyBudget, 'wageSpending:', nextWageSpending);
 
           return {
             ...team,
             players: newPlayers,
-            budget: newBudget
+            budget: nextLegacyBudget,
+            transferBudget: nextTransferBudget ?? team.transferBudget,
+            balance: nextBalance ?? team.balance,
+            wageSpending: nextWageSpending ?? team.wageSpending,
           };
         }
         return team;

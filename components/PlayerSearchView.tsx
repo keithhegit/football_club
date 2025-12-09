@@ -7,7 +7,7 @@ import { ClubLogo } from './ClubLogo';
 import { Team } from '../types';
 
 interface PlayerSearchViewProps {
-    onTransferComplete?: (player: Player, fee: number) => void;
+    onTransferComplete?: (player: Player, fee: number, wage: number) => void;
     userTeam?: Team; // To filter out user's own players
 }
 
@@ -213,9 +213,9 @@ export const PlayerSearchView: React.FC<PlayerSearchViewProps> = ({ onTransferCo
                         <PlayerProfileCard
                             player={selectedPlayer}
                             userTeam={userTeam}
-                            onTransferComplete={(player, fee) => {
+                            onTransferComplete={(player, fee, wage) => {
                                 if (onTransferComplete) {
-                                    onTransferComplete(player, fee);
+                                    onTransferComplete(player, fee, wage);
                                 }
                                 setSelectedPlayer(null); // Close modal after transfer
                             }}
